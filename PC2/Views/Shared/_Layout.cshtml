@@ -3,29 +3,127 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PC2</title>
+    <title>@ViewData["Title"] - PC2Online</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        @{
+            string currController = ViewContext.RouteData.Values["controller"]?.ToString();
+            string currAction = ViewContext.RouteData.Values["action"]?.ToString();
+        }
+
+        @* Sets menu item text for the current page to black*@
+        #@currController-@currAction > a {
+            color:black !important;
+        }
+
+        @* Prevents menu item background from being highlighted for the current page*@
+        #@currController-@currAction {
+            background-color: rgb(136, 178, 53) !important;
+        }
+
+        @RenderSectionAsync("Head", false)
+    </style>
 </head>
-<body>
+<body id="bootstrap-override">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PC2</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+        <div id="heading">
+            <div id="pc2Logo">
+                <a asp-controller="Home" asp-action="Index">
+                    <img src="~/images/PC2-logo.jpg" alt="PC2 logo" />
+                </a>
+            </div>
+            <div id="mainTitle">
+                <h1>
+                    <a asp-controller="Home" asp-action="Index">Pierce County Coalition for Developmental Disabilities (PC2)</a>
+                </h1>
+            </div>
+        </div>
+        <nav class="navbar navbar-expand-md navbar-toggleable-md navbar-dark border-bottom border-top box-shadow mb-3">
+            <div class="container">
+                <div id="menu-bar">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <div id="hamburger">
+                            <span class="navbar-toggler-icon"></span>
+                        </div>
+                    </button>
+                    <div id="menu-title">MENU</div>
+                </div>
+                <div id="left-ribbon" class="ribbon"></div>
+                <div id="right-ribbon" class="ribbon"></div>
+                <div class="navbar-collapse collapse d-md-inline-flex flex-md-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <li id="Home-Index" class="nav-item menu-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <li id="NewsToKnow-Index" class="nav-item menu-item">
+                            <a class="nav-link" asp-area="" asp-controller="NewsToKnow" asp-action="Index">NEWS TO KNOW</a>
+                        </li>
+                        <li id="Events-Index" class="nav-item menu-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" asp-area="" asp-controller="Events" asp-action="Index">EVENTS</a>
+                            <div id="event-submenu" class="submenu-container">
+                                <ul class="submenu dropdown-menu">
+                                    <li id="Events-EventsAndActivities" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Events" asp-action="EventsAndActivities">PC2 Events and Activities</a>
+                                    </li>
+                                    <li class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Event Photos</a>
+                                    </li>
+                                    <li id="Events-CountyWideEventsAndActivities" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Events" asp-action="CountyWideEventsAndActivities">County-wide Events and Activities</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li id="Resources-Index" class="nav-item menu-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" asp-area="" asp-controller="Resources" asp-action="Index">RESOURCES</a>
+                            <div id="resources-submenu" class="submenu-container">
+                                <ul class="submenu dropdown-menu">
+                                    <li id="Resources-ResourceGuide" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a>
+                                    </li>
+                                    <li id="Resources-FocusNewsletters" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Resources" asp-action="FocusNewsletters">Focus Newsletters</a>
+                                    </li>
+                                    <li id="Resources-DisabilityAwareness" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a>
+                                    </li>
+                                    <li id="Resources-ResourceLinks" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Resources" asp-action="ResourceLinks">Resource Links</a>
+                                    </li>
+                                    <li id="Resources-AgeSpecificIssues" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Resources" asp-action="AgeSpecificIssues">Age-Specific Issues</a>
+                                    </li>
+                                    <li id="Resources-LegislativeLinksAndEvents" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Legislative Links &amp; Events</a>
+                                    </li>
+                                    <li id="Resources-EmergencyPreparedness" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Resources" asp-action="EmergencyPreparedness">Emergency Preparedness</a>
+                                    </li>
+                                    <li id="Resources-VirtualCloset" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Resources" asp-action="VirtualCloset">Virtual Closet</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item menu-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">PC2's HOUSING PROGRAM</a>
+                        </li>
+                        <li id="about-menu" class="nav-item menu-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" asp-area="" asp-controller="Home" asp-action="About">ABOUT US</a>
+                            <div id="about-submenu" class="submenu-container">
+                                <ul class="submenu dropdown-menu">
+                                    <li id="about-item" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
+                                    </li>
+                                    <li id="contact-item" class="nav-item submenu-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Contact Us</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
                     </ul>
-                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
@@ -36,14 +134,35 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - PC2 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer">
+        <div class="footer-column">
+            <div class="footer-item" id="footer-phone">
+                <p>253.564.0707</p>
+                <p>877-DD-LINKS</p>
+            </div>
+
+            <div class="footer-item" id="footer-address">
+                <p>3716 Pacific Ave, STE A</p>
+                <p>Tacoma, WA 98418</p>
+            </div>
+        </div>
+        <div class="footer-column">
+            <div class="footer-item" id="footer-copyright">
+                <p>&copy; @DateTime.Now.Year by PC2 for DD</p>
+            </div>
+            <div class="footer-item" id="footer-social-media">
+                <a href="https://twitter.com/PC24DD" target="_blank">
+                    <img src="~/images/twitter-logo.jpg" alt="twitter logo" />
+                </a>
+                <a href="https://www.facebook.com/PCCDD" target="_blank">
+                    <img src="~/images/facebook-logo.jpg" alt="facebook logo" />
+                </a>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

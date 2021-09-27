@@ -2,64 +2,494 @@
 for details on configuring this project to bundle and minify static web assets. */
 
 a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
 }
 
+/* Provide sufficient contrast against white background */
 a {
-  color: #0077cc;
+    color: #0366d6;
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
 }
 
+/* Sticky footer styles
+-------------------------------------------------- */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
+
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .border-top {
-  border-top: 1px solid #e5e5e5;
+    border-top: 1px solid #e5e5e5;
 }
+
 .border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
 button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
+    font-size: 1rem;
+    line-height: inherit;
 }
 
+/* Sticky footer styles
+-------------------------------------------------- */
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
 }
+
+
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+    position: absolute;
+    display: flex;
+    vertical-align: middle;
+    justify-content: space-between;
+    padding: 0 calc(12% - 50px);
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    height: 67px;
+    margin-top: 200px;
+    margin-bottom: 77px;
+    background-color: rgba(18, 66, 35, 1);
+    color: rgb(248, 249, 250);
+    font-weight: bold;
+    font-family: "Palatino Linotype", serif;
+    font-size: 16px;
+}
+
+main {
+    /* Prevents absolutely positioned footer from overlapping main*/
+    margin-bottom: 155px;
+    overflow: hidden;
+}
+
+
+.footer-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: row;
+    flex: 50%;
+    justify-content: space-around;
+}
+
+#bootstrap-override .footer-item p {
+    margin-bottom: 0;
+    text-align: center;
+    line-height: 1.3em;
+}
+
+#footer-social-media {
+    flex-direction: row;
+}
+
+    #footer-social-media a {
+        margin: 5px;
+    }
+
+#heading {
+    width: 75%;
+    margin: 8% auto auto auto;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+    /*Adds an invisible element that makes navbar top margin work against heading floated elements*/
+    #heading::after {
+        display: block;
+        height: 0;
+        width: 100%;
+        content: "";
+        clear: both;
+    }
+
+#mainTitle {
+    float: left;
+    width: 80%;
+    text-align: center;
+    margin: auto;
+}
+
+    #mainTitle h1 {
+        margin-bottom: 0;
+        font-size: 2.5rem;
+    }
+
+    #mainTitle a {
+        font-weight: bold;
+        color: rgb(41, 41, 41);
+    }
+
+        #mainTitle a:hover {
+            text-decoration: none;
+        }
+
+#pc2Logo {
+    float: right;
+    width: 20%;
+}
+
+    #pc2Logo img {
+        width: 200px;
+        height: 130px;
+    }
+
+#bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .submenu, .divider {
+    background-color: rgb(136, 178, 53);
+}
+
+#bootstrap-override nav {
+    justify-content: space-around;
+    clear: both;
+    height: 62px;
+    padding: 0;
+    z-index: 10;
+    width: 80%;
+    margin: 1.5em auto 25px auto !important;
+}
+
+.container {
+    margin: 0;
+    width: 100%;
+    max-width: 2000px;
+}
+
+ul.navbar-nav {
+    text-align: center;
+    justify-content: space-around;
+    -webkit-justify-content: space-around; /*Safari 6.1+*/
+    display: -webkit-flex; /*Safari*/
+    max-width: 950px;
+    margin: 0 auto;
+}
+
+nav .container {
+    padding: 0;
+}
+
+#bootstrap-override .navbar-toggler {
+    /*font-size: 19px;*/
+    border: none;
+    border-radius: 0;
+    outline: none;
+    padding: 0;
+}
+
+#menu-bar {
+    display: inherit;
+}
+
+#menu-title {
+    display: inline-block;
+    font-size: 1.2em;
+    margin: auto;
+    /*to counter nav-toggler so menu title appears centered*/
+    padding-right: 58px;
+}
+
+#bootstrap-override .navbar-toggler, #bootstrap-override .menu-item a, #menu-title {
+    font-weight: 700;
+    color: rgb(248, 249, 250);
+}
+
+#hamburger {
+    padding: 10px;
+    display: inline-block;
+}
+
+.navbar-toggler-icon {
+    padding: 17px;
+}
+
+#bootstrap-override .menu-item a {
+    padding: 8px 0 8px 0;
+    font-size: 15px;
+}
+
+/*text color transition when hovered*/
+#bootstrap-override .menu-item:hover > a, #bootstrap-override .submenu-item:hover > a {
+    color: black;
+    transition: color .4s ease 0s;
+    -webkit-transition: color .4s ease 0s;
+    -moz-transition: color .4s ease 0s;
+    -o-transition: color .4s ease 0s;
+}
+
+.menu-item {
+    height: 60px;
+    display: inline-flex;
+    padding: 12px 10px 12px 10px;
+    position: relative;
+    align-items: center;
+}
+
+    /*background color transition when hovered*/
+    .menu-item:hover, .submenu-item:hover {
+        background-color: rgba(180, 204, 132, 1);
+        transition: background-color .4s ease 0s;
+        -webkit-transition: background-color .4s ease 0s;
+        -moz-transition: background-color .4s ease 0s;
+    }
+
+nav a {
+    padding: 10px;
+}
+
+.ribbon {
+    position: absolute;
+    bottom: -50px;
+    height: 0;
+    width: 0;
+    border: 25px solid transparent;
+    border-top-color: rgba(91, 118, 35, 1);
+}
+
+#left-ribbon {
+    border-right-width: 0;
+    left: 0;
+}
+
+#right-ribbon {
+    border-left-width: 0;
+    right: 0;
+}
+
+.submenu-container {
+    padding: 15px 0 0 0;
+    background-color: transparent;
+    position: absolute;
+    left: 50%;
+    top: 60px;
+    -webkit-transform: translate(-50%, 0%);
+    -ms-transform: translate(-50%, 0%);
+    -moz-transform: translate(-50%, 0%);
+    -o-transform: translate(-50%, 0%);
+    transform: translate(-50%, 0%);
+    z-index: 11;
+}
+
+#bootstrap-override .submenu-item a {
+    white-space: nowrap;
+    padding: 4px 7px 9px 7px;
+    text-align: center;
+}
+
+.submenu-item {
+    height: 30px;
+    list-style-type: none;
+}
+
+#bootstrap-override .submenu {
+    padding: 0;
+    position: static;
+    margin: 0;
+    border-radius: 0;
+    min-width: 90px;
+}
+
+@media only screen and (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+
+    #pc2Logo {
+        padding-bottom: 1em;
+    }
+
+    #menu-bar * {
+        width: 0;
+    }
+
+    /*removes caret for drop down*/
+    .dropdown-toggle::after {
+        content: none;
+    }
+
+    #menu-bar *, .submenu-container * {
+        display: none;
+    }
+
+    /*Shows submenu when menu item is hovered*/
+    #Events-Index:hover #event-submenu *,
+    #Resources-Index:hover #resources-submenu *,
+    #about-menu:hover #about-submenu,
+    #about-menu:hover #about-submenu .submenu,
+    #about-menu:hover #about-submenu .submenu #contact-item,
+    #about-menu:hover #about-submenu .submenu #contact-item a,
+    #about-menu:hover #about-submenu .submenu #about-item,
+    #about-menu:hover #about-submenu .submenu #about-item a {
+        display: block;
+    }
+
+    /*top border shows even when display is set to none*/
+    .submenu {
+        border: none;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    /*Centers menu items when navbar collapses*/
+    #bootstrap-override .menu-item a {
+        height: inherit;
+        width: inherit;
+        margin: auto;
+    }
+
+    #heading {
+        width: 100%;
+        margin: 2% auto auto auto;
+    }
+
+    #mainTitle a {
+        display: block;
+        font-size: .75em;
+        line-height: 1.3;
+    }
+
+    #pc2Logo {
+        margin: auto;
+        clear: both;
+        width: 200px;
+        float: none;
+        /*padding makes image look more centered*/
+        padding-left: 28px;
+        padding-bottom: .5em;
+    }
+
+        #pc2Logo img {
+            width: 160px;
+            height: 104px;
+        }
+
+    #mainTitle {
+        width: 100%;
+        float: none;
+    }
+
+    #bootstrap-override nav {
+        margin-top: .4em;
+    }
+
+    #menu-bar {
+        width: 100%;
+    }
+
+    .footer {
+        height: 134px;
+        margin-bottom: 0;
+    }
+
+    .footer-column {
+        flex-direction: column;
+    }
+}
+
+main {
+    color: rgb(41, 41, 41);
+    line-height: 1.3;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+h2 {
+    font-size: 1rem;
+    margin: 0;
+}
+
+#content a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+main p {
+    line-height: 1.3;
+    margin-bottom: 0;
+}
+
+#photo-header {
+    margin: auto;
+    clear: both;
+    overflow: hidden;
+    -webkit-transition: width .5s;
+    -moz-transition: width.5s;
+    -o-transition: width.5s;
+    transition: width .5s;
+    max-width: 100%;
+}
+
+    #photo-header::after {
+        display: block;
+        height: 0;
+        width: 100%;
+        content: "";
+        clear: both;
+    }
+
+    #photo-header img {
+        float: left;
+        padding: 10px 0;
+        max-width: 100%;
+    }
+
+.divider {
+    height: 25px;
+    margin: 1.2em auto;
+}
+
+#content {
+    width: calc(75% + 80px);
+    margin: 0 auto 50px auto;
+}
+
+    #content ul {
+        margin-bottom: 0;
+    }
+
+    #content img {
+        max-width: 100%;
+    }
+
+#page-title {
+    text-align: center;
+    margin-top: 1.5em;
 }
