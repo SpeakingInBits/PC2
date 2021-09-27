@@ -21,9 +21,8 @@
         #@currController-@currAction {
             background-color: rgb(136, 178, 53) !important;
         }
-
-        @RenderSectionAsync("Head", false)
     </style>
+    @await RenderSectionAsync("Head", false)
 </head>
 <body id="bootstrap-override">
     <header>
