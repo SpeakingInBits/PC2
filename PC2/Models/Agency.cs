@@ -34,7 +34,7 @@ namespace PC2.Models
 
         public string? TDD {  get; set;}
 
-        public string? Crisis_Help_Hotline {  get; set;}
+        public string? CrisisHelpHotline {  get; set;}
 
         public string? Email {  get; set;}
 

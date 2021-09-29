@@ -12,7 +12,7 @@ using PC2.Data;
 namespace PC2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210929033612_Agency")]
+    [Migration("20210929194656_Agency")]
     partial class Agency
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,15 +26,15 @@ namespace PC2.Data.Migrations
 
             modelBuilder.Entity("AgencyAgencyCategory", b =>
                 {
+                    b.Property<int>("AgenciesAgencyId")
+                        .HasColumnType("int");
+
                     b.Property<int>("AgencyCategoriesAgencyCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("agenciesAgencyId")
-                        .HasColumnType("int");
+                    b.HasKey("AgenciesAgencyId", "AgencyCategoriesAgencyCategoryId");
 
-                    b.HasKey("AgencyCategoriesAgencyCategoryId", "agenciesAgencyId");
-
-                    b.HasIndex("agenciesAgencyId");
+                    b.HasIndex("AgencyCategoriesAgencyCategoryId");
 
                     b.ToTable("AgencyAgencyCategory");
                 });
@@ -268,7 +268,7 @@ namespace PC2.Data.Migrations
                     b.Property<string>("Contact")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Crisis_Help_Hotline")
+                    b.Property<string>("CrisisHelpHotline")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
@@ -325,15 +325,15 @@ namespace PC2.Data.Migrations
 
             modelBuilder.Entity("AgencyAgencyCategory", b =>
                 {
-                    b.HasOne("PC2.Models.AgencyCategory", null)
+                    b.HasOne("PC2.Models.Agency", null)
                         .WithMany()
-                        .HasForeignKey("AgencyCategoriesAgencyCategoryId")
+                        .HasForeignKey("AgenciesAgencyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PC2.Models.Agency", null)
+                    b.HasOne("PC2.Models.AgencyCategory", null)
                         .WithMany()
-                        .HasForeignKey("agenciesAgencyId")
+                        .HasForeignKey("AgencyCategoriesAgencyCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

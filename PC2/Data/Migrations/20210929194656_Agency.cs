@@ -27,7 +27,7 @@ namespace PC2.Data.Migrations
                     TollFree = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TTY = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TDD = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Crisis_Help_Hotline = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CrisisHelpHotline = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Website = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -54,15 +54,15 @@ namespace PC2.Data.Migrations
                 name: "AgencyAgencyCategory",
                 columns: table => new
                 {
-                    AgencyCategoriesAgencyCategoryId = table.Column<int>(type: "int", nullable: false),
-                    agenciesAgencyId = table.Column<int>(type: "int", nullable: false)
+                    AgenciesAgencyId = table.Column<int>(type: "int", nullable: false),
+                    AgencyCategoriesAgencyCategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AgencyAgencyCategory", x => new { x.AgencyCategoriesAgencyCategoryId, x.agenciesAgencyId });
+                    table.PrimaryKey("PK_AgencyAgencyCategory", x => new { x.AgenciesAgencyId, x.AgencyCategoriesAgencyCategoryId });
                     table.ForeignKey(
-                        name: "FK_AgencyAgencyCategory_Agency_agenciesAgencyId",
-                        column: x => x.agenciesAgencyId,
+                        name: "FK_AgencyAgencyCategory_Agency_AgenciesAgencyId",
+                        column: x => x.AgenciesAgencyId,
                         principalTable: "Agency",
                         principalColumn: "AgencyId",
                         onDelete: ReferentialAction.Cascade);
@@ -75,9 +75,9 @@ namespace PC2.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AgencyAgencyCategory_agenciesAgencyId",
+                name: "IX_AgencyAgencyCategory_AgencyCategoriesAgencyCategoryId",
                 table: "AgencyAgencyCategory",
-                column: "agenciesAgencyId");
+                column: "AgencyCategoriesAgencyCategoryId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

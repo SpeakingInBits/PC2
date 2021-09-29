@@ -9,6 +9,6 @@ namespace PC2.Models
         
         public string AgencyCategoryName {  get; set; }
 
-        public List<Agency> agencies {  get; set; } = new List<Agency>();
+        public List<Agency> Agencies {  get; set; } = new List<Agency>();
     }
 }
