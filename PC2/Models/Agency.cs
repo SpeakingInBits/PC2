@@ -36,6 +36,8 @@ namespace PC2.Models
 
         public string? CrisisHelpHotline {  get; set;}
 
+        public string? Fax { get; set;}
+
         public string? Email {  get; set;}
 
         public string? Website { get; set;}

@@ -275,6 +275,9 @@ namespace PC2.Data.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Fax")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("MailingAddress")
                         .HasColumnType("nvarchar(max)");
 

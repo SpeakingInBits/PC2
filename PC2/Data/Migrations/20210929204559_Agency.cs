@@ -28,6 +28,7 @@ namespace PC2.Data.Migrations
                     TTY = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TDD = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CrisisHelpHotline = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Fax = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Website = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
