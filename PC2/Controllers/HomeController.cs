@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Office.Interop.Excel;
 using PC2.Data;
 using PC2.Models;
@@ -11,6 +12,8 @@ namespace PC2.Controllers
     {
         private const int CategoryStart = 28;
         private const int CategoryEnd = 99;
+        private const int StartingRow = 2;
+        private const int EndingRow = 901;
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
 
@@ -51,9 +54,10 @@ namespace PC2.Controllers
         [ActionName("ConfirmImportExcel")]
         public async Task<IActionResult> ImportExcel()
         {
+            string path = Path.Combine(Environment.CurrentDirectory, @"Data\Resources", "2020.rg.breakout.xlsx");
             Application xlApp = new Application();
-            Workbook xlWorkbook = xlApp.Workbooks.Open(@"~/Data/Resources/2020.rg.breakout.xlsx");
-            _Worksheet xlWorksheet = (_Worksheet)xlWorkbook.Sheets[0];
+            Workbook xlWorkbook = xlApp.Workbooks.Open(path);
+            _Worksheet xlWorksheet = (_Worksheet)xlWorkbook.Sheets[1];
             Microsoft.Office.Interop.Excel.Range xlRange = xlWorksheet.UsedRange;
             await CreateAgencyCategories(xlRange);
 
@@ -63,151 +67,229 @@ namespace PC2.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Creates the relationship between Agency and AgencyCategory
+        /// </summary>
         private async Task AddCategoriesToAgency(Microsoft.Office.Interop.Excel.Range xlRange)
         {
             List<AgencyCategory> categories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
             List<Agency> agencies = await AgencyDB.GetAllAgencyAsync(_context);
 
-            for (int row = 2; row <= 901; row++)
+            for (int row = StartingRow; row <= EndingRow; row++)
             {
+                List<AgencyCategory> currentCategories = new List<AgencyCategory>();
                 for (int col = CategoryStart; col <= CategoryEnd; col++)
                 {
-                    if ((string)xlRange.Cells[row, col] == "x")
+                    Microsoft.Office.Interop.Excel.Range range = xlRange.Cells[row, col];
+                    try
                     {
-                        agencies[row - 1].AgencyCategories.Add(categories[col - CategoryStart]);
+                        if (range.Value.ToString() == "x")
+                        {
+                            agencies[row - 2].AgencyCategories.Add(categories[col - CategoryStart]);
+                        }
+                    }
+                    catch (RuntimeBinderException)
+                    {
+                        continue;
                     }
                 }
-
+                await AgencyDB.UpdateAgencyAsync(_context, agencies[row - 2], currentCategories);
             }
         }
 
+        /// <summary>
+        /// Creates the Categories for the agencies
+        /// </summary>
         private async Task CreateAgencyCategories(Microsoft.Office.Interop.Excel.Range xlRange)
         {
             for (int col = CategoryStart; col <= CategoryEnd; col++)
             {
                 AgencyCategory agencyCategory = new AgencyCategory();
-                agencyCategory.AgencyCategoryName = (string)xlRange.Cells[1, col];
+                Microsoft.Office.Interop.Excel.Range range = xlRange.Cells[1, col];
+                agencyCategory.AgencyCategoryName = range.Value.ToString();
                 await AgencyCategoryDB.AddCategoryAsync(_context, agencyCategory);
             }
         }
 
+        /// <summary>
+        /// Creates the agencies
+        /// </summary>
         private async Task CreateAgencies(Microsoft.Office.Interop.Excel.Range xlRange)
         {
-            for (int row = 2; row <= 901; row++)
+            for (int row = StartingRow; row <= EndingRow; row++)
             {
                 Agency agency = new Agency();
                 for (int col = 1; col < CategoryStart; col++)
                 {
-                    switch (col)
+                    Microsoft.Office.Interop.Excel.Range range = xlRange.Cells[row, col];
+                    try
                     {
-                        case 1:
-                            agency.AgencyName = (string)xlRange.Cells[row, col];
-                            break;
-                        case 2:
-                            agency.AgencyName2 = (string)xlRange.Cells[row, col];
-                            break;
-                        case 3:
-                            agency.Contact = (string)xlRange.Cells[row, col];
-                            break;
-                        case 4:
-                            agency.Address1 = (string)xlRange.Cells[row, col];
-                            break;
-                        case 5:
-                            agency.Address2 = (string)xlRange.Cells[row, col];
-                            break;
-                        case 6:
-                            agency.City = (string)xlRange.Cells[row, col];
-                            break;
-                        case 7:
-                            agency.State = (string)xlRange.Cells[row, col];
-                            break;
-                        case 8:
-                            agency.Zip = (string)xlRange.Cells[row, col];
-                            break;
-                        case 9:
-                            agency.MailingAddress = (string)xlRange.Cells[row, col];
-                            break;
-                        case 10:
-                            agency.Phone = (string)xlRange.Cells[row, col];
-                            break;
-                        case 11:
-                            if ((string)xlRange.Cells[row, col] != String.Empty)
-                            {
-                                agency.Phone += " " + (string)xlRange.Cells[row, col];
-                            }
-                            break;
-                        case 12:
-                            if ((string)xlRange.Cells[row, col] != String.Empty)
-                            {
-                                agency.Phone += " " + (string)xlRange.Cells[row, col];
-                            }
-                            break;
-                        case 13:
-                            if ((string)xlRange.Cells[row, col] != String.Empty)
-                            {
-                                agency.Phone += " " + (string)xlRange.Cells[row, col];
-                            }
-                            break;
-                        case 14:
-                            agency.TollFree = (string)xlRange.Cells[row, col];
-                            break;
-                        case 15:
-                            if ((string)xlRange.Cells[row, col] != String.Empty)
-                            {
-                                agency.TollFree += " " + (string)xlRange.Cells[row, col];
-                            }
-                            break;
-                        case 16:
-                            agency.TTY = (string)xlRange.Cells[row, col];
-                            break;
-                        case 17:
-                            if ((string)xlRange.Cells[row, col] != String.Empty)
-                            {
-                                agency.TTY += " " + (string)xlRange.Cells[row, col];
-                            }
-                            break;
-                        case 18:
-                            agency.TDD = (string)xlRange.Cells[row, col];
-                            break;
-                        case 19:
-                            agency.CrisisHelpHotline = (string)xlRange.Cells[row, col];
-                            break;
-                        case 20:
-                            agency.Fax = (string)xlRange.Cells[row, col];
-                            break;
-                        case 21:
-                            if ((string)xlRange.Cells[row, col] != String.Empty)
-                            {
-                                agency.Fax += " " + (string)xlRange.Cells[row, col];
-                            }
-                            break;
-                        case 22:
-                            agency.Email = (string)xlRange.Cells[row, col];
-                            break;
-                        case 23:
-                            if ((string)xlRange.Cells[row, col] != String.Empty)
-                            {
-                                agency.Email += " " + (string)xlRange.Cells[row, col];
-                            }
-                            break;
-                        case 24:
-                            if ((string)xlRange.Cells[row, col] != String.Empty)
-                            {
-                                agency.Email += " " + (string)xlRange.Cells[row, col];
-                            }
-                            break;
-                        case 25:
-                            agency.Website = (string)xlRange.Cells[row, col];
-                            break;
-                        case 26:
-                            if ((string)xlRange.Cells[row, col] != String.Empty)
-                            {
-                                agency.Website += " " + (string)xlRange.Cells[row, col];
-                            }
-                            break;
-                        case 27:
-                            agency.Description = (string)xlRange.Cells[row, col];
-                            break;
+                        switch (col)
+                        {
+                            case 1:
+                                agency.AgencyName = range.Value.ToString();
+                                break;
+                            case 2:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.AgencyName2 = range.Value.ToString();
+                                }
+                                break;
+                            case 3:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Contact = range.Value.ToString();
+                                }
+                                break;
+                            case 4:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Address1 = range.Value.ToString();
+                                }
+                                break;
+                            case 5:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Address2 = range.Value.ToString();
+                                }
+                                break;
+                            case 6:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.City = range.Value.ToString();
+                                }
+                                break;
+                            case 7:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.State = range.Value.ToString();
+                                }
+                                break;
+                            case 8:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Zip = range.Value.ToString();
+                                }
+                                break;
+                            case 9:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.MailingAddress = range.Value.ToString();
+                                }
+                                break;
+                            case 10:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Phone = range.Value.ToString();
+                                }
+                                break;
+                            case 11:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Phone += " " + range.Value.ToString();
+                                }
+                                break;
+                            case 12:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Phone += " " + range.Value.ToString();
+                                }
+                                break;
+                            case 13:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Phone += " " + range.Value.ToString();
+                                }
+                                break;
+                            case 14:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.TollFree = range.Value.ToString();
+                                }
+                                break;
+                            case 15:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.TollFree += " " + range.Value.ToString();
+                                }
+                                break;
+                            case 16:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.TTY = range.Value.ToString();
+                                }
+                                break;
+                            case 17:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.TTY += " " + range.Value.ToString();
+                                }
+                                break;
+                            case 18:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.TDD = range.Value.ToString();
+                                }
+                                break;
+                            case 19:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.CrisisHelpHotline = range.Value.ToString();
+                                }
+                                break;
+                            case 20:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Fax = range.Value.ToString();
+                                }
+                                break;
+                            case 21:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Fax += " " + range.Value.ToString();
+                                }
+                                break;
+                            case 22:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Email = range.Value.ToString();
+                                }
+                                break;
+                            case 23:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Email += " " + range.Value.ToString();
+                                }
+                                break;
+                            case 24:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Email += " " + range.Value.ToString();
+                                }
+                                break;
+                            case 25:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Website = range.Value.ToString();
+                                }
+                                break;
+                            case 26:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Website += " " + range.Value.ToString();
+                                }
+                                break;
+                            case 27:
+                                if (range.Value.ToString() != null)
+                                {
+                                    agency.Description = range.Value.ToString();
+                                }
+                                break;
+                        }
+                    }
+                    catch (RuntimeBinderException)
+                    {
+                        continue;
                     }
                 }
                 await AgencyDB.AddAgencyAsync(_context, agency);
