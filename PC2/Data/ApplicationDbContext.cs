@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PC2.Models;
 
 namespace PC2.Data
 {
@@ -9,5 +10,8 @@ namespace PC2.Data
             : base(options)
         {
         }
+
+        public virtual DbSet<Agency> Agency {  get; set; }
+        public virtual DbSet<AgencyCategory> AgencyCategory {  get; set; }
     }
 }
