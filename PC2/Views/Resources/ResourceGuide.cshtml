@@ -1,0 +1,45 @@
+﻿@model IEnumerable<PC2.Models.AgencyCategory>
+
+@{
+    ViewData["Title"] = "ResourceGuide";
+}
+
+<div class="headerPic d-flex justify-content-center" />
+        <img src=~/images/resource/resource1.jpg />
+        <img src=~/images/resource/resource2.jpg />
+        <img src=~/images/resource/resource3.jpg />
+        <img src=~/images/resource/resource4.jpg />
+</div>
+
+<div class="divider"></div>
+
+<div class="headerPic d-flex justify-content-center">
+    <h1>PIERCE COUNTY RESOURCE GUIDE</h1>
+</div>
+
+<div>
+    <img src="~/images/resource/2020 guide_cover.jpg" />
+    <img src="~/images/resource/2020 guide_cover2.jpg" />
+</div>
+
+<div>
+    <p>PC2 is pleased to present the 11th edition of the</p>
+    <p>Pierce County Resource Guide to Services and Supports for Individuals</p>
+    <p>Who Experience Intellectual/Developmental Disabilities</p>
+    <p>(section links below).</p>
+    <br />
+    <p>Please call our office at 253.564.0707 to make arrangements to pick up your copy!</p>
+</div>
+<br />
+
+<table class="table">
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.AgencyCategoryName)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
