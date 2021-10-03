@@ -18,8 +18,16 @@ namespace PC2.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ResourceGuide()
+        public async Task<IActionResult> ResourceGuide(int categoryID)
         {
+            List<Agency> agencies = new List<Agency>();
+            if (categoryID != 0)
+            {
+                agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, (int)categoryID);
+            }
+
+            ViewData["Agency"] = agencies;
+
             List<AgencyCategory> agencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
             return View(agencyCategories);
         }

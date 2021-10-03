@@ -1,7 +1,29 @@
 ﻿@model IEnumerable<PC2.Models.AgencyCategory>
 
+@section Head {
+    <style>
+        .left-column {
+            float
+        padding-left: 25px;
+        padding-right: 30px;
+    }
+    .right-column {
+        padding-left: 55px;
+    }
+
+    .left-column, .right-column {
+        width: 20%;
+        float: left;
+    }
+    .letter {
+        width: 835px;
+    }
+    </style>
+}
+
 @{
     ViewData["Title"] = "ResourceGuide";
+    List<Agency> agencies = (List<Agency>)ViewData["Agency"];
 }
 
 <div class="headerPic d-flex justify-content-center" />
@@ -17,29 +39,103 @@
     <h1>PIERCE COUNTY RESOURCE GUIDE</h1>
 </div>
 
-<div>
+<div class="headerPic d-flex justify-content-center">
     <img src="~/images/resource/2020 guide_cover.jpg" />
     <img src="~/images/resource/2020 guide_cover2.jpg" />
 </div>
 
 <div>
-    <p>PC2 is pleased to present the 11th edition of the</p>
-    <p>Pierce County Resource Guide to Services and Supports for Individuals</p>
-    <p>Who Experience Intellectual/Developmental Disabilities</p>
-    <p>(section links below).</p>
+    <p class="text-center">PC2 is pleased to present the 11th edition of the</p>
+    <p class="text-center">Pierce County Resource Guide to Services and Supports for Individuals</p>
+    <p class="text-center">Who Experience Intellectual/Developmental Disabilities</p>
+    <p class="text-center">(section links below).</p>
     <br />
-    <p>Please call our office at 253.564.0707 to make arrangements to pick up your copy!</p>
+    <p class="text-center">Please call our office at 253.564.0707 to make arrangements to pick up your copy!</p>
 </div>
 <br />
 
+<div class="letter">
+    <p>Dear Reader:</p>
+    <br />
+    <p>This Pierce County Resource Guide is dedicated to the hard work and commitment of those who have endeavored 
+        timelessly over the years to “keep the promise.”</p>
+    <br />
+    <p>We want to acknowledge the generous support of Pierce County Human Services, Developmental Disabilities 
+        Program, in providing the funds to update and print this important comprehensive guide to services and supports 
+        for individuals who experience intellectual/ developmental disabilities.  This important tool will assist you in 
+        navigating the public and private programs and services available throughout Pierce County and beyond. </p>
+    <br />
+    <p>The Pierce County Coalition for Developmental Disabilities (PC2) welcomes the opportunity to assist individuals 
+        and families in finding the services and programs that best meet your needs. We are here to answer your calls 
+        if you need further assistance.  Whether you are an individual who experiences an intellectual/developmental 
+        disability, have a family member who experiences an intellectual/developmental disability, work within the disability 
+        field, or are in the general community, we welcome your questions and concerns. </p>
+    <br />
+    <p>We acknowledge that, when compiling this complex list of resources, there are changes that can occur during the 
+        production process.  Please know that every effort was made to ensure the accuracy and completeness of agency 
+        information. </p>
+    <br />
+    <p>Sincerely,</p>
+    <p>PC2 Staff</p>
+    <br />
+</div>
+
+@if (agencies.Count == 0)
+{
+    <div class="left-column">
 <table class="table">
     <tbody>
-@foreach (var item in Model) {
+        
+@for (int i = 0; i < Model.Count() / 2; i++)
+{
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.AgencyCategoryName)
+                <a asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)">
+                @Html.DisplayFor(modelItem => Model.ElementAt(i).AgencyCategoryName)</a> 
             </td>
         </tr>
 }
+
     </tbody>
 </table>
+</div>
+
+<div class="right-column">
+<table class="table">
+    <tbody>
+        
+@for (int i = Model.Count() / 2; i < Model.Count(); i++)
+{
+        <tr>
+            <td>
+                <a asp-action="ResourceGuide" asp-route-categoryID="@i + 1">
+                @Html.DisplayFor(modelItem => Model.ElementAt(i).AgencyCategoryName)</a> 
+            </td>
+        </tr>
+}
+
+    </tbody>
+</table>
+</div>
+}
+else
+{
+    <div>
+        <table class="table">
+            @for (int i = 0; i < agencies.Count; i++)
+            {
+                <tr>
+                    <td>@agencies[i].AgencyName</td>
+                    @if (agencies[i].Phone != null)
+                    {
+                        <td>@agencies[i].Phone</td>
+            }
+                    else
+                    {
+                        <td>@agencies[i].Email</td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+}

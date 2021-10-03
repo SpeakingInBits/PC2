@@ -22,7 +22,29 @@ namespace PC2.Data
         public static async Task<List<Agency>> GetAllAgencyAsync(ApplicationDbContext context)
         {
             return await (from a in context.Agency
-                          select a).ToListAsync();
+                          select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
+        }
+
+        /// <summary>
+        /// Gets all agencies that have a category that matches the categoryID
+        /// </summary>
+        public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, int categoryID)
+        {
+            List<Agency> agencies = await GetAllAgencyAsync(context);
+
+            List<Agency> result = new List<Agency>();
+            for (int i = 0; i < agencies.Count; i++)
+            {
+                for (int j = 0; j < agencies[i].AgencyCategories.Count; j++)
+                {
+                    if (agencies[i].AgencyCategories[j].AgencyCategoryId == categoryID)
+                    {
+                        result.Add(agencies[i]);
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
