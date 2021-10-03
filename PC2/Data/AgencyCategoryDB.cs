@@ -25,5 +25,12 @@ namespace PC2.Data
             return await (from a in context.AgencyCategory
                           select a).ToListAsync();
         }
+
+        public static async Task<AgencyCategory> GetAgencyCategory(ApplicationDbContext context, int categoryID)
+        {
+            return await (from a in context.AgencyCategory
+                          where a.AgencyCategoryId == categoryID
+                          select a).FirstOrDefaultAsync();
+        }
     }
 }

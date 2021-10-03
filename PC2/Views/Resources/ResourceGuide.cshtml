@@ -24,6 +24,12 @@
 @{
     ViewData["Title"] = "ResourceGuide";
     List<Agency> agencies = (List<Agency>)ViewData["Agency"];
+    AgencyCategory agencyCategory = (AgencyCategory)ViewData["AgencyCategory"];
+    int yPosition = 0;
+    if (ViewData["YPosition"] != null) {
+        yPosition = (int)ViewData["YPosition"];
+    }
+    
 }
 
 <div class="headerPic d-flex justify-content-center" />
@@ -90,7 +96,7 @@
 {
         <tr>
             <td>
-                <a asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)">
+                <a asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPos="tempY" onclick="getYpos()">
                 @Html.DisplayFor(modelItem => Model.ElementAt(i).AgencyCategoryName)</a> 
             </td>
         </tr>
@@ -108,7 +114,7 @@
 {
         <tr>
             <td>
-                <a asp-action="ResourceGuide" asp-route-categoryID="@i + 1">
+                <a id="click" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPos="tempY">
                 @Html.DisplayFor(modelItem => Model.ElementAt(i).AgencyCategoryName)</a> 
             </td>
         </tr>
@@ -122,10 +128,25 @@ else
 {
     <div>
         <table class="table">
+            <thead>
+                <tr>
+                    <td></td>
+                    <td><h1>@agencyCategory.AgencyCategoryName</h1></td>
+                    <td></td>
+                </tr>
+            </thead>
             @for (int i = 0; i < agencies.Count; i++)
             {
                 <tr>
                     <td>@agencies[i].AgencyName</td>
+                    @if (agencies[i].AgencyName2 != null)
+                    {
+                        <td>@agencies[i].AgencyName2</td>
+            }
+                    else
+                    {
+                        <td></td>
+                    }
                     @if (agencies[i].Phone != null)
                     {
                         <td>@agencies[i].Phone</td>
@@ -139,3 +160,5 @@ else
         </table>
     </div>
 }
+<script>let yPos = @yPosition;</script>
+<script src="~/js/resource-guide.js"></script>
