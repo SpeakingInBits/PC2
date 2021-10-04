@@ -28,6 +28,7 @@ namespace PC2.Controllers
             }
             if (agencyName != null)
             {
+                agencyName = agencyName.Replace("**", "&");
                 resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, agencyName);
             }
 

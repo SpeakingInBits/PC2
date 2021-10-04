@@ -19,6 +19,7 @@ function setAgencyNameAndGetYPos() {
     url = url.replace("tempY", y);
 
     let input = $('[name="list-of-agencies"]').val();
+    input = input.replace("&", "**");
     url = url.replace("agency-name", input);
     $(this).attr("formaction", url);
 }
