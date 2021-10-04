@@ -11,7 +11,7 @@ function getYpos() {
     $(this).attr("href", url);
 }
 
-function setAgencyName() {
+function setAgencyNameAndGetYPos() {
     let y = document.documentElement.scrollTop;
     let url = $(this).attr("formaction");
     url = url.replace("tempY", y);

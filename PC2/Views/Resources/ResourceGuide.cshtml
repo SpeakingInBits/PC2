@@ -89,7 +89,7 @@
         }
   </datalist>
   <input type="submit" id="agency-submit" asp-action="ResourceGuide" asp-route-yPosition="tempY" asp-route-agencyName="agencyName"
-  onclick="setAgencyName()">
+  onclick="setAgencyNameAndGetYPos()">
 </form>
 
 @if (Model.Agencies.Count == 0)
