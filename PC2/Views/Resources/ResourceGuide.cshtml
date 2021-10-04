@@ -79,18 +79,20 @@
     <br />
 </div>
 
-<form asp-action="ResourceGuide" asp-route-yPosition="tempY" method="get">
+<div class="form-group">
+<form id="submit" asp-action="ResourceGuide" method="post">
   <label for="list-of-agencies">Choose an agency from the list:</label>
-  <input list="list-of-agencies" name="list-of-agencies" id="list-of-agencys">
+  <input list="list-of-agencies" name="list-of-agencies" id="list-of-agency">
   <datalist id="list-of-agencies">
         @for (int i = 0; i < Model.AgenciesForDataList.Count; i++)
         {
-            <option id="agencyName" value="@Model.AgenciesForDataList[i].AgencyName"/>
+            <option class="agencyName" value="@Model.AgenciesForDataList[i].AgencyName"/>
         }
   </datalist>
-  <input type="submit" id="agency-submit" asp-action="ResourceGuide" asp-route-yPosition="tempY" asp-route-agencyName="agencyName"
-  onclick="setAgencyNameAndGetYPos()">
+  <input type="submit" class="agency-submit" id="agency-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyName="agency-name">
 </form>
+</div>
+<br />
 
 @if (Model.Agencies.Count == 0)
 {
@@ -102,12 +104,11 @@
 {
         <tr>
             <td>
-                <a asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY" onclick="getYpos()">
+                <a id="agency" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY">
                 @Html.DisplayFor(modelItem => Model.AgencyCategories.ElementAt(i).AgencyCategoryName)</a> 
             </td>
         </tr>
 }
-
     </tbody>
 </table>
 </div>
@@ -125,7 +126,6 @@
             </td>
         </tr>
 }
-
     </tbody>
 </table>
 </div>
@@ -134,13 +134,17 @@ else
 {
     <div>
         <table class="table">
-            <thead>
-                <tr>
-                    <td></td>
-                    <td><h1>@Model.Category.AgencyCategoryName</h1></td>
-                    <td></td>
-                </tr>
-            </thead>
+            @if (Model.Category != null)
+            {
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td><h1>@Model.Category.AgencyCategoryName</h1></td>
+                        <td></td>
+                    </tr>
+                </thead>
+            }
+            
             @for (int i = 0; i < Model.Agencies.Count; i++)
             {
                 <tr>
@@ -166,5 +170,8 @@ else
         </table>
     </div>
 }
-<script>let yPos = @Model.YPos;</script>
+<script>
+    if (@Model.YPos != 0) {
+        window.scrollTo(0, @Model.YPos);
+    }</script>
 <script src="~/js/resource-guide.js"></script>

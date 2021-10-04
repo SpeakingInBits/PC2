@@ -22,7 +22,7 @@ namespace PC2.Data
         public static async Task<List<Agency>> GetAllAgencyAsync(ApplicationDbContext context)
         {
             return await (from a in context.Agency
-                          select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
+                          select a).Include(nameof(Agency.AgencyCategories)).Distinct().ToListAsync();
         }
 
         /// <summary>
@@ -61,6 +61,13 @@ namespace PC2.Data
             }
             context.Entry(agency).State = EntityState.Modified;
             await context.SaveChangesAsync();
+        }
+
+        public static async Task<List<Agency>> GetAgenciesByName(ApplicationDbContext context, string name)
+        {
+            return await (from a in context.Agency
+                          where a.AgencyName == name
+                          select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
         }
     }
 }

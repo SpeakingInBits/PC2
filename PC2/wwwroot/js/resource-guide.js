@@ -1,7 +1,9 @@
 ﻿window.onload = function () {
-    if (yPos != 0) {
-        window.scrollTo(0, yPos);
-    }
+    let agencySubmit = document.getElementById("agency-submit");
+    let agency = document.getElementById("agency");
+    agencySubmit.onclick = setAgencyNameAndGetYPos;
+    //agency.onclick = getYpos;
+    agency.addEventListener('click', getYpos);
 }
 
 function getYpos() {
@@ -16,7 +18,7 @@ function setAgencyNameAndGetYPos() {
     let url = $(this).attr("formaction");
     url = url.replace("tempY", y);
 
-    let input = $(this).siblings("#agencyName").val();
-    url = url.replace("agencyName", input);
+    let input = $('[name="list-of-agencies"]').val();
+    url = url.replace("agency-name", input);
     $(this).attr("formaction", url);
 }
