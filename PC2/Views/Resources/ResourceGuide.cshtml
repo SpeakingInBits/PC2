@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PC2.Models.AgencyCategory>
+﻿@model PC2.Models.ResourceGuideModel
 
 @section Head {
     <style>
@@ -22,14 +22,7 @@
 }
 
 @{
-    ViewData["Title"] = "ResourceGuide";
-    List<Agency> agencies = (List<Agency>)ViewData["Agency"];
-    AgencyCategory agencyCategory = (AgencyCategory)ViewData["AgencyCategory"];
-    int yPosition = 0;
-    if (ViewData["YPosition"] != null) {
-        yPosition = (int)ViewData["YPosition"];
-    }
-    
+    ViewData["Title"] = "Resource Guide";
 }
 
 <div class="headerPic d-flex justify-content-center" />
@@ -86,18 +79,31 @@
     <br />
 </div>
 
-@if (agencies.Count == 0)
+<form asp-action="ResourceGuide" asp-route-yPosition="tempY" method="get">
+  <label for="list-of-agencies">Choose an agent from the list:</label>
+  <input list="list-of-agencies" name="list-of-agencies" id="list-of-agencys">
+  <datalist id="list-of-agencies">
+        @for (int i = 0; i < Model.AgenciesForDataList.Count; i++)
+        {
+            <option id="agencyName" value="@Model.AgenciesForDataList[i].AgencyName"/>
+        }
+  </datalist>
+  <input type="submit" id="agency-submit" asp-action="ResourceGuide" asp-route-yPosition="tempY" asp-route-agencyName="agencyName"
+  onclick="setAgencyName()">
+</form>
+
+@if (Model.Agencies.Count == 0)
 {
     <div class="left-column">
 <table class="table">
     <tbody>
         
-@for (int i = 0; i < Model.Count() / 2; i++)
+@for (int i = 0; i < Model.AgencyCategories.Count() / 2; i++)
 {
         <tr>
             <td>
-                <a asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPos="tempY" onclick="getYpos()">
-                @Html.DisplayFor(modelItem => Model.ElementAt(i).AgencyCategoryName)</a> 
+                <a asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY" onclick="getYpos()">
+                @Html.DisplayFor(modelItem => Model.AgencyCategories.ElementAt(i).AgencyCategoryName)</a> 
             </td>
         </tr>
 }
@@ -110,12 +116,12 @@
 <table class="table">
     <tbody>
         
-@for (int i = Model.Count() / 2; i < Model.Count(); i++)
+@for (int i = Model.AgencyCategories.Count() / 2; i < Model.AgencyCategories.Count(); i++)
 {
         <tr>
             <td>
-                <a id="click" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPos="tempY">
-                @Html.DisplayFor(modelItem => Model.ElementAt(i).AgencyCategoryName)</a> 
+                <a id="click" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY">
+                @Html.DisplayFor(modelItem => Model.AgencyCategories.ElementAt(i).AgencyCategoryName)</a> 
             </td>
         </tr>
 }
@@ -131,34 +137,34 @@ else
             <thead>
                 <tr>
                     <td></td>
-                    <td><h1>@agencyCategory.AgencyCategoryName</h1></td>
+                    <td><h1>@Model.Category.AgencyCategoryName</h1></td>
                     <td></td>
                 </tr>
             </thead>
-            @for (int i = 0; i < agencies.Count; i++)
+            @for (int i = 0; i < Model.Agencies.Count; i++)
             {
                 <tr>
-                    <td>@agencies[i].AgencyName</td>
-                    @if (agencies[i].AgencyName2 != null)
+                    <td>@Model.Agencies[i].AgencyName</td>
+                    @if (Model.Agencies[i].AgencyName2 != null)
                     {
-                        <td>@agencies[i].AgencyName2</td>
+                        <td>@Model.Agencies[i].AgencyName2</td>
             }
                     else
                     {
                         <td></td>
                     }
-                    @if (agencies[i].Phone != null)
+                    @if (Model.Agencies[i].Phone != null)
                     {
-                        <td>@agencies[i].Phone</td>
+                        <td>@Model.Agencies[i].Phone</td>
             }
                     else
                     {
-                        <td>@agencies[i].Email</td>
+                        <td>@Model.Agencies[i].Email</td>
                     }
                 </tr>
             }
         </table>
     </div>
 }
-<script>let yPos = @yPosition;</script>
+<script>let yPos = @Model.YPos;</script>
 <script src="~/js/resource-guide.js"></script>
