@@ -92,6 +92,21 @@
   <input type="submit" class="agency-submit" id="agency-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyName="agency-name">
 </form>
 </div>
+
+<div class="form-group">
+<form id="submit" asp-action="ResourceGuide" method="post">
+  <label for="list-of-services">Choose an agency service from the list:</label>
+  <input list="list-of-services" name="list-of-services" id="list-of-service">
+  <datalist id="list-of-services">
+        @for (int i = 0; i < Model.AgencyCategories.Count; i++)
+        {
+            <option class="agencyName" value="@Model.AgencyCategories[i].AgencyCategoryName"/>
+        }
+  </datalist>
+  <input type="submit" class="category-submit" id="category-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyCategory="agency-category">
+</form>
+</div>
+
 <br />
 
 @if (Model.Agencies.Count == 0)

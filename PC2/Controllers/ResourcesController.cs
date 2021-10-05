@@ -18,7 +18,7 @@ namespace PC2.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ResourceGuide(int categoryID, int yPosition, string? agencyName)
+        public async Task<IActionResult> ResourceGuide(int categoryID, int yPosition, string? agencyName, string? agencyCategory)
         {
             ResourceGuideModel resourceGuide = new ResourceGuideModel();
             if (categoryID != 0)
@@ -30,6 +30,11 @@ namespace PC2.Controllers
             {
                 agencyName = agencyName.Replace("**", "&");
                 resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, agencyName);
+            }
+            if (agencyCategory != null)
+            {
+                resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, agencyCategory);
+                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
             }
 
             resourceGuide.AgencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
