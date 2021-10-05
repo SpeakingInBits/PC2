@@ -1,12 +1,20 @@
 ﻿window.onload = function () {
     let agencySubmit = document.getElementById("agency-submit");
-    let agency = document.getElementById("agency");
+    let agency = document.getElementsByClassName("right-agency");
+    let agency2 = document.getElementsByClassName("left-agency");
     let categorySubmit = document.getElementById("category-submit");
     let zipSubmit = document.getElementById("zip-submit");
     agencySubmit.onclick = setAgencyNameAndGetYPos;
     categorySubmit.onclick = setCategoryNameAndGetYPos;
     zipSubmit.onclick = setZipcodeAndGetYPos;
-    agency.addEventListener('click', getYpos);
+
+    for (let i = 0; i < agency.length; i++) {
+        agency[i].addEventListener('click', getYpos);
+    }
+    for (let i = 0; i < agency2.length; i++) {
+        agency2[i].addEventListener('click', getYpos);
+    }
+    
 }
 
 function getYpos() {

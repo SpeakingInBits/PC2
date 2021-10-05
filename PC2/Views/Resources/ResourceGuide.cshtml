@@ -133,7 +133,7 @@
 {
         <tr>
             <td>
-                <a id="agency" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY">
+                <a class="left-agency" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY">
                 @Html.DisplayFor(modelItem => Model.AgencyCategories.ElementAt(i).AgencyCategoryName)</a> 
             </td>
         </tr>
@@ -150,7 +150,7 @@
 {
         <tr>
             <td>
-                <a id="click" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY">
+                <a class="right-agency" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY">
                 @Html.DisplayFor(modelItem => Model.AgencyCategories.ElementAt(i).AgencyCategoryName)</a> 
             </td>
         </tr>
