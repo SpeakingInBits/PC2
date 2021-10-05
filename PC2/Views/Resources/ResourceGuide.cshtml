@@ -1,0 +1,227 @@
+﻿@model PC2.Models.ResourceGuideModel
+
+@section Head {
+<style>
+    .left-column {
+        float padding-left: 25px;
+        padding-right: 30px;
+    }
+
+    .right-column {
+        padding-left: 55px;
+    }
+
+    .left-column, .right-column {
+        width: 20%;
+        float: left;
+    }
+
+    .letter {
+        width: 835px;
+    }
+</style>
+}
+
+@{
+    ViewData["Title"] = "Resource Guide";
+}
+
+<div class="headerPic d-flex justify-content-center" />
+<img src=~/images/resource/resource1.jpg />
+<img src=~/images/resource/resource2.jpg />
+<img src=~/images/resource/resource3.jpg />
+<img src=~/images/resource/resource4.jpg />
+</div>
+
+<div class="divider"></div>
+
+<div class="headerPic d-flex justify-content-center">
+    <h1>PIERCE COUNTY RESOURCE GUIDE</h1>
+</div>
+
+<div class="headerPic d-flex justify-content-center">
+    <img src="~/images/resource/2020 guide_cover.jpg" />
+    <img src="~/images/resource/2020 guide_cover2.jpg" />
+</div>
+
+<div>
+    <p class="text-center">PC2 is pleased to present the 11th edition of the</p>
+    <p class="text-center">Pierce County Resource Guide to Services and Supports for Individuals</p>
+    <p class="text-center">Who Experience Intellectual/Developmental Disabilities</p>
+    <p class="text-center">(section links below).</p>
+    <br />
+    <p class="text-center">Please call our office at 253.564.0707 to make arrangements to pick up your copy!</p>
+</div>
+<br />
+
+<div class="letter">
+    <p>Dear Reader:</p>
+    <br />
+    <p>
+        This Pierce County Resource Guide is dedicated to the hard work and commitment of those who have endeavored
+        timelessly over the years to “keep the promise.”
+    </p>
+    <br />
+    <p>
+        We want to acknowledge the generous support of Pierce County Human Services, Developmental Disabilities
+        Program, in providing the funds to update and print this important comprehensive guide to services and supports
+        for individuals who experience intellectual/ developmental disabilities.  This important tool will assist you in
+        navigating the public and private programs and services available throughout Pierce County and beyond.
+    </p>
+    <br />
+    <p>
+        The Pierce County Coalition for Developmental Disabilities (PC2) welcomes the opportunity to assist individuals
+        and families in finding the services and programs that best meet your needs. We are here to answer your calls
+        if you need further assistance.  Whether you are an individual who experiences an intellectual/developmental
+        disability, have a family member who experiences an intellectual/developmental disability, work within the disability
+        field, or are in the general community, we welcome your questions and concerns.
+    </p>
+    <br />
+    <p>
+        We acknowledge that, when compiling this complex list of resources, there are changes that can occur during the
+        production process.  Please know that every effort was made to ensure the accuracy and completeness of agency
+        information.
+    </p>
+    <br />
+    <p>Sincerely,</p>
+    <p>PC2 Staff</p>
+    <br />
+</div>
+
+<div class="form-group">
+    <form id="submit" asp-action="ResourceGuide" method="post">
+        <label for="list-of-agencies">Choose an agency from the list:</label>
+        <input list="list-of-agencies" name="list-of-agencies" id="list-of-agency">
+        <datalist id="list-of-agencies">
+            @for (int i = 0; i < Model.AgenciesForDataList.Count; i++)
+            {
+                <option class="agencyName" value="@Model.AgenciesForDataList[i].AgencyName" />
+            }
+        </datalist>
+        <input type="submit" class="agency-submit" id="agency-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyName="agency-name">
+    </form>
+</div>
+
+<div class="form-group">
+    <form id="submit" asp-action="ResourceGuide" method="post">
+        <label for="list-of-services">Choose an agency service from the list:</label>
+        <input list="list-of-services" name="list-of-services" id="list-of-service">
+        <datalist id="list-of-services">
+            @for (int i = 0; i < Model.AgencyCategories.Count; i++)
+            {
+                <option class="agencyName" value="@Model.AgencyCategories[i].AgencyCategoryName" />
+            }
+        </datalist>
+        <input type="submit" class="category-submit" id="category-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyCategory="agency-category">
+    </form>
+</div>
+
+<div class="form-group">
+    <form id="submit" asp-action="ResourceGuide" method="post">
+        <label for="list-of-zipcodes">Search for an agency by zip code:</label>
+        <input list="list-of-zipcodes" name="list-of-zipcodes" id="list-of-zipcode">
+        <datalist id="list-of-zipcodes">
+            @for (int i = 0; i < Model.ZipCode.Count; i++)
+            {
+                <option class="zipcode" value="@Model.ZipCode[i]" />
+            }
+        </datalist>
+        <input type="submit" class="zip-submit" id="zip-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-zipCode="zip-code">
+    </form>
+</div>
+
+<br />
+
+@if (Model.Agencies.Count == 0)
+{
+    <div class="left-column">
+        <table class="table">
+            <tbody>
+
+                @for (int i = 0; i < Model.AgencyCategories.Count() / 2; i++)
+                {
+                    <tr>
+                        <td>
+                            <a class="left-agency" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY">
+                                @Html.DisplayFor(modelItem => Model.AgencyCategories.ElementAt(i).AgencyCategoryName)
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="right-column">
+        <table class="table">
+            <tbody>
+
+                @for (int i = Model.AgencyCategories.Count() / 2; i < Model.AgencyCategories.Count(); i++)
+                {
+                    <tr>
+                        <td>
+                            <a class="right-agency" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY">
+                                @Html.DisplayFor(modelItem => Model.AgencyCategories.ElementAt(i).AgencyCategoryName)
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div>
+        <table class="table">
+            @if (Model.Category != null)
+            {
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td><h1>@Model.Category.AgencyCategoryName</h1></td>
+                        <td></td>
+                    </tr>
+                </thead>
+            }
+            else if (Model.CurrentZip != null)
+            {
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td><h1>@Model.CurrentZip</h1></td>
+                        <td></td>
+                    </tr>
+                </thead>
+            }
+
+            @for (int i = 0; i < Model.Agencies.Count; i++)
+            {
+                <tr>
+                    <td>@Model.Agencies[i].AgencyName</td>
+                    @if (Model.Agencies[i].AgencyName2 != null)
+                    {
+                        <td>@Model.Agencies[i].AgencyName2</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    @if (Model.Agencies[i].Phone != null)
+                    {
+                        <td>@Model.Agencies[i].Phone</td>
+                    }
+                    else
+                    {
+                        <td>@Model.Agencies[i].Email</td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+}
+<script>
+    if (@Model.YPos != 0) {
+        window.scrollTo(0, @Model.YPos);
+    }</script>
+<script src="~/js/resource-guide.js"></script>

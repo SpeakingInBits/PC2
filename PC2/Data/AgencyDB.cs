@@ -22,7 +22,36 @@ namespace PC2.Data
         public static async Task<List<Agency>> GetAllAgencyAsync(ApplicationDbContext context)
         {
             return await (from a in context.Agency
-                          select a).ToListAsync();
+                          select a).Include(nameof(Agency.AgencyCategories)).Distinct().ToListAsync();
+        }
+
+        /// <summary>
+        /// Gets all agencies that have a category that matches the categoryID
+        /// </summary>
+        public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, int categoryID)
+        {
+            List<Agency> agencies = await GetAllAgencyAsync(context);
+
+            List<Agency> result = new List<Agency>();
+            for (int i = 0; i < agencies.Count; i++)
+            {
+                for (int j = 0; j < agencies[i].AgencyCategories.Count; j++)
+                {
+                    if (agencies[i].AgencyCategories[j].AgencyCategoryId == categoryID)
+                    {
+                        result.Add(agencies[i]);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, string zipCode)
+        {
+            return await (from a in context.Agency
+                          where a.Zip !=  null && a.Zip == zipCode
+                          select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
         }
 
         /// <summary>
@@ -39,6 +68,27 @@ namespace PC2.Data
             }
             context.Entry(agency).State = EntityState.Modified;
             await context.SaveChangesAsync();
+        }
+
+        public static async Task<List<Agency>> GetAgenciesByName(ApplicationDbContext context, string name)
+        {
+            return await (from a in context.Agency
+                          where a.AgencyName == name
+                          select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
+        }
+
+        public static async Task<List<string>> GetAllZipCode(ApplicationDbContext context)
+        {
+            List<Agency> list = await (from a in context.Agency
+                                       where a.Zip != null
+                                       select a).ToListAsync();
+            List<string> result = new List<string>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                result.Add(list[i].Zip);
+            }
+            result = result.OrderBy(a => a).Distinct().ToList();
+            return result;
         }
     }
 }
