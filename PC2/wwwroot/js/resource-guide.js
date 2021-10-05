@@ -2,9 +2,10 @@
     let agencySubmit = document.getElementById("agency-submit");
     let agency = document.getElementById("agency");
     let categorySubmit = document.getElementById("category-submit");
+    let zipSubmit = document.getElementById("zip-submit");
     agencySubmit.onclick = setAgencyNameAndGetYPos;
     categorySubmit.onclick = setCategoryNameAndGetYPos;
-    //agency.onclick = getYpos;
+    zipSubmit.onclick = setZipcodeAndGetYPos;
     agency.addEventListener('click', getYpos);
 }
 
@@ -32,7 +33,16 @@ function setCategoryNameAndGetYPos() {
     url = url.replace("tempY", y);
 
     let input = $('[name="list-of-services"]').val();
-    input = input.replace("&", "**");
     url = url.replace("agency-category", input);
+    $(this).attr("formaction", url);
+}
+
+function setZipcodeAndGetYPos() {
+    let y = document.documentElement.scrollTop;
+    let url = $(this).attr("formaction");
+    url = url.replace("tempY", y);
+
+    let input = $('[name="list-of-zipcodes"]').val();
+    url = url.replace("zip-code", input);
     $(this).attr("formaction", url);
 }

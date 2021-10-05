@@ -18,7 +18,8 @@ namespace PC2.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ResourceGuide(int categoryID, int yPosition, string? agencyName, string? agencyCategory)
+        public async Task<IActionResult> ResourceGuide(int categoryID, int yPosition, string? agencyName, string? agencyCategory, 
+            string? zipCode)
         {
             ResourceGuideModel resourceGuide = new ResourceGuideModel();
             if (categoryID != 0)
@@ -36,10 +37,16 @@ namespace PC2.Controllers
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, agencyCategory);
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
             }
+            if (zipCode != null)
+            {
+                resourceGuide.CurrentZip = zipCode;
+                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, zipCode);
+            }
 
             resourceGuide.AgencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
             resourceGuide.AgenciesForDataList = await AgencyDB.GetAllAgencyAsync(_context);
             resourceGuide.YPos = yPosition;
+            resourceGuide.ZipCode = await AgencyDB.GetAllZipCode(_context);
 
             return View(resourceGuide);
         }
