@@ -1,0 +1,112 @@
+﻿@model PC2.Models.EventsModel
+@{
+    ViewData["Title"] = "Events";
+}
+<style>
+    .agenda .agenda-date {
+        width: 170px;
+    }
+
+        .agenda .agenda-date .dayofmonth {
+            width: 40px !important;
+            font-size: 36px !important;
+            line-height: 36px !important;
+            float: left;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .agenda .agenda-date .shortdate {
+            font-size: 0.75em;
+        }
+
+
+    /* Times */
+    .agenda .agenda-time {
+        width: 140px;
+    }
+
+
+    /* Events */
+    .agenda .agenda-events {
+    }
+
+        .agenda .agenda-events .agenda-event {
+        }
+
+        @@media (max-width: 767px) {
+    
+}
+</style>
+<div class="d-flex justify-content-center">
+    <img src=~/images/events/events1.jpg />
+    <img src=~/images/events/events2.jpg />
+    <img src=~/images/events/events3.jpg />
+    <img src=~/images/events/events4.jpg />
+</div>
+<br />
+<div class="d-flex justify-content-center">
+    <h1>EVENTS</h1>
+</div>
+
+<div class="divider"></div>
+
+<br />
+
+<p class="d-flex justify-content-center">There are always great events and activities to attend around the County!</p>
+
+<br />
+
+<div class="agenda">
+    <div class="table-responsive">
+        <table class="table table-condensed table-bordered">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Event</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.CalendarDate.Count; i++)
+                {
+                    <tr>
+                        <td class="agenda-date" class="active" rowspan="@Model.CalendarDate[i].CalendarEvents.Count">
+                            <div class="dayofmonth">@Model.CalendarDate[i].DayOfMonth</div>
+                            <div class="dayofweek">@Model.CalendarDate[i].DayOfWeek</div>
+                            <div class="shortdate text-muted">@Model.CalendarDate[i].Month,&nbsp;@Model.CalendarDate[i].Year</div>
+                        </td>
+                        @for (int j = 0; j < Model.CalendarDate[i].CalendarEvents.Count; j++)
+                        {
+                            @if (j > 0)
+                            {
+                            <tr>
+                                <td class="agenda-time">
+                                        @Model.CalendarDate[i].CalendarEvents[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].CalendarEvents[j].EndingTime
+                                </td>
+                                <td class="agenda-events">
+                                    <div class="agenda-event">
+                                            @Model.CalendarDate[i].CalendarEvents[j].EventDescription
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                            else
+                            {
+                        <td class="agenda-time">
+                                    @Model.CalendarDate[i].CalendarEvents[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].CalendarEvents[j].EndingTime
+                        </td>
+                        <td class="agenda-events">
+                            <div class="agenda-event">
+                                        @Model.CalendarDate[i].CalendarEvents[j].EventDescription
+                            </div>
+                        </td>
+                            }
+
+                        }
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
