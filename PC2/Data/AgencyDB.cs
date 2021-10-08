@@ -19,10 +19,12 @@ namespace PC2.Data
         /// <summary>
         /// Gets all Agencies from the database
         /// </summary>
-        public static async Task<List<Agency>> GetAllAgencyAsync(ApplicationDbContext context)
+        public static async Task<List<Agency?>> GetAllAgencyAsync(ApplicationDbContext context)
         {
             return await (from a in context.Agency
-                          select a).Include(nameof(Agency.AgencyCategories)).Distinct().ToListAsync();
+                                       select a).Include(nameof(Agency.AgencyCategories)).GroupBy(a => a.AgencyName)
+                                       .Select(a => a.FirstOrDefault())
+                                       .ToListAsync();
         }
 
         /// <summary>
