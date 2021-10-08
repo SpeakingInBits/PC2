@@ -19,14 +19,12 @@ namespace PC2.Data
         /// <summary>
         /// Gets all Agencies from the database
         /// </summary>
-        public static async Task<List<Agency>> GetAllAgencyAsync(ApplicationDbContext context)
+        public static async Task<List<Agency?>> GetAllAgencyAsync(ApplicationDbContext context)
         {
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
             return await (from a in context.Agency
                                        select a).Include(nameof(Agency.AgencyCategories)).GroupBy(a => a.AgencyName)
                                        .Select(a => a.FirstOrDefault())
                                        .ToListAsync();
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
         }
 
         /// <summary>
