@@ -16,6 +16,10 @@ namespace PC2.Models
         [Required]
         public string EventDescription {  get; set; }
 
+        public bool PC2Event {  get; set; }
+
+        public bool CountyEvent {  get; set; }
+
         public List<CalendarDate> CalendarDate {  get; set; } = new List<CalendarDate>();
     }
 }

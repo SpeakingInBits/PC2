@@ -12,7 +12,7 @@ using PC2.Data;
 namespace PC2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211007035828_Calendar")]
+    [Migration("20211009214728_Calendar")]
     partial class Calendar
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,12 +44,12 @@ namespace PC2.Data.Migrations
                     b.Property<int>("CalendarDateID")
                         .HasColumnType("int");
 
-                    b.Property<int>("CalendarEventsCalendarEventID")
+                    b.Property<int>("EventsCalendarEventID")
                         .HasColumnType("int");
 
-                    b.HasKey("CalendarDateID", "CalendarEventsCalendarEventID");
+                    b.HasKey("CalendarDateID", "EventsCalendarEventID");
 
-                    b.HasIndex("CalendarEventsCalendarEventID");
+                    b.HasIndex("EventsCalendarEventID");
 
                     b.ToTable("CalendarDateCalendarEvent");
                 });
@@ -349,20 +349,8 @@ namespace PC2.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CalendarDateID"), 1L, 1);
 
-                    b.Property<int>("DayOfMonth")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DayOfWeek")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Month")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Year")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("CalendarDateID");
 
@@ -377,6 +365,9 @@ namespace PC2.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CalendarEventID"), 1L, 1);
 
+                    b.Property<bool>("CountyEvent")
+                        .HasColumnType("bit");
+
                     b.Property<string>("EndingTime")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -384,6 +375,9 @@ namespace PC2.Data.Migrations
                     b.Property<string>("EventDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PC2Event")
+                        .HasColumnType("bit");
 
                     b.Property<string>("StartingTime")
                         .IsRequired()
@@ -419,7 +413,7 @@ namespace PC2.Data.Migrations
 
                     b.HasOne("PC2.Models.CalendarEvent", null)
                         .WithMany()
-                        .HasForeignKey("CalendarEventsCalendarEventID")
+                        .HasForeignKey("EventsCalendarEventID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

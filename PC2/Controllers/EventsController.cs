@@ -17,6 +17,7 @@ namespace PC2.Controllers
         {
             EventsModel events = new EventsModel();
             events.CalendarDate = await CalendarDateDB.GetAllDates(_context);
+            
             return View(events);
         }
     }

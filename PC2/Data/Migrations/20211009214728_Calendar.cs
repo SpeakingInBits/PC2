@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -14,10 +15,7 @@ namespace PC2.Data.Migrations
                 {
                     CalendarDateID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DayOfMonth = table.Column<int>(type: "int", nullable: false),
-                    DayOfWeek = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Month = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Year = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,7 +30,9 @@ namespace PC2.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartingTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EndingTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EventDescription = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    EventDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PC2Event = table.Column<bool>(type: "bit", nullable: false),
+                    CountyEvent = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -44,11 +44,11 @@ namespace PC2.Data.Migrations
                 columns: table => new
                 {
                     CalendarDateID = table.Column<int>(type: "int", nullable: false),
-                    CalendarEventsCalendarEventID = table.Column<int>(type: "int", nullable: false)
+                    EventsCalendarEventID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CalendarDateCalendarEvent", x => new { x.CalendarDateID, x.CalendarEventsCalendarEventID });
+                    table.PrimaryKey("PK_CalendarDateCalendarEvent", x => new { x.CalendarDateID, x.EventsCalendarEventID });
                     table.ForeignKey(
                         name: "FK_CalendarDateCalendarEvent_CalendarDates_CalendarDateID",
                         column: x => x.CalendarDateID,
@@ -56,17 +56,17 @@ namespace PC2.Data.Migrations
                         principalColumn: "CalendarDateID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CalendarDateCalendarEvent_CalendarEvents_CalendarEventsCalendarEventID",
-                        column: x => x.CalendarEventsCalendarEventID,
+                        name: "FK_CalendarDateCalendarEvent_CalendarEvents_EventsCalendarEventID",
+                        column: x => x.EventsCalendarEventID,
                         principalTable: "CalendarEvents",
                         principalColumn: "CalendarEventID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CalendarDateCalendarEvent_CalendarEventsCalendarEventID",
+                name: "IX_CalendarDateCalendarEvent_EventsCalendarEventID",
                 table: "CalendarDateCalendarEvent",
-                column: "CalendarEventsCalendarEventID");
+                column: "EventsCalendarEventID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

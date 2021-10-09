@@ -8,7 +8,7 @@ namespace PC2.Data
         public static async Task<List<CalendarDate>> GetAllDates(ApplicationDbContext context)
         {
             return await (from c in context.CalendarDates
-                          select c).Include(nameof(CalendarDate.CalendarEvents)).ToListAsync();
+                          select c).Include(nameof(CalendarDate.Events)).ToListAsync();
         }
     }
 }

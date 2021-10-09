@@ -7,18 +7,8 @@ namespace PC2.Models
         [Key]
         public int CalendarDateID {  get; set; }
 
-        [Required]
-        public int DayOfMonth {  get; set; }
+        public DateTime Date {  get; set; }
 
-        [Required]
-        public string DayOfWeek {  get; set; }
-
-        [Required]
-        public string Month {  get; set; }
-
-        [Required]
-        public string Year {  get; set; }
-
-        public List<CalendarEvent> CalendarEvents {  get; set; } = new List<CalendarEvent>();
+        public List<CalendarEvent> Events {  get; set; }
     }
 }

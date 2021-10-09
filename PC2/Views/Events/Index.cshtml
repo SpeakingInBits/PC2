@@ -71,22 +71,22 @@
                 @for (int i = 0; i < Model.CalendarDate.Count; i++)
                 {
                     <tr>
-                        <td class="agenda-date" class="active" rowspan="@Model.CalendarDate[i].CalendarEvents.Count">
-                            <div class="dayofmonth">@Model.CalendarDate[i].DayOfMonth</div>
-                            <div class="dayofweek">@Model.CalendarDate[i].DayOfWeek</div>
-                            <div class="shortdate text-muted">@Model.CalendarDate[i].Month,&nbsp;@Model.CalendarDate[i].Year</div>
+                        <td class="agenda-date" class="active" rowspan="@Model.CalendarDate[i].Events.Count">
+                            <div class="dayofmonth">@Model.CalendarDate[i].Date.Day</div>
+                            <div class="dayofweek">@Model.CalendarDate[i].Date.DayOfWeek</div>
+                            <div class="shortdate text-muted">@Model.CalendarDate[i].Date.Month,&nbsp;@Model.CalendarDate[i].Date.Year</div>
                         </td>
-                        @for (int j = 0; j < Model.CalendarDate[i].CalendarEvents.Count; j++)
+                        @for (int j = 0; j < Model.CalendarDate[i].Events.Count; j++)
                         {
                             @if (j > 0)
                             {
                             <tr>
                                 <td class="agenda-time">
-                                        @Model.CalendarDate[i].CalendarEvents[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].CalendarEvents[j].EndingTime
+                                        @Model.CalendarDate[i].Events[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].Events[j].EndingTime
                                 </td>
                                 <td class="agenda-events">
                                     <div class="agenda-event">
-                                            @Model.CalendarDate[i].CalendarEvents[j].EventDescription
+                                            @Model.CalendarDate[i].Events[j].EventDescription
                                     </div>
                                 </td>
                             </tr>
@@ -94,11 +94,11 @@
                             else
                             {
                         <td class="agenda-time">
-                                    @Model.CalendarDate[i].CalendarEvents[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].CalendarEvents[j].EndingTime
+                                    @Model.CalendarDate[i].Events[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].Events[j].EndingTime
                         </td>
                         <td class="agenda-events">
                             <div class="agenda-event">
-                                        @Model.CalendarDate[i].CalendarEvents[j].EventDescription
+                                        @Model.CalendarDate[i].Events[j].EventDescription
                             </div>
                         </td>
                             }
