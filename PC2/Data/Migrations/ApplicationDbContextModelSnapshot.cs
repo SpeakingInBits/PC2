@@ -34,7 +34,7 @@ namespace PC2.Data.Migrations
 
                     b.HasIndex("AgencyCategoriesAgencyCategoryId");
 
-                    b.ToTable("AgencyAgencyCategory");
+                    b.ToTable("AgencyAgencyCategory", (string)null);
                 });
 
             modelBuilder.Entity("CalendarDateCalendarEvent", b =>
@@ -49,7 +49,7 @@ namespace PC2.Data.Migrations
 
                     b.HasIndex("EventsCalendarEventID");
 
-                    b.ToTable("CalendarDateCalendarEvent");
+                    b.ToTable("CalendarDateCalendarEvent", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -319,7 +319,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("AgencyId");
 
-                    b.ToTable("Agency");
+                    b.ToTable("Agency", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.AgencyCategory", b =>
@@ -336,7 +336,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("AgencyCategoryId");
 
-                    b.ToTable("AgencyCategory");
+                    b.ToTable("AgencyCategory", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.CalendarDate", b =>
@@ -352,7 +352,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("CalendarDateID");
 
-                    b.ToTable("CalendarDates");
+                    b.ToTable("CalendarDates", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.CalendarEvent", b =>
@@ -383,7 +383,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("CalendarEventID");
 
-                    b.ToTable("CalendarEvents");
+                    b.ToTable("CalendarEvents", (string)null);
                 });
 
             modelBuilder.Entity("AgencyAgencyCategory", b =>
