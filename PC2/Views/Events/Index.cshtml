@@ -74,7 +74,7 @@
                         <td class="agenda-date" class="active" rowspan="@Model.CalendarDate[i].Events.Count">
                             <div class="dayofmonth">@Model.CalendarDate[i].Date.Day</div>
                             <div class="dayofweek">@Model.CalendarDate[i].Date.DayOfWeek</div>
-                            <div class="shortdate text-muted">@Model.CalendarDate[i].Date.Month,&nbsp;@Model.CalendarDate[i].Date.Year</div>
+                            <div class="shortdate text-muted">@Model.CalendarDate[i].Date.ToString("MMMM"),&nbsp;@Model.CalendarDate[i].Date.Year</div>
                         </td>
                         @for (int j = 0; j < Model.CalendarDate[i].Events.Count; j++)
                         {
