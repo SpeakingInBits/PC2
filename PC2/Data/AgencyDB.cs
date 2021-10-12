@@ -17,12 +17,23 @@ namespace PC2.Data
         }
 
         /// <summary>
-        /// Gets all Agencies from the database
+        /// Gets all Agencies that are distinct from the database
         /// </summary>
-        public static async Task<List<Agency>> GetAllAgencyAsync(ApplicationDbContext context)
+        public static async Task<List<Agency?>> GetDistinctAgenciesAsync(ApplicationDbContext context)
         {
             return await (from a in context.Agency
-                          select a).Include(nameof(Agency.AgencyCategories)).Distinct().ToListAsync();
+                                       select a).Include(nameof(Agency.AgencyCategories)).GroupBy(a => a.AgencyName)
+                                       .Select(a => a.FirstOrDefault())
+                                       .ToListAsync();
+        }
+
+        /// <summary>
+        /// Gets all agencies from the database
+        /// </summary>
+        public static async Task<List<Agency>> GetAllAgenciesAsync(ApplicationDbContext context)
+        {
+            return await (from a in context.Agency
+                          select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
         }
 
         /// <summary>
@@ -30,7 +41,7 @@ namespace PC2.Data
         /// </summary>
         public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, int categoryID)
         {
-            List<Agency> agencies = await GetAllAgencyAsync(context);
+            List<Agency> agencies = await GetAllAgenciesAsync(context);
 
             List<Agency> result = new List<Agency>();
             for (int i = 0; i < agencies.Count; i++)

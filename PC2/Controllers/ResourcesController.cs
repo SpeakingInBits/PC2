@@ -29,7 +29,6 @@ namespace PC2.Controllers
             }
             if (agencyName != null)
             {
-                agencyName = agencyName.Replace("**", "&");
                 resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, agencyName);
             }
             if (agencyCategory != null)
@@ -44,7 +43,7 @@ namespace PC2.Controllers
             }
 
             resourceGuide.AgencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
-            resourceGuide.AgenciesForDataList = await AgencyDB.GetAllAgencyAsync(_context);
+            resourceGuide.AgenciesForDataList = await AgencyDB.GetDistinctAgenciesAsync(_context);
             resourceGuide.YPos = yPosition;
             resourceGuide.ZipCode = await AgencyDB.GetAllZipCode(_context);
 
