@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Resources\" />
+    <Folder Include="wwwroot\images\events\" />
     <Folder Include="wwwroot\images\resource\" />
   </ItemGroup>
 
