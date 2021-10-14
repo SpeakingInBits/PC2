@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PC2.Data;
 using PC2.Models;
 
 namespace PC2.Controllers
 {
+    [Authorize(Roles = IdentityHelper.Admin)]
     public class AgencyController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -12,9 +14,16 @@ namespace PC2.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? id)
         {
-            List<Agency> agencies = await AgencyDB.GetAllAgenciesAsync(_context);
+            int pageNum = id ?? 1;
+            const int PageSize = 40;
+            ViewData["CurrentPage"] = pageNum;
+
+            List<Agency> totalAgencies = await AgencyDB.GetAllAgenciesAsync(_context);
+            ViewData["MaxPage"] = (int)Math.Ceiling((double)totalAgencies.Count / PageSize);
+
+            List<Agency> agencies = await AgencyDB.GetAllAgenciesAsync(_context, PageSize, pageNum);
             return View(agencies);
         }
 

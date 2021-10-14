@@ -37,6 +37,20 @@ namespace PC2.Data
         }
 
         /// <summary>
+        /// Gets all agencies by page and page size
+        /// </summary>
+        /// <param name="pageSize">The number of agencies per page</param>
+        /// <param name="pageNum">The page number</param>
+        /// <returns></returns>
+        public static async Task<List<Agency>> GetAllAgenciesAsync(ApplicationDbContext context, int pageSize, int pageNum)
+        {
+            List<Agency> agencies = await (from a in context.Agency
+                          select a).OrderBy(a => a.AgencyName)
+                          .Include(nameof(Agency.AgencyCategories)).ToListAsync();
+            return agencies.Skip(pageSize * (pageNum - 1)).Take(pageSize).ToList();
+        }
+
+        /// <summary>
         /// Gets all agencies that have a category that matches the categoryID
         /// </summary>
         public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, int categoryID)
