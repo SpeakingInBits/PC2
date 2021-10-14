@@ -48,4 +48,11 @@ IdentityHelper.CreateRoles(serviceProvider.ServiceProvider, IdentityHelper.Admin
 IdentityHelper.CreateDefaultAdmin(serviceProvider.ServiceProvider, IdentityHelper.Admin)
               .Wait();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapGet("/Identity/Account/Register", context => Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
+    endpoints.MapPost("/Identity/Account/Register", context => Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
+
+});
+
 app.Run();
