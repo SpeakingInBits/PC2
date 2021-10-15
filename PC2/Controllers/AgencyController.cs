@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PC2.Data;
 using PC2.Models;
 
@@ -27,10 +28,26 @@ namespace PC2.Controllers
             return View(agencies);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             ViewData["AgencyCategories"] = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Agency agency, string services)
+        {
+            if (ModelState.IsValid)
+            {
+                string[] serviceArray = JsonConvert.DeserializeObject<string[]>(services);
+                for (int i = 0; i < serviceArray.Length; i++)
+                {
+                    agency.AgencyCategories.Add(await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]));
+                }
+                await AgencyDB.AddAgencyAsync(_context, agency);
+            }
+            return RedirectToAction("Index");
         }
     }
 }
