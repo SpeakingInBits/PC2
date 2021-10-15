@@ -27,8 +27,9 @@ namespace PC2.Controllers
             return View(agencies);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewData["AgencyCategories"] = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
             return View();
         }
     }

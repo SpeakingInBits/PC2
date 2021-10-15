@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
+    List<AgencyCategory> agencyCategories = (List<AgencyCategory>)ViewData["AgencyCategories"];
 }
 
 <h1>Create</h1>
@@ -103,6 +104,20 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label for="list-of-categories" class="control-label">Choose a service from the list:</label>
+                <input list="list-of-categories" name="list-of-categories" id="list-of-service" class="form-control">
+                <datalist id="list-of-categories">
+                    @for (int i = 0; i < agencyCategories.Count; i++)
+                    {
+                        <option class="agencyName" value="@agencyCategories[i].AgencyCategoryName" />
+                    }
+                </datalist>
+                <span class="text-success" id="category-success"></span>
+                <br />
+                <button type="button" class="btn btn-primary category-submit" id="category-submit" value="Add Service">Add Service</button>
+            </div>
+            <br />
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -113,3 +128,4 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+<script src=~/js/AgencyCreate.js></script>
