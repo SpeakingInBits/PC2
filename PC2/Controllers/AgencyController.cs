@@ -49,5 +49,41 @@ namespace PC2.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        /// <summary>
+        /// Edits an agency
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            Agency agency = await AgencyDB.GetAgencyAsync(_context, id);
+            ViewData["ExistingServices"] = agency.AgencyCategories;
+            ViewData["Categories"] = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
+            return View(agency);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(Agency agency, string servicesRemoved, string servicesAdded)
+        {
+            if (ModelState.IsValid)
+            {
+                string[] serviceArray = JsonConvert.DeserializeObject<string[]>(servicesRemoved);
+                List<AgencyCategory> addedCategories = new List<AgencyCategory>();
+                List<AgencyCategory> removedCategories = new List<AgencyCategory>();
+                for (int i = 0; i < serviceArray.Length; i++)
+                {
+                    removedCategories.Add(await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]));
+                }
+                serviceArray = JsonConvert.DeserializeObject<string[]>(servicesAdded);
+                for (int i = 0; i < serviceArray.Length; i++)
+                {
+                    addedCategories.Add(await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]));
+                }
+                await AgencyDB.UpdateAgencyAsync(_context, agency, addedCategories, removedCategories);
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

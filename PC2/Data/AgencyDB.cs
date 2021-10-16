@@ -79,17 +79,29 @@ namespace PC2.Data
                           select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
         }
 
+        public static async Task<Agency?> GetAgencyAsync(ApplicationDbContext context, int id)
+        {
+            return await (from a in context.Agency
+                          where a.AgencyId == id
+                          select a).Include(nameof(Agency.AgencyCategories)).FirstOrDefaultAsync();
+        }
+
         /// <summary>
         /// Updates the Agency with the categories that belong to it
         /// </summary>
         /// <param name="context"></param>
         /// <param name="agency">The Agency being updated</param>
         /// <param name="categories">The categories being added to the agency</param>
-        public static async Task UpdateAgencyAsync(ApplicationDbContext context, Agency agency, List<AgencyCategory> categories)
+        public static async Task UpdateAgencyAsync(ApplicationDbContext context, Agency agency, 
+            List<AgencyCategory> addedCategories, List<AgencyCategory> removedCategories)
         {
-            for (int i = 0; i < categories.Count; i++)
+            for (int i = 0; i < addedCategories.Count; i++)
             {
-                context.AgencyCategory.Attach(agency.AgencyCategories[i]);
+                context.AgencyCategory.Attach(addedCategories[i]);
+            }
+            for (int i = 0; i < removedCategories.Count; i++)
+            {
+                context.AgencyCategory.Remove(removedCategories[i]);
             }
             context.Entry(agency).State = EntityState.Modified;
             await context.SaveChangesAsync();
