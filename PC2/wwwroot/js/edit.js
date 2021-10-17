@@ -30,9 +30,10 @@ function submitForm() {
     let url = $(this).attr("formaction");
 
     let newString = JSON.stringify(addedServices);
-    //newString = encodeURIComponent(newString);
+    newString = encodeURIComponent(newString);
     url = url.replace("tempAdded", newString);
     newString = JSON.stringify(removedServices);
+    newString = encodeURIComponent(newString);
     url = url.replace("tempRemoved", newString);
     $(this).attr("formaction", url);
 }

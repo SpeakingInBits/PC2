@@ -19,7 +19,7 @@ function onSubmit() {
     let url = $(this).attr("formaction");
 
     let newString = JSON.stringify(services);
-    //newString = encodeURIComponent(newString);
+    newString = encodeURIComponent(newString);
     url = url.replace("tempServices", newString);
     $(this).attr("formaction", url);
 }
