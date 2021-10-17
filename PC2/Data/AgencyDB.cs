@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using PC2.Models;
 
 namespace PC2.Data
@@ -95,16 +96,38 @@ namespace PC2.Data
         public static async Task UpdateAgencyAsync(ApplicationDbContext context, Agency agency, 
             List<AgencyCategory> addedCategories, List<AgencyCategory> removedCategories)
         {
-            for (int i = 0; i < addedCategories.Count; i++)
-            {
-                context.AgencyCategory.Attach(addedCategories[i]);
-            }
+            
             for (int i = 0; i < removedCategories.Count; i++)
             {
-                context.AgencyCategory.Remove(removedCategories[i]);
+                for (int j = 0; j < agency.AgencyCategories.Count; j++)
+                {
+                    if (removedCategories[i] == agency.AgencyCategories[j])
+                    {
+                        string query = "DELETE FROM AgencyAgencyCategory WHERE AgenciesAgencyId = @agencyId AND AgencyCategoriesAgencyCategoryId = @categoryId";
+                        SqlParameter[] sqlParams = new SqlParameter[]
+                        {
+                            new SqlParameter { ParameterName = "agencyId", Value = agency.AgencyId},
+                            new SqlParameter { ParameterName = "categoryId", Value = agency.AgencyCategories[j].AgencyCategoryId}
+                        };
+                        context.Database.ExecuteSqlRaw(query, sqlParams);
+                        //context.AgencyCategory.Remove(agency.AgencyCategories[j]);
+                        agency.AgencyCategories.Remove(removedCategories[i]);
+                    }
+                }
+            }
+            for (int i = 0; i < addedCategories.Count; i++)
+            {
+                context.AgencyCategory.Attach(agency.AgencyCategories[i]);
             }
             context.Entry(agency).State = EntityState.Modified;
-            await context.SaveChangesAsync();
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return;
+            }
         }
 
         public static async Task<List<Agency>> GetAgenciesByName(ApplicationDbContext context, string name)

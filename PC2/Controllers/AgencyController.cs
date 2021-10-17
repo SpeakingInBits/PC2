@@ -69,6 +69,7 @@ namespace PC2.Controllers
         {
             if (ModelState.IsValid)
             {
+                agency = await AgencyDB.GetAgencyAsync(_context, agency.AgencyId);
                 string[] serviceArray = JsonConvert.DeserializeObject<string[]>(servicesRemoved);
                 List<AgencyCategory> addedCategories = new List<AgencyCategory>();
                 List<AgencyCategory> removedCategories = new List<AgencyCategory>();
