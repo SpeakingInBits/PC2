@@ -148,5 +148,11 @@ namespace PC2.Data
             result = result.OrderBy(a => a).Distinct().ToList();
             return result;
         }
+
+        public static async Task Delete(ApplicationDbContext context, Agency agency)
+        {
+            context.Entry(agency).State = EntityState.Deleted;
+            await context.SaveChangesAsync();
+        }
     }
 }

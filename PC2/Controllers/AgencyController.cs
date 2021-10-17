@@ -90,5 +90,21 @@ namespace PC2.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            Agency agency = await AgencyDB.GetAgencyAsync(_context, id);
+            return View(agency);
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            Agency agency = await _context.Agency.FindAsync(id);
+            await AgencyDB.Delete(_context, agency);
+            return RedirectToAction("Index");
+        }
     }
 }
