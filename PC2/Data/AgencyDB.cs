@@ -94,9 +94,8 @@ namespace PC2.Data
         /// <param name="agency">The Agency being updated</param>
         /// <param name="categories">The categories being added to the agency</param>
         public static async Task UpdateAgencyAsync(ApplicationDbContext context, Agency agency, 
-            List<AgencyCategory> addedCategories, List<AgencyCategory> removedCategories)
+            List<AgencyCategory> removedCategories)
         {
-            
             for (int i = 0; i < removedCategories.Count; i++)
             {
                 for (int j = 0; j < agency.AgencyCategories.Count; j++)
@@ -110,12 +109,11 @@ namespace PC2.Data
                             new SqlParameter { ParameterName = "categoryId", Value = agency.AgencyCategories[j].AgencyCategoryId}
                         };
                         context.Database.ExecuteSqlRaw(query, sqlParams);
-                        //context.AgencyCategory.Remove(agency.AgencyCategories[j]);
                         agency.AgencyCategories.Remove(removedCategories[i]);
                     }
                 }
             }
-            for (int i = 0; i < addedCategories.Count; i++)
+            for (int i = 0; i < agency.AgencyCategories.Count; i++)
             {
                 context.AgencyCategory.Attach(agency.AgencyCategories[i]);
             }

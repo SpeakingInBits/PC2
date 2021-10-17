@@ -69,20 +69,24 @@ namespace PC2.Controllers
         {
             if (ModelState.IsValid)
             {
-                agency = await AgencyDB.GetAgencyAsync(_context, agency.AgencyId);
                 string[] serviceArray = JsonConvert.DeserializeObject<string[]>(servicesRemoved);
-                List<AgencyCategory> addedCategories = new List<AgencyCategory>();
                 List<AgencyCategory> removedCategories = new List<AgencyCategory>();
                 for (int i = 0; i < serviceArray.Length; i++)
                 {
-                    removedCategories.Add(await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]));
+                    AgencyCategory temp = await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]);
+                    removedCategories.Add(temp);
+                    agency.AgencyCategories.Add(temp);
                 }
                 serviceArray = JsonConvert.DeserializeObject<string[]>(servicesAdded);
                 for (int i = 0; i < serviceArray.Length; i++)
                 {
-                    addedCategories.Add(await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]));
+                    AgencyCategory temp = await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]);
+                    if (!agency.AgencyCategories.Contains(temp))
+                    {
+                        agency.AgencyCategories.Add(temp);
+                    }
                 }
-                await AgencyDB.UpdateAgencyAsync(_context, agency, addedCategories, removedCategories);
+                await AgencyDB.UpdateAgencyAsync(_context, agency, removedCategories);
             }
             return RedirectToAction("Index");
         }
