@@ -1,0 +1,131 @@
+﻿@model PC2.Models.Agency
+
+@{
+    ViewData["Title"] = "Create";
+    List<AgencyCategory> agencyCategories = (List<AgencyCategory>)ViewData["AgencyCategories"];
+}
+
+<h1>Create</h1>
+
+<h4>Agency</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="AgencyName" class="control-label"></label>
+                <input asp-for="AgencyName" class="form-control" />
+                <span asp-validation-for="AgencyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AgencyName2" class="control-label"></label>
+                <input asp-for="AgencyName2" class="form-control" />
+                <span asp-validation-for="AgencyName2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Contact" class="control-label"></label>
+                <input asp-for="Contact" class="form-control" />
+                <span asp-validation-for="Contact" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address1" class="control-label"></label>
+                <input asp-for="Address1" class="form-control" />
+                <span asp-validation-for="Address1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address2" class="control-label"></label>
+                <input asp-for="Address2" class="form-control" />
+                <span asp-validation-for="Address2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State" class="control-label"></label>
+                <input asp-for="State" class="form-control" />
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Zip" class="control-label"></label>
+                <input asp-for="Zip" class="form-control" />
+                <span asp-validation-for="Zip" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MailingAddress" class="control-label"></label>
+                <input asp-for="MailingAddress" class="form-control" />
+                <span asp-validation-for="MailingAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TollFree" class="control-label"></label>
+                <input asp-for="TollFree" class="form-control" />
+                <span asp-validation-for="TollFree" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TTY" class="control-label"></label>
+                <input asp-for="TTY" class="form-control" />
+                <span asp-validation-for="TTY" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TDD" class="control-label"></label>
+                <input asp-for="TDD" class="form-control" />
+                <span asp-validation-for="TDD" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CrisisHelpHotline" class="control-label"></label>
+                <input asp-for="CrisisHelpHotline" class="form-control" />
+                <span asp-validation-for="CrisisHelpHotline" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Fax" class="control-label"></label>
+                <input asp-for="Fax" class="form-control" />
+                <span asp-validation-for="Fax" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Website" class="control-label"></label>
+                <input asp-for="Website" class="form-control" />
+                <span asp-validation-for="Website" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="list-of-categories" class="control-label">Choose a service from the list:</label>
+                <input list="list-of-categories" name="list-of-categories" id="list-of-service" class="form-control">
+                <datalist id="list-of-categories">
+                    @for (int i = 0; i < agencyCategories.Count; i++)
+                    {
+                        <option class="agencyName" value="@agencyCategories[i].AgencyCategoryName" />
+                    }
+                </datalist>
+                <span class="text-success" id="category-success"></span>
+                <br />
+                <button type="button" class="btn btn-primary category-submit" id="category-submit" value="Add Service">Add Service</button>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" id="submit" asp-route-services="tempServices" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<script src=~/js/AgencyCreate.js></script>

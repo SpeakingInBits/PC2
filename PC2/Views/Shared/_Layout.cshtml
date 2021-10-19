@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using PC2.Data
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -53,7 +54,15 @@
                 <div id="right-ribbon" class="ribbon"></div>
                 <div class="navbar-collapse collapse d-md-inline-flex flex-md-row-reverse" id="navbarSupportedContent">
                     <ul class="navbar-nav flex-grow-1">
-                        <li id="Home-Index" class="nav-item menu-item">
+                        @if (User.IsInRole(IdentityHelper.Admin))
+                        {
+                            <li class="nav-item menu-item">
+                                <a class="nav-link" asp-controller="Agency" asp-action="Index">Agencies</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li id="Home-Index" class="nav-item menu-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
                         </li>
                         <li id="NewsToKnow-Index" class="nav-item menu-item">
@@ -119,9 +128,10 @@
                                     <li id="contact-item" class="nav-item submenu-item">
                                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Contact Us</a>
                                     </li>
-                                </ul>
+                                    </ul>
                             </div>
                         </li>
+                        }   
                     </ul>
                 </div>
             </div>

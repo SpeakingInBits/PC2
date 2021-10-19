@@ -32,7 +32,7 @@ namespace PC2.Data
         /// <param name="context"></param>
         /// <param name="categoryID"></param>
         /// <returns></returns>
-        public static async Task<AgencyCategory> GetAgencyCategory(ApplicationDbContext context, int categoryID)
+        public static async Task<AgencyCategory?> GetAgencyCategory(ApplicationDbContext context, int categoryID)
         {
             return await (from a in context.AgencyCategory
                           where a.AgencyCategoryId == categoryID
@@ -45,7 +45,7 @@ namespace PC2.Data
         /// <param name="context"></param>
         /// <param name="category"></param>
         /// <returns></returns>
-        public static async Task<AgencyCategory> GetAgencyCategory(ApplicationDbContext context, string category)
+        public static async Task<AgencyCategory?> GetAgencyCategory(ApplicationDbContext context, string category)
         {
             return await (from a in context.AgencyCategory
                           where a.AgencyCategoryName == category
