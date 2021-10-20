@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewData["Title"] = "Create Event";
+}
+<link rel="stylesheet" href="~/css/dtsel.css" />
+
+<h1>Create Event</h1>
+
+<form id="form" class="form" asp-action="Create" method="post">
+    <div class="form-group">
+        <label>Set date for event</label>
+        <input type="text" value="@DateTime.Today.ToString("MM/dd/yyyy")" id="date" name="dateTimePicker" />
+        <span id="error" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Set a starting time</label>
+        <input type="time" />
+    </div>
+    <div class="form-group">
+        <label>Set an ending time</label>
+        <input type="time" />
+    </div>
+    <div class="form-group">
+        <label>Describe the event</label>
+        <input type="text" />
+    </div>
+</form>
+
+
+<script src="~/js/dtsel.js"></script>
+<script src="~/js/CreateEvent.js"></script>
