@@ -57,7 +57,7 @@ namespace PC2.Controllers
 
             if (existingDate != null)
             {
-                calendarEvent.CalendarDate.Add(existingDate);
+                calendarEvent.CalendarDate = existingDate;
                 await CalendarEventDB.AddEvent(_context, calendarEvent);
                 existingDate.Events.Add(calendarEvent);
                 CalendarDateDB.AddCalendarEventToDate(_context, existingDate);
@@ -65,7 +65,7 @@ namespace PC2.Controllers
             else
             {
                 await CalendarDateDB.AddCalendarDate(_context, calendarDate);
-                calendarEvent.CalendarDate.Add(calendarDate);
+                calendarEvent.CalendarDate = calendarDate;
                 await CalendarEventDB.AddEvent(_context, calendarEvent);
                 calendarDate.Events.Add(calendarEvent);
                 CalendarDateDB.AddCalendarEventToDate(_context, calendarDate);

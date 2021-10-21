@@ -20,6 +20,6 @@ namespace PC2.Models
 
         public bool CountyEvent {  get; set; }
 
-        public List<CalendarDate> CalendarDate {  get; set; } = new List<CalendarDate>();
+        public CalendarDate CalendarDate {  get; set; }
     }
 }
