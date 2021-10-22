@@ -119,7 +119,11 @@ namespace PC2.Controllers
             int temp = Int32.Parse(startingTime.Substring(0, 2));
             if (temp > 12)
             {
-                temp -= 12;
+                // Want to keep 1:00 set at 13:00 for sorting times. 1:00 will always be set before 12:00
+                if (temp != 13)
+                {
+                    temp -= 12;
+                }
                 startingTime = temp + startingTime.Substring(2) + " PM";
             }
             else if (temp == 12)
