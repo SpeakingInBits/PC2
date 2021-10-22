@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PC2.Data;
 using PC2.Models;
 
 namespace PC2.Controllers
 {
+    [Authorize(Roles = IdentityHelper.Admin)]
     public class CalendarController : Controller
     {
         private readonly ApplicationDbContext _context;
