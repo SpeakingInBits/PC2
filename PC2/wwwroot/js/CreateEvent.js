@@ -60,6 +60,9 @@ function onSubmit() {
     }
 }
 
+/**
+ * Validates whether or not one of the checkboxes is checked
+ * */
 function validateCheckboxes() {
     if ($("#pc2").prop("checked") || $("#county").prop("checked")) {
         document.getElementById("checkbox-error").innerHTML = "";
@@ -71,6 +74,9 @@ function validateCheckboxes() {
     }
 }
 
+/**
+ * Validates whether or not a description has been added
+ * */
 function validateDescription() {
     if (document.getElementById("description").value.trim() == "") {
         document.getElementById("description-error").innerHTML = "Enter a description for the event";
@@ -83,6 +89,9 @@ function validateDescription() {
     }
 }
 
+/**
+ * Validates whether or not an end time has been filled in
+ * */
 function validateEndTime() {
     if (document.getElementById("ending-time").value.trim() == "") {
         document.getElementById("end-error").innerHTML = "Enter a valid end time. ie 01:30 PM";
@@ -94,6 +103,9 @@ function validateEndTime() {
     }
 }
 
+/**
+ * Validates whether or not the starting time has been filled in
+ * */
 function validateStartTime() {
     if (document.getElementById("starting-time").value.trim() == "") {
         document.getElementById("start-error").innerHTML = "Enter a valid start time. ie 01:30 PM";
@@ -105,6 +117,9 @@ function validateStartTime() {
     }
 }
 
+/**
+ * Validates that the date has been filled in and is in the proper format for parsing into DateTime
+ * */
 function validateDate() {
     let regexp = /^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d/g;
 

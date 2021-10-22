@@ -53,6 +53,7 @@ namespace PC2.Controllers
                 calendarEvent.CountyEvent = true;
             }
 
+            // Checking to see if the date already exists in the database
             CalendarDate existingDate = await CalendarDateDB.GetCalendarDate(_context, calendarDate.Date);
 
             if (existingDate != null)
@@ -74,6 +75,12 @@ namespace PC2.Controllers
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// Formats the ending time from a 24 hour time to a standard 12 hour
+        /// with am or pm attached
+        /// </summary>
+        /// <param name="endingTime"></param>
+        /// <returns></returns>
         private static string FormatEndingTime(string endingTime)
         {
             int temp = Int32.Parse(endingTime.Substring(0, 2));
@@ -95,6 +102,12 @@ namespace PC2.Controllers
             return endingTime;
         }
 
+        /// <summary>
+        /// Formats the starting time from a 24 hour time to a 12 hour time
+        /// with am or pm attached
+        /// </summary>
+        /// <param name="startingTime"></param>
+        /// <returns></returns>
         private static string FormatStartingTime(string startingTime)
         {
             int temp = Int32.Parse(startingTime.Substring(0, 2));
