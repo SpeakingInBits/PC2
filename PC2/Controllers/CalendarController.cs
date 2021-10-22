@@ -91,6 +91,10 @@ namespace PC2.Controllers
                 temp -= 12;
                 endingTime = temp + endingTime.Substring(2) + " PM";
             }
+            else if (temp == 12)
+            {
+                endingTime = temp + endingTime.Substring(2) + " PM";
+            }
             else if (temp == 0)
             {
                 temp += 12;
@@ -116,6 +120,10 @@ namespace PC2.Controllers
             if (temp > 12)
             {
                 temp -= 12;
+                startingTime = temp + startingTime.Substring(2) + " PM";
+            }
+            else if (temp == 12)
+            {
                 startingTime = temp + startingTime.Substring(2) + " PM";
             }
             else if (temp == 0)
