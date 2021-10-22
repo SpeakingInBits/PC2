@@ -6,43 +6,46 @@
 
 <h1>Create Event</h1>
 
-<form id="create" class="form" asp-action="Create" method="post">
-    <div class="form-group">
-        <label>Set date for event</label>
-        <input type="text" value="@DateTime.Today.ToString("MM/dd/yyyy")" id="date" name="dateTimePicker" />
-        <span id="error" class="text-danger"></span>
+<div class="row">
+    <div class="col-md-4">
+        <form id="create" class="form" asp-action="Create" method="post">
+            <div class="form-group">
+                <label class="control-label">Set date for event</label>
+                <input class="form-control" type="text" value="@DateTime.Today.ToString("MM/dd/yyyy")" id="date" name="dateTimePicker" />
+                <span id="error" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Set a starting time</label>
+                <input class="form-control" type="time" id="starting-time" />
+                <span id="start-error" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Set an ending time</label>
+                <input class="form-control" type="time" id="ending-time" />
+                <span id="end-error" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Describe the event</label>
+                <textarea class="form-control" rows="5" id="description" ></textarea>
+                <span id="description-error" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span id="checkbox-error" class="text-danger"></span>
+                <div class="checkbox">
+                    <input type="checkbox" id="pc2" value="PC2 Event" name="pc2" />
+                    <label for="pc2">PC2 Event</label>
+                    <input type="checkbox" id="county" value="County Event" name="county" />
+                    <label for="county">County Event</label>
+                    <span id="checkbox-error" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input id="submit" type="submit" value="Create Event" class="btn btn-primary" asp-route-startingTime="tempStart"
+                asp-route-endingTime="tempEnd" asp-route-date="tempDate" asp-route-description="tempDescription"/>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label>Set a starting time</label>
-        <input type="time" id="starting-time" />
-        <span id="start-error" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label>Set an ending time</label>
-        <input type="time" id="ending-time" />
-        <span id="end-error" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label>Describe the event</label>
-        <textarea rows="5" cols="60" id="description" ></textarea>
-        <span id="description-error" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <span id="checkbox-error" class="text-danger"></span>
-        <div class="checkbox">
-            <input type="checkbox" id="pc2" value="PC2 Event" name="pc2" />
-            <label for="pc2">PC2 Event</label>
-            <input type="checkbox" id="county" value="County Event" name="county" />
-            <label for="county">County Event</label>
-            <span id="checkbox-error" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <input id="submit" type="submit" value="Create Event" class="btn btn-primary" asp-route-startingTime="tempStart"
-        asp-route-endingTime="tempEnd" asp-route-date="tempDate" asp-route-description="tempDescription"/>
-    </div>
-</form>
-
+</div>
 
 <script src="~/js/dtsel.js"></script>
 <script src="~/js/CreateEvent.js"></script>
