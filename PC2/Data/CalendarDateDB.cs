@@ -12,9 +12,20 @@ namespace PC2.Data
         /// <returns></returns>
         public static async Task<List<CalendarDate>> GetAllDates(ApplicationDbContext context)
         {
-            return await (from c in context.CalendarDates
+             List<CalendarDate> calendarDate = await (from c in context.CalendarDates
                           where c.Date >= DateTime.Today
+                          orderby c.Date
                           select c).Include(nameof(CalendarDate.Events)).ToListAsync();
+
+            // Sorting events based on starting time
+            for (int i = 0; i < calendarDate.Count; i++)
+            {
+                calendarDate[i].Events = calendarDate[i].Events
+                    .OrderBy(e => e.StartingTime.Substring(e.StartingTime.IndexOf(" ")))
+                    .ThenBy(e => e.StartingTime.Substring(0, e.StartingTime.IndexOf(":")))
+                    .ThenBy(e => e.StartingTime.Substring(e.StartingTime.IndexOf(":"))).ToList();
+            }
+            return calendarDate;
         }
 
         /// <summary>
