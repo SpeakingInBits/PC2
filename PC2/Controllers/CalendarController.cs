@@ -15,11 +15,11 @@ namespace PC2.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            // Sets date to today at midnight
-            //DateTime today = DateTime.Today;
-            return View();
+            EventsModel eventsModel = new EventsModel();
+            eventsModel.CalendarDate = await CalendarDateDB.GetAllDates(_context);
+            return View(eventsModel);
         }
 
         /// <summary>
@@ -72,6 +72,88 @@ namespace PC2.Controllers
                 await CalendarEventDB.AddEvent(_context, calendarEvent);
                 calendarDate.Events.Add(calendarEvent);
                 CalendarDateDB.AddCalendarEventToDate(_context, calendarDate);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// Edits an event based on event id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            CalendarEvent calendarEvent = await CalendarEventDB.GetEvent(_context, id);
+            calendarEvent.StartingTime = UnformatTime(calendarEvent.StartingTime);
+            calendarEvent.EndingTime = UnformatTime(calendarEvent.EndingTime);
+
+            return View(calendarEvent);
+        }
+
+        /// <summary>
+        /// Returns the time to a format that the input can read
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        private static string UnformatTime(string time)
+        {
+            int temp = Int32.Parse(time.Substring(0, time.IndexOf(":")));
+            string ampmTemp = time.Substring(time.IndexOf(" ") + 1);
+            string backPortion = "";
+
+            // If the time is two digits then indexof goes 1 too far
+            // If the time is one digit then indexof goes 2 too far
+            if (temp > 9)
+            {
+                backPortion = time.Substring(time.IndexOf(":"), time.IndexOf(" ") - 2);
+            }
+            else
+            {
+                backPortion = time.Substring(time.IndexOf(":"), time.IndexOf(" ") - 1);
+            }
+
+            string frontPortion = "";
+
+            if (ampmTemp == "PM" && temp != 13 && temp != 12)
+            {
+                temp += 12;
+                frontPortion = temp + "";
+            }
+            else if (temp < 10)
+            {
+                frontPortion = "0" + temp;
+            }
+            else
+            {
+                frontPortion = temp + "";
+            }
+
+            return frontPortion + backPortion;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(CalendarEvent calendarEvent)
+        {
+            // If event type is changed the opposite type needs to be set to false
+            if (calendarEvent.PC2Event)
+            {
+                calendarEvent.CountyEvent = false;
+            }
+            else
+            {
+                calendarEvent.PC2Event = false;
+            }
+
+            calendarEvent.StartingTime = FormatStartingTime(calendarEvent.StartingTime);
+            calendarEvent.EndingTime = FormatEndingTime(calendarEvent.EndingTime);
+
+            bool success = await CalendarEventDB.UpdateEvent(_context, calendarEvent);
+
+            if (!success)
+            {
+                TempData["UpdateFailed"] = "An error occured updating the event";
             }
 
             return RedirectToAction("Index");
