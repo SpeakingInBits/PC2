@@ -7,6 +7,11 @@ a.navbar-brand {
     word-break: break-all;
 }
 
+/*Overriding the color settings for login/logout*/
+.text-dark {
+    color: white !important;
+}
+
 /* Provide sufficient contrast against white background */
 a {
     color: #0366d6;
