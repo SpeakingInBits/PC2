@@ -321,6 +321,18 @@ nav a {
     min-width: 90px;
 }
 
+/*Shows submenu when menu item is hovered*/
+#Events-Index:hover #event-submenu *,
+#Resources-Index:hover #resources-submenu *,
+#about-menu:hover #about-submenu,
+#about-menu:hover #about-submenu .submenu,
+#about-menu:hover #about-submenu .submenu #contact-item,
+#about-menu:hover #about-submenu .submenu #contact-item a,
+#about-menu:hover #about-submenu .submenu #about-item,
+#about-menu:hover #about-submenu .submenu #about-item a {
+    display: block;
+}
+
 @media only screen and (min-width: 768px) {
     html {
         font-size: 16px;
@@ -343,17 +355,7 @@ nav a {
         display: none;
     }
 
-    /*Shows submenu when menu item is hovered*/
-    #Events-Index:hover #event-submenu *,
-    #Resources-Index:hover #resources-submenu *,
-    #about-menu:hover #about-submenu,
-    #about-menu:hover #about-submenu .submenu,
-    #about-menu:hover #about-submenu .submenu #contact-item,
-    #about-menu:hover #about-submenu .submenu #contact-item a,
-    #about-menu:hover #about-submenu .submenu #about-item,
-    #about-menu:hover #about-submenu .submenu #about-item a {
-        display: block;
-    }
+    
 
     /*top border shows even when display is set to none*/
     .submenu {
