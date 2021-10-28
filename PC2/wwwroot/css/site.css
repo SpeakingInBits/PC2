@@ -8,7 +8,7 @@ a.navbar-brand {
 }
 
 /*Overriding the color settings for login/logout*/
-.text-dark {
+.nav-link {
     color: white !important;
 }
 
