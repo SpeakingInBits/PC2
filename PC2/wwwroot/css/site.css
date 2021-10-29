@@ -360,7 +360,18 @@ nav a {
         display: none;
     }
 
-    
+    /*Shows submenu when menu item is hovered*/
+    #Events-Index:hover #event-submenu *,
+    #Resources-Index:hover #resources-submenu *,
+    #Calendar-Index:hover #calendar-submenu *,
+    #about-menu:hover #about-submenu,
+    #about-menu:hover #about-submenu .submenu,
+    #about-menu:hover #about-submenu .submenu #contact-item,
+    #about-menu:hover #about-submenu .submenu #contact-item a,
+    #about-menu:hover #about-submenu .submenu #about-item,
+    #about-menu:hover #about-submenu .submenu #about-item a {
+        display: block;
+    }
 
     /*top border shows even when display is set to none*/
     .submenu {

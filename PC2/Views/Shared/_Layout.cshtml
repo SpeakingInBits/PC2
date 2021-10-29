@@ -59,6 +59,16 @@
                             <li class="nav-item menu-item">
                                 <a class="nav-link" asp-controller="Agency" asp-action="Index">Agencies</a>
                             </li>
+                            <li id="Calendar-Index" class="nav-item menu-item dropdown" >
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" asp-area="" asp-controller="Calendar" asp-action="Index">Calendar</a>
+                                <div id="calendar-submenu" class="submenu-container">
+                                    <ul class="submenu dropdown-menu">
+                                        <li id="Calendar-Create" class="nav-item submenu-item">
+                                            <a class="nav-link" asp-area="" asp-controller="Calendar" asp-action="Create">Create Events</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
                         }
                         else
                         {
