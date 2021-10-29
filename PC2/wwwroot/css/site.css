@@ -173,7 +173,7 @@ main {
         height: 130px;
     }
 
-#bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .submenu, .divider {
+#bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .submenu, .divider, .dropdown-menu {
     background-color: rgb(136, 178, 53);
 }
 
@@ -193,7 +193,7 @@ main {
     max-width: 2000px;
 }
 
-ul.navbar-nav {
+ul.navbar-nav, .dropdown-item {
     text-align: center;
     justify-content: space-around;
     -webkit-justify-content: space-around; /*Safari 6.1+*/
@@ -326,9 +326,12 @@ nav a {
     min-width: 90px;
 }
 
+.priority > li {
+    z-index: 10;
+}
+
 /*Shows submenu when menu item is hovered*/
-#Events-Index:hover #event-submenu *,
-#Resources-Index:hover #resources-submenu *,
+/*#Resources-Index:hover #resources-submenu *,
 #about-menu:hover #about-submenu,
 #about-menu:hover #about-submenu .submenu,
 #about-menu:hover #about-submenu .submenu #contact-item,
@@ -336,7 +339,7 @@ nav a {
 #about-menu:hover #about-submenu .submenu #about-item,
 #about-menu:hover #about-submenu .submenu #about-item a {
     display: block;
-}
+}*/
 
 @media only screen and (min-width: 768px) {
     html {
@@ -351,26 +354,8 @@ nav a {
         width: 0;
     }
 
-    /*removes caret for drop down*/
-    .dropdown-toggle::after {
-        content: none;
-    }
-
     #menu-bar *, .submenu-container * {
         display: none;
-    }
-
-    /*Shows submenu when menu item is hovered*/
-    #Events-Index:hover #event-submenu *,
-    #Resources-Index:hover #resources-submenu *,
-    #Calendar-Index:hover #calendar-submenu *,
-    #about-menu:hover #about-submenu,
-    #about-menu:hover #about-submenu .submenu,
-    #about-menu:hover #about-submenu .submenu #contact-item,
-    #about-menu:hover #about-submenu .submenu #contact-item a,
-    #about-menu:hover #about-submenu .submenu #about-item,
-    #about-menu:hover #about-submenu .submenu #about-item a {
-        display: block;
     }
 
     /*top border shows even when display is set to none*/
