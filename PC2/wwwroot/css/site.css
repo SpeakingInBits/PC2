@@ -326,8 +326,15 @@ nav a {
     min-width: 90px;
 }
 
-.priority > li {
+.priority > a {
     z-index: 10;
+}
+
+.dropdown-toggle {
+    padding: 8px 0 8px 0;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
 }
 
 /*Shows submenu when menu item is hovered*/
