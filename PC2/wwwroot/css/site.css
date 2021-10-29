@@ -7,6 +7,11 @@ a.navbar-brand {
     word-break: break-all;
 }
 
+/*Overriding the color settings for login/logout*/
+.nav-link {
+    color: white !important;
+}
+
 /* Provide sufficient contrast against white background */
 a {
     color: #0366d6;
@@ -319,6 +324,18 @@ nav a {
     margin: 0;
     border-radius: 0;
     min-width: 90px;
+}
+
+/*Shows submenu when menu item is hovered*/
+#Events-Index:hover #event-submenu *,
+#Resources-Index:hover #resources-submenu *,
+#about-menu:hover #about-submenu,
+#about-menu:hover #about-submenu .submenu,
+#about-menu:hover #about-submenu .submenu #contact-item,
+#about-menu:hover #about-submenu .submenu #contact-item a,
+#about-menu:hover #about-submenu .submenu #about-item,
+#about-menu:hover #about-submenu .submenu #about-item a {
+    display: block;
 }
 
 @media only screen and (min-width: 768px) {
