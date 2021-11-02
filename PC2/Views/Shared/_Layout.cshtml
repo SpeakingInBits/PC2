@@ -77,6 +77,24 @@
                                     </ul>
                                 </div>
                             </li>
+                            <li class="nav-item menu-item dropdown" >
+                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon d-none"></span>
+                                </button>
+                                <div class="" id="navbarNavDarkDropdown">
+                                    <ul class="navbar-nav priority">
+                                        <li class="nav-item dropdown menu-item">
+                                            <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Members
+                                            </p>
+                                            <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink">
+                                                <li><a class="dropdown-item" asp-controller="About" asp-action="IndexStaff">View Staff</a></li>
+                                                <li><a class="dropdown-item" asp-controller="About" asp-action="CreateStaff">Create Staff Member</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
                         }
                         else
                         {
