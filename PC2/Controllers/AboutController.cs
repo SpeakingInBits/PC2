@@ -74,5 +74,27 @@ namespace PC2.Controllers
             await StaffDB.Delete(_context, staff);
             return RedirectToAction("IndexStaff");
         }
+
+        public async Task<IActionResult> IndexBoard()
+        {
+            return View(await BoardDB.GetAllBoardMembers(_context));
+        }
+
+        /// <summary>
+        /// Creates a board member
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult CreateBoard()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateBoard(Board board)
+        {
+            await BoardDB.CreateBoardMember(_context, board);
+            return RedirectToAction("IndexBoard");
+        }
     }
 }
