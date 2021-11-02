@@ -15,9 +15,9 @@ namespace PC2.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexStaff()
         {
-            return View();
+            return View(await StaffDB.GetAllStaff(_context));
         }
 
         /// <summary>
@@ -34,7 +34,25 @@ namespace PC2.Controllers
         public async Task<IActionResult> CreateStaff(Staff staff)
         {
             await StaffDB.AddStaff(_context, staff);
-            return RedirectToAction("Index");
+            return RedirectToAction("IndexStaff");
+        }
+
+        /// <summary>
+        /// Edits a staff member
+        /// </summary>
+        /// <param name="id">The id for the staff member</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> EditStaff(int id)
+        {
+            return View(await StaffDB.GetStaffMember(_context, id));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditStaff(Staff staff)
+        {
+            await StaffDB.SaveChanges(_context, staff);
+            return RedirectToAction("IndexStaff");
         }
     }
 }
