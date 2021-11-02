@@ -54,5 +54,25 @@ namespace PC2.Controllers
             await StaffDB.SaveChanges(_context, staff);
             return RedirectToAction("IndexStaff");
         }
+
+        /// <summary>
+        /// Deletes a staff member
+        /// </summary>
+        /// <param name="id">The id of the staff member</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> DeleteStaff(int id)
+        {
+            return View(await StaffDB.GetStaffMember(_context, id));
+        }
+
+        [HttpPost]
+        [ActionName("DeleteStaff")]
+        public async Task<IActionResult> ConfirmDeleteStaff(int id)
+        {
+            Staff staff = await StaffDB.GetStaffMember(_context, id);
+            await StaffDB.Delete(_context, staff);
+            return RedirectToAction("IndexStaff");
+        }
     }
 }

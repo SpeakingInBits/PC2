@@ -29,5 +29,11 @@ namespace PC2.Data
             context.Entry(staff).State = EntityState.Modified;
             await context.SaveChangesAsync();
         }
+
+        public static async Task Delete(ApplicationDbContext context, Staff staff)
+        {
+            context.Entry(staff).State = EntityState.Deleted;
+            await context.SaveChangesAsync();
+        }
     }
 }
