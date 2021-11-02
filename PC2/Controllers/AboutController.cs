@@ -96,5 +96,23 @@ namespace PC2.Controllers
             await BoardDB.CreateBoardMember(_context, board);
             return RedirectToAction("IndexBoard");
         }
+
+        /// <summary>
+        /// Edits a board member
+        /// </summary>
+        /// <param name="id">The id of the board member</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> EditBoard(int id)
+        {
+            return View(await BoardDB.GetBoardMember(_context, id));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditBoard(Board board)
+        {
+            await BoardDB.EditBoardMember(_context, board);
+            return RedirectToAction("IndexBoard");
+        }
     }
 }

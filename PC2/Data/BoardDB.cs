@@ -16,5 +16,18 @@ namespace PC2.Data
             context.BoardMembers.Add(board);
             await context.SaveChangesAsync();
         }
+
+        public static async Task<Board?> GetBoardMember(ApplicationDbContext context, int id)
+        {
+            return await (from b in context.BoardMembers
+                          where b.ID == id
+                          select b).FirstOrDefaultAsync();
+        }
+
+        public static async Task EditBoardMember(ApplicationDbContext context, Board board)
+        {
+            context.Entry(board).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+        }
     }
 }
