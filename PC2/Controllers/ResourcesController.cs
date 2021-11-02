@@ -49,5 +49,11 @@ namespace PC2.Controllers
 
             return View(resourceGuide);
         }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            Agency agency = await AgencyDB.GetAgencyAsync(_context, id);
+            return View(agency);
+        }
     }
 }

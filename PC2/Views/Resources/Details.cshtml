@@ -1,0 +1,200 @@
+﻿@model PC2.Models.Agency
+
+@{
+    ViewData["Title"] = "Details";
+    string phone = "";
+    string crisis = "";
+    if (Model.Phone != null)
+    {
+        phone = Model.PhoneToString();
+    }
+    if (Model.CrisisHelpHotline != null)
+    {
+        crisis = Model.CrisisToString();
+    }
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>@Html.DisplayFor(model => model.AgencyName) Details</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Agency Name
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AgencyName)
+        </dd>
+        @if (Model.AgencyName2 != null)
+        {
+            <dt class = "col-sm-2">
+                Agency Name 2
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.AgencyName2)
+            </dd>
+        }
+        @if (Model.Contact != null)
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Contact)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Contact)
+            </dd>
+        }
+        @if (Model.Address1 != null)
+        {
+            <dt class = "col-sm-2">
+                Address
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Address1)
+            </dd>
+        }
+        @if (Model.Address2 != null)
+        {
+            <dt class = "col-sm-2">
+                Address Line 2
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Address2)
+            </dd>
+        }
+        @if (Model.City != null)
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.City)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.City)
+            </dd>
+
+        }
+        @if (Model.State != null)
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.State)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.State)
+            </dd>
+        }
+        @if (Model.Zip != null)
+        {
+            <dt class = "col-sm-2">
+                Zip Code
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Zip)
+            </dd>
+        }
+        @if (Model.MailingAddress != null)
+        {
+            <dt class = "col-sm-2">
+                Mailing Address
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.MailingAddress)
+            </dd>
+        }
+        @if (Model.Phone != null)
+        {
+            <dt class = "col-sm-2">
+                Phone Number
+            </dt>
+                @if (phone.Substring(0, 3) == "tel")
+                {
+                    <dd class = "col-sm-10">
+                        <a href="@phone)">@Model.Phone</a>
+                    </dd>
+                }
+                else
+                {
+                    <dd class = "col-sm-10">
+                        @phone
+                    </dd>
+                }
+            
+        }
+        @if (Model.TollFree != null)
+        {
+            <dt class = "col-sm-2">
+                Toll Free
+            </dt>
+            <dd class = "col-sm-10">
+                <a href="tel:@Html.DisplayFor(model => model.TollFree)">@Model.TollFree</a>
+            </dd>
+        }
+        @if (Model.TTY != null)
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.TTY)
+            </dt>
+            <dd class = "col-sm-10">
+                <a href="tel:@Html.DisplayFor(model => model.TTY)">@Model.TTY</a>
+            </dd>
+        }
+        @if (Model.TDD != null)
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.TDD)
+            </dt>
+            <dd class = "col-sm-10">
+                <a href="tel:@Html.DisplayFor(model => model.TDD)">@Model.TDD</a>
+            </dd>
+        }
+        @if (Model.CrisisHelpHotline != null)
+        {
+            <dt class = "col-sm-2">
+                Crisis Help Hotline
+            </dt>
+            @if (crisis.Substring(0, 3) == "tel")
+            {
+                <dd class = "col-sm-10">
+                    <a href="@crisis">@Model.CrisisHelpHotline</a>
+                </dd>
+            }
+            else
+            {
+                <dd class = "col-sm-10">
+                    @crisis
+                </dd>
+            }
+        }
+        @if (Model.Fax != null)
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Fax)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Fax)
+            </dd>
+        }
+        @if (Model.Email != null)
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Email)
+            </dt>
+            <dd class = "col-sm-10">
+                <a href="mailto: @Html.DisplayFor(model => model.Email)" >@Model.Email</a>
+            </dd>
+        }
+        @if (Model.Website != null)
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Website)
+            </dt>
+            <dd class = "col-sm-10">
+                <a href="http://@Html.DisplayFor(model => model.Website)">@Model.Website</a>
+            </dd>
+        }
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+    </dl>
+</div>

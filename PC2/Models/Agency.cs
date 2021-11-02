@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace PC2.Models
 {
@@ -45,5 +46,31 @@ namespace PC2.Models
         public string? Description {  get; set;}
 
         public List<AgencyCategory> AgencyCategories { get; set; } = new List<AgencyCategory>();
+
+        public string PhoneToString()
+        {
+            Regex regex = new Regex(@"^\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}[\s]?$");
+            if (regex.IsMatch(Phone))
+            {
+                return "tel:" + Phone;
+            }
+            else
+            {
+                return Phone;
+            }
+        }
+
+        public string CrisisToString()
+        {
+            Regex regex = new Regex(@"^\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$");
+            if (regex.IsMatch(CrisisHelpHotline))
+            {
+                return "tel:" + CrisisHelpHotline;
+            }
+            else
+            {
+                return CrisisHelpHotline;
+            }
+        }
     }
 }
