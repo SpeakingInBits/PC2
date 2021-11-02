@@ -114,5 +114,25 @@ namespace PC2.Controllers
             await BoardDB.EditBoardMember(_context, board);
             return RedirectToAction("IndexBoard");
         }
+
+        /// <summary>
+        /// Deletes a board member
+        /// </summary>
+        /// <param name="id">The id of the board member</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> DeleteBoard(int id)
+        {
+            return View(await BoardDB.GetBoardMember(_context, id));
+        }
+
+        [HttpPost]
+        [ActionName("DeleteBoard")]
+        public async Task<IActionResult> ConfirmDeleteBoard(int id)
+        {
+            Board board = await BoardDB.GetBoardMember(_context, id);
+            await BoardDB.Delete(_context, board);
+            return RedirectToAction("IndexBoard");
+        }
     }
 }
