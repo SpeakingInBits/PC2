@@ -10,5 +10,11 @@ namespace PC2.Data
             return await (from s in context.SteeringCommittee
                           select s).ToListAsync();
         }
+
+        public static async Task Create(ApplicationDbContext context, SteeringCommittee steeringCommittee)
+        {
+            context.SteeringCommittee.Add(steeringCommittee);
+            await context.SaveChangesAsync();
+        }
     }
 }

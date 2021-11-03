@@ -134,5 +134,27 @@ namespace PC2.Controllers
             await BoardDB.Delete(_context, board);
             return RedirectToAction("IndexBoard");
         }
+
+        public async Task<IActionResult> IndexSteeringCommittee()
+        {
+            return View(await SteeringCommitteeDB.GetAllSteeringCommittee(_context));
+        }
+
+        /// <summary>
+        /// Creates a steering committee member
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult CreateSteeringCommittee()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateSteeringCommittee(SteeringCommittee steeringCommittee)
+        {
+            await SteeringCommitteeDB.Create(_context, steeringCommittee);
+            return RedirectToAction("IndexSteeringCommittee");
+        }
     }
 }

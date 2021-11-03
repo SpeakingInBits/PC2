@@ -1,0 +1,40 @@
+﻿@model IEnumerable<PC2.Models.SteeringCommittee>
+
+@{
+    ViewData["Title"] = "IndexSteeringCommittee";
+}
+
+<h1>Steering Committee</h1>
+
+<p>
+    <a asp-action="CreateSteeringCommittee">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                <a asp-action="EditSteeringCommittee" asp-route-id="@item.ID">Edit</a> |
+                <a asp-action="DeleteSteeringCommittee" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
