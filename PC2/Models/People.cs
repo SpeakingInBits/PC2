@@ -8,6 +8,6 @@ namespace PC2.Models
         public int ID { get; set; }
         public string Name { get; set; }
 
-        public string Title { get; set; }
+        public string? Title { get; set; }
     }
 }
