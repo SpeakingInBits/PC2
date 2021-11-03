@@ -1,4 +1,5 @@
-﻿@{
+﻿@model PC2.Models.AboutUsModel
+@{
     ViewData["Title"] = "About Us";
 }
 
@@ -55,180 +56,57 @@
 
     <h2>Our Staff</h2>
 
-    <div>
-        <p class="name">BethAnn Garteiz, Ed.D.</p>
-        <p class="position">Executive Director</p>
-        <p class="phone">253.564.0707 x 107</p>
-        <p class="email">
-            <a href="mailto:bethann@pc2online.org">Email</a>
-        </p>
+    <div class="staff-column">
+        <table class="table">
+            <tbody>
+                @for (int i = 0; i < Model.Staff.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <p>@Model.Staff[i].Name</p>
+                            <p>@Model.Staff[i].Title</p>
+                            <a href="tel:@Model.Staff[i].Phone">@Model.Staff[i].Phone x @Model.Staff[i].Extension</a>
+                            <br>
+                            <a href="mailto:@Model.Staff[i].Email">@Model.Staff[i].Email</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
-
-    <div>
-        <p class="name">Jauna Balderston-Todd</p>
-        <p class="position">Media Specialist / Bookkeeper</p>
-        <p class="phone">253.564.0707 x 103</p>
-        <p class="email">
-            <a href="mailto:jauna@pc2online.org">Email</a>
-        </p>
-    </div>
-
-    <div>
-        <p class="name">Dale Golder</p>
-        <p class="position">Housing Program Manager</p>
-        <p class="phone">253.564.0707 x 107</p>
-        <p class="email">
-            <a href="mailto:dale@pc2online.org">Email</a>
-        </p>
-    </div>
-
-    <div>
-        <p class="name">Sandi Gruberg</p>
-        <p class="position">Program Coordinator</p>
-        <p class="phone">253.564.0707 x 102</p>
-        <p class="email">
-            <a href="mailto:sandi@pc2online.org">Email</a>
-        </p>
-    </div>
-
-    <div>
-        <p class="name">Kristin Loos</p>
-        <p class="position">Program Assistant</p>
-        <p class="phone">253.564.0707 x 105</p>
-        <p class="email">
-            <a href="kristin@pc2online.org">Email</a>
-        </p>
-    </div>
-
-    <div>
-        <p class="name">Christopher Cleveland</p>
-        <p class="position">Office Assistant</p>
-        <p class="phone">253.564.0707 x 100</p>
-        <p class="email">
-            <a href="mailto:christopher@pc2online.org">Email</a>
-        </p>
-    </div>
-
-    <div>
-        <p class="name">Nathan Becker</p>
-        <p class="position">Custodian</p>
-        <p class="phone">253.564.0707</p>
-        <p class="email"></p>
-    </div>
-
-    <div>
-        <p class="name">Shawna Franklin</p>
-        <p class="position">Housing Consultant</p>
-        <p class="phone"></p>
-        <p class="email">
-            <a href="mailto:shawna@pc2online.org">Email</a>
-        </p>
-    </div>
-
-    <div>
-        <p class="name">General Info/Questions</p>
-        <p class="position"></p>
-        <p class="phone">253.564.0707</p>
-        <p class="email">
-            <a href="mailto:info@pc2online.org">Email</a>
-        </p>
-    </div>
-
     <h2>Our Board</h2>
-
-    <div>
-        <p class="name">Dr. Alan Gill</p>
-        <p class="position">Board Chair</p>
-        <p class="start-year">Member since 2007</p>
+    <div class="board-column">
+        <table class="table">
+            <tbody>
+                @for (int i = 0; i < Model.Board.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <p>@Model.Board[i].Name</p>
+                            @if (Model.Board[i].Title != null)
+                            {
+                                <p>@Model.Board[i].Title</p>
+                            }
+                            <p>Member since @Model.Board[i].MembershipStart</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
-
-    <div>
-        <p class="name">Tom Pagana</p>
-        <p class="position">Board Vice Chair / Treasurer</p>
-        <p class="start-year">Member since 2001</p>
-    </div>
-
-    <div>
-        <p class="name">Jason Clapp</p>
-        <p class="position"></p>
-        <p class="start-year">Member since 2019</p>
-    </div>
-
-    <div>
-        <p class="name">LaVon Frazier</p>
-        <p class="position"></p>
-        <p class="start-year">Member since 2014</p>
-    </div>
-
-    <div>
-        <p class="name">Jo Simms</p>
-        <p class="position"></p>
-        <p class="start-year">Member since 2014</p>
-    </div>
-
-    <div>
-        <p class="name">Jeffrey Snyder, Sr.</p>
-        <p class="position"></p>
-        <p class="start-year">Member since 2012</p>
-    </div>
-
-    <div>
-        <p class="name">Melody Snyder</p>
-        <p class="position"></p>
-        <p class="start-year">Member since 2013</p>
-    </div>
-
-    <div>
-        <p class="name">Sarah Temblay</p>
-        <p class="position"></p>
-        <p class="start-year">Member since 2019</p>
-    </div>
-
-    <div>
-        <p class="name">Timothy Williams</p>
-        <p class="position"></p>
-        <p class="start-year">Member since 2007</p>
-    </div>
-
     <h2>Our Steering Committee</h2>
-
-    <div>
-        <p class="name">Cindy Becker</p>
-        <p class="position">Parent</p>
+    <div class="steering-column">
+        <table class="table">
+            <tbody>
+                @for (int i = 0; i < Model.SteeringCommittee.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <p>@Model.SteeringCommittee[i].Name</p>
+                            <p>@Model.SteeringCommittee[i].Title</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
-
-    <div>
-        <p class="name">Doanh Chang</p>
-        <p class="position">Parent</p>
-    </div>
-
-    <div>
-        <p class="name">Linda Hyatt</p>
-        <p class="position">Parent</p>
-    </div>
-
-    <div>
-        <p class="name">Carolyn Jones</p>
-        <p class="position">Parent</p>
-    </div>
-
-    <div>
-        <p class="name">Francie Peltier</p>
-        <p class="position">Parent</p>
-    </div>
-
-    <div>
-        <p class="name">Michael Raymond</p>
-        <p class="position">Self Advocate</p>
-    </div>
-
-    <div>
-        <p class="name">Vikram Shah</p>
-        <p class="position">Parent</p>
-    </div>
-
-    <div>
-        <p class="name">Robert Wardell</p>
-        <p class="position">Self Advocate</p>
-    </div>
-</div>
