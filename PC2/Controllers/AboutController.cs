@@ -156,5 +156,23 @@ namespace PC2.Controllers
             await SteeringCommitteeDB.Create(_context, steeringCommittee);
             return RedirectToAction("IndexSteeringCommittee");
         }
+
+        /// <summary>
+        /// Gets a steering committee member by id
+        /// </summary>
+        /// <param name="id">The id of the steering committee member</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> EditSteeringCommittee(int id)
+        {
+            return View(await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditSteeringCommittee(SteeringCommittee steeringCommittee)
+        {
+            await SteeringCommitteeDB.EditSteeringCommittee(_context, steeringCommittee);
+            return RedirectToAction("IndexSteeringCommittee");
+        }
     }
 }

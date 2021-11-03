@@ -16,5 +16,18 @@ namespace PC2.Data
             context.SteeringCommittee.Add(steeringCommittee);
             await context.SaveChangesAsync();
         }
+
+        public static async Task<SteeringCommittee?> GetSteeringCommitteeMember(ApplicationDbContext context, int id)
+        {
+            return await (from s in context.SteeringCommittee
+                          where s.ID == id
+                          select s).FirstOrDefaultAsync();
+        }
+
+        public static async Task EditSteeringCommittee(ApplicationDbContext context, SteeringCommittee steeringCommittee)
+        {
+            context.Entry(steeringCommittee).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+        }
     }
 }
