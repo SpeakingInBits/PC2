@@ -12,8 +12,8 @@ using PC2.Data;
 namespace PC2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211103000409_SteeringCommittee")]
-    partial class SteeringCommittee
+    [Migration("20211103174049_AllowNullTitle")]
+    partial class AllowNullTitle
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -395,7 +395,6 @@ namespace PC2.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
