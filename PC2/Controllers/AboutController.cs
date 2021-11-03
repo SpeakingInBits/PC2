@@ -174,5 +174,25 @@ namespace PC2.Controllers
             await SteeringCommitteeDB.EditSteeringCommittee(_context, steeringCommittee);
             return RedirectToAction("IndexSteeringCommittee");
         }
+
+        /// <summary>
+        /// Deletes a steering committee member by id
+        /// </summary>
+        /// <param name="id">The id of the member</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> DeleteSteeringCommittee(int id)
+        {
+            return View(await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id));
+        }
+
+        [HttpPost]
+        [ActionName("DeleteSteeringCommittee")]
+        public async Task<IActionResult> ConfirmDeleteSteeringCommittee(int id)
+        {
+            SteeringCommittee steeringCommittee = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id);
+            await SteeringCommitteeDB.Delete(_context, steeringCommittee);
+            return RedirectToAction("IndexSteeringCommittee");
+        }
     }
 }

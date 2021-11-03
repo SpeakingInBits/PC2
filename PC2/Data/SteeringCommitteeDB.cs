@@ -29,5 +29,11 @@ namespace PC2.Data
             context.Entry(steeringCommittee).State = EntityState.Modified;
             await context.SaveChangesAsync();
         }
+
+        public static async Task Delete(ApplicationDbContext context, SteeringCommittee steeringCommittee)
+        {
+            context.Entry(steeringCommittee).State = EntityState.Deleted;
+            await context.SaveChangesAsync();
+        }
     }
 }
