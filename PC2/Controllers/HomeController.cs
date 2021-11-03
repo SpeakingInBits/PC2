@@ -24,9 +24,13 @@ namespace PC2.Controllers
             return View();
         }
 
-        public IActionResult About()
+        public async Task<IActionResult> About()
         {
-            return View();
+            AboutUsModel aboutUs = new AboutUsModel();
+            aboutUs.Staff = await StaffDB.GetAllStaff(_context);
+            aboutUs.Board = await BoardDB.GetAllBoardMembers(_context);
+            aboutUs.SteeringCommittee = await SteeringCommitteeDB.GetAllSteeringCommittee(_context);
+            return View(aboutUs);
         }
 
         public IActionResult Privacy()

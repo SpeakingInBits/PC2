@@ -15,5 +15,9 @@ namespace PC2.Data
         public virtual DbSet<AgencyCategory> AgencyCategory {  get; set; }
         public virtual DbSet<CalendarEvent> CalendarEvents {  get; set; }
         public virtual DbSet<CalendarDate> CalendarDates {  get; set; }
+        public virtual DbSet<Staff> StaffMembers { get; set; }
+        public virtual DbSet<Board> BoardMembers { get; set; }
+        public virtual DbSet<SteeringCommittee> SteeringCommittee { get; set; }
+        public virtual DbSet<People> People { get; set; }
     }
 }
