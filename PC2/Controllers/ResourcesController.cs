@@ -60,5 +60,10 @@ namespace PC2.Controllers
         {
             return View();
         }
+
+        public IActionResult AgeSpecificIssues()
+        {
+            return View();
+        }
     }
 }

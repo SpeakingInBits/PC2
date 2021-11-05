@@ -24,6 +24,7 @@
   <ItemGroup>
     <Folder Include="Data\Resources\" />
     <Folder Include="wwwroot\images\events\" />
+    <Folder Include="wwwroot\images\age-specific-issues\" />
     <Folder Include="wwwroot\images\news\" />
     <Folder Include="wwwroot\images\videos\" />
     <Folder Include="wwwroot\images\resource-index\" />
