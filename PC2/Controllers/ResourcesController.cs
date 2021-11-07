@@ -75,5 +75,10 @@ namespace PC2.Controllers
         {
             return View();
         }
+
+        public IActionResult VirtualCloset()
+        {
+            return View();
+        }
     }
 }

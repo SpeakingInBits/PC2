@@ -26,6 +26,7 @@
     <Folder Include="wwwroot\images\events\" />
     <Folder Include="wwwroot\images\age-specific-issues\" />
     <Folder Include="wwwroot\images\legislative-links\" />
+    <Folder Include="wwwroot\images\resource-closet\" />
     <Folder Include="wwwroot\images\resource-emergency\" />
     <Folder Include="wwwroot\images\news\" />
     <Folder Include="wwwroot\images\videos\" />
