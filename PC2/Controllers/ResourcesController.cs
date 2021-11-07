@@ -80,5 +80,10 @@ namespace PC2.Controllers
         {
             return View();
         }
+
+        public IActionResult FocusNewsletters()
+        {
+            return View();
+        }
     }
 }
