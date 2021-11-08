@@ -7,6 +7,10 @@ a.navbar-brand {
     word-break: break-all;
 }
 
+.name {
+    color: rgb(91,118,35) !important;
+}
+
 /*Overriding the color settings for login/logout*/
 .nav-link {
     color: white !important;

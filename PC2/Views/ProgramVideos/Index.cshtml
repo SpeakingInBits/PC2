@@ -1,0 +1,117 @@
+﻿@section head {
+    <style>
+        h1 {
+            text-align: center;
+            text-decoration: underline;
+        }
+        h2 {
+            text-align: center;
+        }
+        .player {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+}
+
+@{
+    ViewData["Title"] = "PROGRAM VIDEOS";
+}
+<div class="d-flex justify-content-center">
+    <img src="https://static.wixstatic.com/media/301cbf_0ce56fabe3744731a08b2e3be9026fe6~mv2.jpeg/v1/crop/x_0,y_0,w_1599,h_454/fill/w_977,h_279,al_c,q_80,usm_0.66_1.00_0.01/301cbf_0ce56fabe3744731a08b2e3be9026fe6~mv2.webp" width="977" height="279"/>
+</div>
+
+<div>
+    <h1>Fall, 2021 Legal Series</h1>
+</div>
+
+<div class="divider"></div>
+<div>
+    <div class="flex-column justify-content-center">
+        <h2>Estate Planning</h2>
+    </div>
+
+    <div class="player" id="player"></div>
+    <br />
+    <br />
+    <div class="flex-column justify-content-center">
+        <h2>Guardianships</h2>
+    </div>
+    <div class="player" id="player2"></div>
+    <br />
+    <br />
+    <div class="flex-column justify-content-center">
+        <h2>Special Needs Trusts &amp; Able Accounts</h2>
+    </div>
+    <div class="player" id="player3"></div>
+</div>
+    <script>
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 3. This function creates an <iframe> (and YouTube player)
+      //    after the API code downloads.
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: '390',
+          width: '640',
+          videoId: 'Ouvh3_l-4DA',
+          playerVars: {
+            'playsinline': 1
+          },
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+        player = new YT.Player('player2', {
+          height: '390',
+          width: '640',
+          videoId: 'b-L9KI5JNeM',
+          playerVars: {
+            'playsinline': 1
+          },
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+        player = new YT.Player('player3', {
+          height: '390',
+          width: '640',
+          videoId: '4N1FSMkCO1M',
+          playerVars: {
+            'playsinline': 1
+          },
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+
+      // 4. The API will call this function when the video player is ready.
+      function onPlayerReady(event) {
+        //event.target.playVideo();
+      }
+
+      // 5. The API calls this function when the player's state changes.
+      //    The function indicates that when playing a video (state=1),
+      //    the player should play for six seconds and then stop.
+      var done = false;
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+          //setTimeout(stopVideo, 6000);
+          done = true;
+        }
+      }
+      function stopVideo() {
+        player.stopVideo();
+      }
+    </script>

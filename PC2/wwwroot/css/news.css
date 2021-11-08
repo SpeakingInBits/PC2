@@ -1,0 +1,20 @@
+﻿body {
+}
+
+h1 {
+    text-align: center;
+}
+
+@media(min-width: 1131px) {
+    .content {
+        margin-left: 25%;
+        margin-right: 25%;
+    }
+}
+
+@media(max-width: 1130px) {
+    .content {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}

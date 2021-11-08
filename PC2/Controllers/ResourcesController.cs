@@ -55,5 +55,35 @@ namespace PC2.Controllers
             Agency agency = await AgencyDB.GetAgencyAsync(_context, id);
             return View(agency);
         }
+
+        public IActionResult ResourceLinks()
+        {
+            return View();
+        }
+
+        public IActionResult AgeSpecificIssues()
+        {
+            return View();
+        }
+
+        public IActionResult LegislativeLinksAndEvents()
+        {
+            return View();
+        }
+
+        public IActionResult EmergencyPreparedness()
+        {
+            return View();
+        }
+
+        public IActionResult VirtualCloset()
+        {
+            return View();
+        }
+
+        public IActionResult FocusNewsletters()
+        {
+            return View();
+        }
     }
 }

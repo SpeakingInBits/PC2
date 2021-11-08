@@ -2,9 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PC2Online</title>
+    <link rel="icon" type="image/x-icon" href="~/images/pc2_logo_icon.ico" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <style>
@@ -35,7 +36,7 @@
             </div>
             <div id="mainTitle">
                 <h1>
-                    <a asp-controller="Home" asp-action="Index">Pierce County Coalition for Developmental Disabilities (PC2)</a>
+                    <a class="name" asp-controller="Home" asp-action="Index">Pierce County Coalition for Developmental Disabilities (PC2)</a>
                 </h1>
             </div>
         </div>
@@ -105,6 +106,9 @@
                             <li id="Home-Index" class="nav-item menu-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
                         </li>
+                        <li class="nav-item menu-item">
+                            <a class="nav-link" asp-controller="ProgramVideos" asp-action="Index">PROGRAM VIDEOS</a>
+                        </li>
                         <li id="NewsToKnow-Index" class="nav-item menu-item">
                             <a class="nav-link" asp-area="" asp-controller="NewsToKnow" asp-action="Index">NEWS TO KNOW</a>
                         </li>
@@ -139,6 +143,7 @@
                                         RESOURCES
                                         </p>
                                         <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink">
+                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="Index">Resources</a></li>
                                             <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a></li>
                                             <li><a class="dropdown-item" asp-controller="Resources" asp-action="FocusNewsletters">Focus News Letters</a></li>
                                             <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a></li>
