@@ -36,19 +36,12 @@ async Task AddCategoriesToAgency(ExcelWorksheet worksheet)
             List<int> currentCategoryID = new List<int>();
             for (int col = Constants.CategoryStart; col <= Constants.CategoryEnd; col++)
             {
-                try
+                if (worksheet.Cells[row, col].Value?.ToString() == "x")
                 {
-                    if (worksheet.Cells[row, col].Value == "x")
-                    {
-                        AgencyAgencyCategory agencyCategory = new AgencyAgencyCategory();
-                        agencyCategory.AgenciesAgencyId = agencies[row - 2].AgencyId;
-                        agencyCategory.AgencyCategoriesAgencyCategoryId = (col - Constants.CategoryStart + 1);
-                        await AgencyDB.UpdateRelationships(agencyCategory);
-                    }
-                }
-                catch (NullReferenceException)
-                {
-                    continue;
+                    AgencyAgencyCategory agencyCategory = new AgencyAgencyCategory();
+                    agencyCategory.AgenciesAgencyId = agencies[row - 2].AgencyId;
+                    agencyCategory.AgencyCategoriesAgencyCategoryId = (col - Constants.CategoryStart + 1);
+                    await AgencyDB.UpdateRelationships(agencyCategory);
                 }
             }
         }
@@ -78,174 +71,167 @@ async Task CreateAgencies(ExcelWorksheet worksheet)
         Agency agency = new Agency();
         for (int col = 1; col < Constants.CategoryStart; col++)
         {
-            try
+            switch (col)
             {
-                switch (col)
-                {
-                    case 1:
-                        agency.AgencyName = worksheet.Cells[row, col].Value.ToString();
-                        break;
-                    case 2:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.AgencyName2 = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 3:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Contact = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 4:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Address1 = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 5:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Address2 = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 6:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.City = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 7:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.State = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 8:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Zip = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 9:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.MailingAddress = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 10:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Phone = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 11:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Phone += " " + worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 12:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Phone += " " + worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 13:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Phone += " " + worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 14:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.TollFree = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 15:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.TollFree += " " + worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 16:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Tty = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 17:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Tty += " " + worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 18:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Tdd = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 19:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.CrisisHelpHotline = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 20:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Fax = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 21:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Fax += " " + worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 22:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Email = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 23:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Email += " " + worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 24:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Email += " " + worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 25:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Website = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 26:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Website += " " + worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                    case 27:
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            agency.Description = worksheet.Cells[row, col].Value.ToString();
-                        }
-                        break;
-                }
-            }
-            catch (NullReferenceException)
-            {
-                continue;
+                case 1:
+                    agency.AgencyName = worksheet.Cells[row, col].Value.ToString();
+                    break;
+                case 2:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.AgencyName2 = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 3:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Contact = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 4:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Address1 = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 5:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Address2 = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 6:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.City = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 7:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.State = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 8:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Zip = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 9:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.MailingAddress = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 10:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Phone = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 11:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Phone += " " + worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 12:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Phone += " " + worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 13:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Phone += " " + worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 14:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.TollFree = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 15:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.TollFree += " " + worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 16:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Tty = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 17:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Tty += " " + worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 18:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Tdd = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 19:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.CrisisHelpHotline = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 20:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Fax = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 21:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Fax += " " + worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 22:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Email = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 23:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Email += " " + worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 24:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Email += " " + worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 25:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Website = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 26:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Website += " " + worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
+                case 27:
+                    if (worksheet.Cells[row, col].Value != null)
+                    {
+                        agency.Description = worksheet.Cells[row, col].Value.ToString();
+                    }
+                    break;
             }
         }
         await AgencyDB.AddAgencyAsync(agency);
