@@ -9,6 +9,11 @@ a.navbar-brand {
 
 .name {
     color: rgb(91,118,35) !important;
+    text-decoration: none;
+}
+
+.name:hover {
+    text-decoration: none;
 }
 
 /*Overriding the color settings for login/logout*/
