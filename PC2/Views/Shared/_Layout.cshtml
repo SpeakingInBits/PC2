@@ -23,6 +23,15 @@
         #@currController-@currAction {
             background-color: rgb(136, 178, 53) !important;
         }
+
+        /*Prevents floated elements from overflowing ---------------------------------------------*/
+        #content::after {
+            display: block;
+            height: 0;
+            width: 100%;
+            content: "";
+            clear: both;
+        }
     </style>
     @await RenderSectionAsync("Head", false)
 </head>
@@ -185,9 +194,11 @@
         </nav>
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+        <div id="content">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
     </div>
 
     <footer class="footer">
