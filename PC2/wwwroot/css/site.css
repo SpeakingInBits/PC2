@@ -435,6 +435,18 @@ nav a {
     .footer-column {
         flex-direction: column;
     }
+
+    /*Turns two column list into one*/
+    .left-column, .right-column {
+        width: 100%;
+        padding-left: 25px;
+        padding-right: 0;
+        margin-bottom: 0;
+    }
+
+    .left-column ul {
+        margin-bottom: 0;
+    }
 }
 
 main {
@@ -448,6 +460,7 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
     font-size: 1.5em;
+    text-align: center;
 }
 
 h2 {
@@ -514,5 +527,24 @@ main p {
 }
 
 
-/*global CSS for pages*/
+.left-column {
+    padding-left: 25px;
+    padding-right: 30px;
+}
 
+.right-column {
+    padding-left: 55px;
+}
+
+.left-column, .right-column {
+    width: 50%;
+    float: left;
+}
+
+.left-column ul, .right-column ul {
+    padding: 0;
+}
+
+li {
+    padding-bottom: 1em;
+}
