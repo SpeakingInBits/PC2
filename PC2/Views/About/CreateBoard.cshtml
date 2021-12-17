@@ -27,6 +27,15 @@
                 <span asp-validation-for="MembershipStart" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="PriorityOrder" class="control-label">Sort Priority</label>
+                <select asp-for="PriorityOrder" class="form-control">
+                    <option value="1">Board Chair</option>
+                    <option value="5">Treasurer</option>
+                    <option value="10">Other</option>
+                </select>
+                <span asp-validation-for="PriorityOrder" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
