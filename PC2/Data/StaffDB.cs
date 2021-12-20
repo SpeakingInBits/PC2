@@ -11,9 +11,14 @@ namespace PC2.Data
             await context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Returns a list of staff sorted by <seealso cref="People.PriorityOrder"/>
+        /// Matching priority levels are then sorted A - Z
+        /// </summary>
         public static async Task<List<Staff>> GetAllStaff(ApplicationDbContext context)
         {
             return await (from s in context.StaffMembers
+                          orderby s.PriorityOrder ascending, s.Name ascending
                           select s).ToListAsync();
         }
 

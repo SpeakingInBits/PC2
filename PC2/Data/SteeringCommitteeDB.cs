@@ -5,9 +5,14 @@ namespace PC2.Data
 {
     public static class SteeringCommitteeDB
     {
+        /// <summary>
+        /// Returns a list of committee members sorted by <seealso cref="People.PriorityOrder"/>
+        /// Matching priority levels are then sorted A - Z
+        /// </summary>
         public static async Task<List<SteeringCommittee>> GetAllSteeringCommittee(ApplicationDbContext context)
         {
             return await (from s in context.SteeringCommittee
+                          orderby s.PriorityOrder ascending, s.Name ascending
                           select s).ToListAsync();
         }
 

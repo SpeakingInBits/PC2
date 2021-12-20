@@ -5,9 +5,14 @@ namespace PC2.Data
 {
     public static class BoardDB
     {
+        /// <summary>
+        /// Returns a list of board members sorted by <seealso cref="People.PriorityOrder"/>
+        /// Matching priority levels are then sorted A - Z
+        /// </summary>
         public static async Task<List<Board>> GetAllBoardMembers(ApplicationDbContext context)
         {
             return await (from b in context.BoardMembers
+                          orderby b.PriorityOrder ascending, b.Name ascending
                           select b).ToListAsync();
         }
 
