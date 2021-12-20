@@ -1,17 +1,5 @@
 ﻿@section Head {
-    <style>
-    .resource-links > a {
-        text-align: center;
-        font-weight: bold;
-        color: black !Important;
-    }
-
-    .resource-links, .main-header {
-        text-align: center;
-    }
-</style>
 }
-
 
 @{
     ViewData["Title"] = "Index";
@@ -27,32 +15,24 @@
     </div>
 </div>
 <br />
-<h1 class="main-header">RESOURCES</h1>
+<h1>RESOURCES</h1>
 
 <div class="divider"></div>
-
-<div class="resource-links">
-    <br />
-    <a asp-controller="Resources" asp-action="ResourceGuide">Click here to access our Pierce County Resource Guide.</a>
-    <br />
-    <br />
-    <a asp-controller="Resources" asp-action="FocusNewsletters">Click here to access our PC2 Focus Newsletters.</a>
-    <br />
-    <br />
-    <a asp-controller="Resources" asp-action="DisabilityAwareness">Click here to access our Disability Awareness Info Sheets.</a>
-    <br />
-    <br />
-    <a asp-controller="Resources" asp-action="ResourceLinks">Click here to acces Resource Links.</a>
-    <br />
-    <br />
-    <a asp-controller="Resources" asp-action="AgeSpecificIssues">Click here to access Age-Specific Issue Links.</a>
-    <br />
-    <br />
-    <a asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Click here to access Legislative Advocacy Links.</a>
-    <br />
-    <br />
-    <a asp-controller="Resources" asp-action="EmergencyPreparedness">Click here to access Emergency Preparedness.</a>
-    <br />
-    <br />
-    <a asp-controller="Resources" asp-action="VirtualCloset">Click here to access information about PC2's Virtual Closet.</a>
+<div class="row justify-content-center">
+    <div class="col-4">
+        <ul> 
+            <li><a asp-controller="Resources" asp-action="ResourceGuide">Click here</a> to access our Pierce County Resource Guide.</li>
+            <li><a asp-controller="Resources" asp-action="FocusNewsletters">Click here</a> to access our PC2 Focus Newsletters.</li>
+            <li><a asp-controller="Resources" asp-action="DisabilityAwareness">Click here</a> to access our Disability Awareness Info Sheets.</li>
+            <li><a asp-controller="Resources" asp-action="ResourceLinks">Click here</a> to acces Resource Links.</li>
+        </ul>
+    </div>
+    <div class="col-4">
+        <ul>
+            <li><a asp-controller="Resources" asp-action="AgeSpecificIssues">Click here</a> to access Age-Specific Issue Links.</li>
+            <li><a asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Click here</a> to access Legislative Advocacy Links.</li>
+            <li><a asp-controller="Resources" asp-action="EmergencyPreparedness">Click here</a> to access Emergency Preparedness.</li>
+            <li><a asp-controller="Resources" asp-action="VirtualCloset">Click here</a> to access information about PC2's Virtual Closet.</li>
+        </ul>
+    </div>
 </div>
