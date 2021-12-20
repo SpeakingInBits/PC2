@@ -23,6 +23,15 @@
         #@currController-@currAction {
             background-color: rgb(136, 178, 53) !important;
         }
+
+        /*Prevents floated elements from overflowing ---------------------------------------------*/
+        #content::after {
+            display: block;
+            height: 0;
+            width: 100%;
+            content: "";
+            clear: both;
+        }
     </style>
     @await RenderSectionAsync("Head", false)
 </head>
@@ -151,7 +160,6 @@
                                             <li><a class="dropdown-item" asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Legislative Links &amp; Events</a></li>
                                             <li><a class="dropdown-item" asp-controller="Resources" asp-action="EmergencyPreparedness">Emergency Preparedness</a></li>
                                             <li><a class="dropdown-item" asp-controller="Resources" asp-action="VirtualCloset">Virtual Closet</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -185,9 +193,11 @@
         </nav>
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+        <div id="content">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
     </div>
 
     <footer class="footer">
