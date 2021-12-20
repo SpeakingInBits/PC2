@@ -33,6 +33,11 @@ namespace PC2.Controllers
             return View(aboutUs);
         }
 
+        public IActionResult HousingProgram()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
