@@ -1,1 +1,45 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<br />
+<h1>Contact Us</h1>
+
+<div class="divider"></div>
+
+<div>
+    <div class="row justify-content-center">
+        <div class="col-2">
+            <h6>PC2</h6>
+            <p>3716 Pacific Avenue</p>
+            <p>Suite A</p>
+            <p>Tacoma, WA  98418</p>
+            <br />
+            <p>info@pc2online.org</p>
+            <p>253.564.0707</p>
+            <p>877-DD-LINKS</p>
+            <p>253.564.0702 (fax)</p>
+        </div>
+
+        <div class="col-6">
+        <form>
+            <div class="row">
+                <div class="col">
+                    <input type="Text" class="form-control" id="inputName" placeholder="Name">
+                    <br />
+                    <input type="Email" class="form-control" id="inputEmail" placeholder="Email">
+                    <br />
+                    <input type="number" class="form-control" id="inputPhone" placeholder="Phone">
+                    <br />
+                    <input type="Text" class="form-control" id="inputSubJect" placeholder="Subject">
+                </div>
+                <div class="col">
+                    <textarea class="form-control" id="inputMessage" placeholder="Message" rows="6"></textarea>
+                    <br />
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </div>
+            </div> 
+        </form>
+        </div>
+    </div>
+</div>
