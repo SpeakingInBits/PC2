@@ -69,54 +69,78 @@
     <br />
 </div>
 
-<div class="form-group">
+<div class="divider"></div>
+<h1>SEARCH FOR A RESOURCE</h1>
+<div class="divider"></div>
+<br />
     <form id="submit" asp-action="ResourceGuide" method="post">
-        <label for="list-of-agencies">Choose an agency from the list:</label>
-        <input list="list-of-agencies" name="list-of-agencies" id="list-of-agency">
-        <datalist id="list-of-agencies">
-            @for (int i = 0; i < Model.AgenciesForDataList.Count; i++)
-            {
-                <option class="agencyName" value="@Model.AgenciesForDataList[i].AgencyName" />
-            }
-        </datalist>
-        <input type="submit" class="agency-submit" id="agency-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyName="agency-name">
+        <div class="form-group row d-flex justify-content-center">
+            <div class="col-md-4">
+                <label for="list-of-agencies">Choose an agency from the list:</label>
+            </div>
+            <div class="col-md-4">
+                <input list="list-of-agencies" name="list-of-agencies" id="list-of-agency" class="form-control">
+                <datalist id="list-of-agencies">
+                    @for (int i = 0; i < Model.AgenciesForDataList.Count; i++)
+                    {
+                        <option class="agencyName" value="@Model.AgenciesForDataList[i].AgencyName" />
+                    }
+                </datalist>
+            </div>
+            <div class="col-md-2">
+                <input type="submit" class="agency-submit btn btn-primary " id="agency-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyName="agency-name">
+            </div>
+        </div>   
     </form>
-</div>
 
-<div class="form-group">
+    <br />
     <form id="submit" asp-action="ResourceGuide" method="post">
-        <label for="list-of-services">Choose an agency service from the list:</label>
-        <input list="list-of-services" name="list-of-services" id="list-of-service">
-        <datalist id="list-of-services">
-            @for (int i = 0; i < Model.AgencyCategories.Count; i++)
-            {
-                <option class="agencyName" value="@Model.AgencyCategories[i].AgencyCategoryName" />
-            }
-        </datalist>
-        <input type="submit" class="category-submit" id="category-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyCategory="agency-category">
+        <div class="form-group row d-flex justify-content-center">
+            <div class="col-md-4">
+                <label for="list-of-services">Choose an agency service from the list:</label>
+            </div>
+            <div class="col-md-4">
+                <input list="list-of-services" name="list-of-services" id="list-of-service" class="form-control">
+                <datalist id="list-of-services">
+                    @for (int i = 0; i < Model.AgencyCategories.Count; i++)
+                    {
+                        <option class="agencyName" value="@Model.AgencyCategories[i].AgencyCategoryName" />
+                    }
+                </datalist>
+            </div>
+            <div class="col-md-2">
+                <input type="submit" class="category-submit btn btn-primary" id="category-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyCategory="agency-category">
+            </div>
+        </div>
     </form>
-</div>
 
-<div class="form-group">
+    <br />
     <form id="submit" asp-action="ResourceGuide" method="post">
-        <label for="list-of-zipcodes">Search for an agency by zip code:</label>
-        <input list="list-of-zipcodes" name="list-of-zipcodes" id="list-of-zipcode">
-        <datalist id="list-of-zipcodes">
-            @for (int i = 0; i < Model.ZipCode.Count; i++)
-            {
-                <option class="zipcode" value="@Model.ZipCode[i]" />
-            }
-        </datalist>
-        <input type="submit" class="zip-submit" id="zip-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-zipCode="zip-code">
+        <div class="form-group row d-flex justify-content-center">
+            <div class="col-md-4">
+                <label for="list-of-zipcodes">Search for an agency by zip code:</label>
+            </div>
+            <div class="col-md-4">
+                <input list="list-of-zipcodes" name="list-of-zipcodes" id="list-of-zipcode" class="form-control">
+                <datalist id="list-of-zipcodes">
+                    @for (int i = 0; i < Model.ZipCode.Count; i++)
+                    {
+                        <option class="zipcode" value="@Model.ZipCode[i]" />
+                    }
+                </datalist>
+            </div>
+            <div class="col-md-2">
+                <input type="submit" class="zip-submit btn btn-primary" id="zip-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-zipCode="zip-code">
+            </div>
+        </div>    
     </form>
-</div>
 
 <br />
 
 @if (Model.Agencies.Count == 0)
 {
     <div class="left-column">
-        <table class="table">
+        <table class="table table-striped">
             <tbody>
 
                 @for (int i = 0; i < Model.AgencyCategories.Count() / 2; i++)
@@ -134,7 +158,7 @@
     </div>
 
     <div class="right-column">
-        <table class="table">
+        <table class="table table-striped">
             <tbody>
 
                 @for (int i = Model.AgencyCategories.Count() / 2; i < Model.AgencyCategories.Count(); i++)
@@ -154,7 +178,7 @@
 else
 {
     <div>
-        <table class="table">
+        <table class="table table-striped">
             @if (Model.Category != null)
             {
                 <thead>
