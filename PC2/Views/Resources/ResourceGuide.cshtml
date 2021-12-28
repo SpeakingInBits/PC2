@@ -88,9 +88,9 @@
                 </datalist>
             </div>
             <div class="col-md-2">
-                <input type="submit" class="agency-submit btn btn-primary " id="agency-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyName="agency-name">
+                <input type="submit" class="agency-submit btn btn-secondary " id="agency-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyName="agency-name">
             </div>
-        </div>   
+        </div>
     </form>
 
     <br />
@@ -109,7 +109,7 @@
                 </datalist>
             </div>
             <div class="col-md-2">
-                <input type="submit" class="category-submit btn btn-primary" id="category-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyCategory="agency-category">
+                <input type="submit" class="category-submit btn btn-secondary" id="category-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyCategory="agency-category">
             </div>
         </div>
     </form>
@@ -130,7 +130,7 @@
                 </datalist>
             </div>
             <div class="col-md-2">
-                <input type="submit" class="zip-submit btn btn-primary" id="zip-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-zipCode="zip-code">
+                <input type="submit" class="zip-submit btn btn-secondary" id="zip-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-zipCode="zip-code">
             </div>
         </div>    
     </form>
@@ -140,7 +140,7 @@
 @if (Model.Agencies.Count == 0)
 {
     <div class="left-column">
-        <table class="table table-striped">
+        <table class="table table-striped table-hover">
             <tbody>
 
                 @for (int i = 0; i < Model.AgencyCategories.Count() / 2; i++)
@@ -158,7 +158,7 @@
     </div>
 
     <div class="right-column">
-        <table class="table table-striped">
+        <table class="table table-striped table-hover">
             <tbody>
 
                 @for (int i = Model.AgencyCategories.Count() / 2; i < Model.AgencyCategories.Count(); i++)
@@ -178,7 +178,7 @@
 else
 {
     <div>
-        <table class="table table-striped">
+        <table class="table table-striped table-hover">
             @if (Model.Category != null)
             {
                 <thead>
