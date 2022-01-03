@@ -214,11 +214,11 @@ else
                     }
                     @if (Model.Agencies[i].Phone != null)
                     {
-                        <td>@Model.Agencies[i].Phone</td>
+                        <td><a href="tel: +@Model.Agencies[i].Phone">@Model.Agencies[i].Phone</a></td>
                     }
                     else
                     {
-                        <td>@Model.Agencies[i].Email</td>
+                        <td><a href="mailto: @Model.Agencies[i].Email">@Model.Agencies[i].Email</a></td>
                     }
                     <td><a type="button" asp-controller="Resources" asp-action="Details" asp-route-id="@Model.Agencies[i].AgencyId" value="Details">Details</a></td>
                 </tr>
