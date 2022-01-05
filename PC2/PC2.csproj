@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="compilerconfig.json" />
     <Content Remove="Views\Home\ConfirmImportExcel.cshtml" />
   </ItemGroup>
 
@@ -38,6 +39,10 @@
     <Folder Include="wwwroot\images\resource\" />
     <Folder Include="wwwroot\PDF\legislative-links\" />
     <Folder Include="wwwroot\PDF\focus-newsletters\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
