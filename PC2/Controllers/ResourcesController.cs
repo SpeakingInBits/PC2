@@ -38,7 +38,7 @@ namespace PC2.Controllers
             }
             if (city != null)
             {
-                resourceGuide.CurrentZip = city;
+                resourceGuide.CurrentCity = city;
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, city);
             }
 

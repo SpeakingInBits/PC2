@@ -9,6 +9,6 @@
         public AgencyCategory? Category {  get; set; }
         public string? AgencyCategoryName {  get; set; }
         public int YPos { get; set; } = 0;
-        public string? CurrentZip {  get; set; }
+        public string? CurrentCity {  get; set; }
     }
 }
