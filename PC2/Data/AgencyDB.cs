@@ -73,10 +73,10 @@ namespace PC2.Data
             return result;
         }
 
-        public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, string zipCode)
+        public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, string city)
         {
             return await (from a in context.Agency
-                          where a.Zip !=  null && a.Zip == zipCode
+                          where a.City !=  null && a.City == city
                           select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
         }
 
