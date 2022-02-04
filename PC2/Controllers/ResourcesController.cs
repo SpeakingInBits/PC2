@@ -19,7 +19,7 @@ namespace PC2.Controllers
         }
 
         public async Task<IActionResult> ResourceGuide(int categoryID, int yPosition, string? agencyName, string? agencyCategory, 
-            string? zipCode)
+            string? city)
         {
             ResourceGuideModel resourceGuide = new ResourceGuideModel();
             if (categoryID != 0)
@@ -36,10 +36,10 @@ namespace PC2.Controllers
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, agencyCategory);
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
             }
-            if (zipCode != null)
+            if (city != null)
             {
-                resourceGuide.CurrentZip = zipCode;
-                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, zipCode);
+                resourceGuide.CurrentZip = city;
+                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, city);
             }
 
             resourceGuide.AgencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
