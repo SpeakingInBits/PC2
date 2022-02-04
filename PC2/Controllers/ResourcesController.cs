@@ -45,7 +45,7 @@ namespace PC2.Controllers
             resourceGuide.AgencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
             resourceGuide.AgenciesForDataList = await AgencyDB.GetDistinctAgenciesAsync(_context);
             resourceGuide.YPos = yPosition;
-            resourceGuide.ZipCode = await AgencyDB.GetAllZipCode(_context);
+            resourceGuide.ZipCode = await AgencyDB.GetAllCities(_context);
 
             return View(resourceGuide);
         }

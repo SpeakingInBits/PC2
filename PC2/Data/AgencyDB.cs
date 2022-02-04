@@ -135,15 +135,15 @@ namespace PC2.Data
                           select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
         }
 
-        public static async Task<List<string>> GetAllZipCode(ApplicationDbContext context)
+        public static async Task<List<string>> GetAllCities(ApplicationDbContext context)
         {
             List<Agency> list = await (from a in context.Agency
-                                       where a.Zip != null
+                                       where a.City != null
                                        select a).ToListAsync();
             List<string> result = new List<string>();
             for (int i = 0; i < list.Count; i++)
             {
-                result.Add(list[i].Zip);
+                result.Add(list[i].City);
             }
             result = result.OrderBy(a => a).Distinct().ToList();
             return result;
