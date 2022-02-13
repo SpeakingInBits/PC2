@@ -18,33 +18,27 @@ namespace PC2.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ResourceGuide(int categoryID, int yPosition, string? agencyName, string? agencyCategory, 
-            string? city)
+        public async Task<IActionResult> ResourceGuide(ResourceGuideModel searchModel)
         {
             ResourceGuideModel resourceGuide = new ResourceGuideModel();
-            if (categoryID != 0)
+            if (searchModel.SearchedAgency != null)
             {
-                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, categoryID);
-                resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
+                resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, searchModel.SearchedAgency);
             }
-            if (agencyName != null)
+            if (searchModel.SearchedService != null)
             {
-                resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, agencyName);
-            }
-            if (agencyCategory != null)
-            {
-                resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, agencyCategory);
+                resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedService);
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
             }
-            if (city != null)
+            if (searchModel.SearchedCity != null)
             {
-                resourceGuide.CurrentCity = city;
-                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, city);
+                resourceGuide.CurrentCity = searchModel.SearchedCity;
+                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
             }
 
             resourceGuide.AgencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
             resourceGuide.AgenciesForDataList = await AgencyDB.GetDistinctAgenciesAsync(_context);
-            resourceGuide.YPos = yPosition;
+            resourceGuide.YPos = searchModel.YPos;
             resourceGuide.City = await AgencyDB.GetAllCities(_context);
 
             return View(resourceGuide);
