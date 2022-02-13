@@ -118,19 +118,19 @@
     <form id="submit" asp-action="ResourceGuide" method="post">
         <div class="form-group row d-flex justify-content-center">
             <div class="col-md-4">
-                <label for="list-of-zipcodes">Search for an agency by zip code:</label>
+                <label for="list-of-cities">Search for an agency by city:</label>
             </div>
             <div class="col-md-4">
-                <input list="list-of-zipcodes" name="list-of-zipcodes" id="list-of-zipcode" class="form-control">
-                <datalist id="list-of-zipcodes">
+                <input list="list-of-cities" name="list-of-cities" id="list-of-city" class="form-control">
+                <datalist id="list-of-cities">
                     @for (int i = 0; i < Model.City.Count; i++)
                     {
-                        <option class="zipcode" value="@Model.City[i]" />
+                        <option class="city" value="@Model.City[i]" />
                     }
                 </datalist>
             </div>
             <div class="col-md-2">
-                <input type="submit" class="zip-submit btn btn-primary" id="zip-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-zipCode="zip-code">
+                <input type="submit" class="city-submit btn btn-primary" id="city-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-city="city-name">
             </div>
         </div>    
     </form>
