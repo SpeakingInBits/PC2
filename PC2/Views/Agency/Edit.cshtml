@@ -1,12 +1,12 @@
 ﻿@model PC2.Models.Agency
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Agency";
     List<AgencyCategory> agencyCategories = (List<AgencyCategory>)ViewData["ExistingServices"];
     List<AgencyCategory> newAgencyCategories = (List<AgencyCategory>)ViewData["Categories"];
 }
 
-<h1>Edit</h1>
+<h1>Edit @Model.AgencyName</h1>
 
 <h4>Agency</h4>
 <hr />
