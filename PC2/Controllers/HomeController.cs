@@ -15,11 +15,11 @@ namespace PC2.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IEmailSender _emailSender; 
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IEmailSender emailSender)
         {
             _logger = logger;
             _context = context;
-            _emailSender = _emailSender;
+            _emailSender = emailSender;
         }
 
         public IActionResult Index()
