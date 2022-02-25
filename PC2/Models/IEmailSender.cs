@@ -15,7 +15,7 @@ namespace IdentityLogin.Models
         {
             _config = config;
         }
-        public async Task SendEmailAsync(string Name, string Email, string Phone, string Subject, string Message) // something coming in null
+        public async Task SendEmailAsync(string Name, string Email, string Phone, string Subject, string Message)
         {
             var apiKey = _config.GetSection("PC2SENDGRIDAPIKEY").Value;
             var PC2Email = _config.GetSection("PC2EMAIL").Value;
