@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IdentityLogin.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CSharp.RuntimeBinder;
 using OfficeOpenXml;
@@ -12,11 +13,13 @@ namespace PC2.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly IEmailSender _emailSender; 
 
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
+            _emailSender = _emailSender;
         }
 
         public IActionResult Index()
@@ -45,6 +48,15 @@ namespace PC2.Controllers
 
         public IActionResult ContactPage()
         {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ContactPage(ContactPageModel contactPageModel)
+        {
+            if (ModelState.IsValid)
+            {
+                await _emailSender.SendEmailAsync(contactPageModel.Name, contactPageModel.Email, contactPageModel.Phone, contactPageModel.Subject, contactPageModel.Message);
+            }
             return View();
         }
 

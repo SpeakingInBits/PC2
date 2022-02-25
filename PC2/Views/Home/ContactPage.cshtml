@@ -1,4 +1,5 @@
-﻿@{
+﻿@model ContactPageModel
+@{
     ViewData["Title"] = "Contact Us";
 }
 
@@ -22,20 +23,34 @@
         </div>
 
         <div class="col-7">
-        <form>
+        <form asp-action="ContactPage" method="post">
             <div class="row">
                 <div class="col">
-                    <input type="Text" class="form-control" id="inputName" placeholder="Name">
+                    <div class="form-group">
+                        <input asp-for="Name" class="form-control" placeholder="Name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
                     <br />
-                    <input type="Email" class="form-control" id="inputEmail" placeholder="Email">
+                    <div class="form-group">
+                        <input asp-for="Email" class="form-control" placeholder="Email"/>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
                     <br />
-                    <input type="number" class="form-control" id="inputPhone" placeholder="Phone">
+                    <div class="form-group">
+                        <input asp-for="Phone" class="form-control" placeholder="Phone"/>
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
                     <br />
-                    <input type="Text" class="form-control" id="inputSubJect" placeholder="Subject">
+                    <div class="mb-3">
+                        <input asp-for="Subject" class="form-control" placeholder="Subject"/>
+                        <span asp-validation-for="Subject" class="text-danger"></span>
+                    </div>
                 </div>
                 <div class="col">
-                    <textarea class="form-control" id="inputMessage" placeholder="Message" rows="6"></textarea>
-                    <br />
+                    <div class="mb-3">
+                        <textarea asp-for="Message" class="form-control" rows="6" placeholder="Message"></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <button type="submit" class="btn btn-primary me-md-2">Send</button>
                     </div>
