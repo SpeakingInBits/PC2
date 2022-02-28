@@ -31,7 +31,6 @@ namespace IdentityLogin.Models
             };
             msg.AddTo(new EmailAddress(PC2Email, "PC2 Team"));
             var response = await client.SendEmailAsync(msg);
-
         }
     }
 }
