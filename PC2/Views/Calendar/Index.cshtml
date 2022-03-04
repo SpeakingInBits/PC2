@@ -1,6 +1,6 @@
 ﻿@model PC2.Models.EventsModel
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Event Calendar";
 }
 
 <style>
@@ -39,7 +39,7 @@
     }
 </style>
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
 @if (TempData["UpdateFailed"] != null)
 {
