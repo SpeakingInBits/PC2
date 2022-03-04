@@ -1,3 +1,4 @@
+using IdentityLogin.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
@@ -14,6 +15,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOpti
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+// email provider
+builder.Services.AddTransient<IEmailSender, EmailSenderSendGrid>();
 
 var app = builder.Build();
 
