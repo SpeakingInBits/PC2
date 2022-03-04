@@ -11,7 +11,7 @@
         public int YPos { get; set; } = 0;
         public string? CurrentCity {  get; set; }
         public string? SearchedAgency { get; set; }
-        public string? SearchedService { get; set; }
+        public string? SearchedCategory { get; set; }
         public string? SearchedCity { get; set; }
     }
 }
