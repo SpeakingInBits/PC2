@@ -25,12 +25,18 @@ namespace PC2.Controllers
             {
                 resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, searchModel.SearchedAgency);
             }
-            if (searchModel.SearchedCategory != null)
+            else if (searchModel.SearchedCategory != null
+                && searchModel.SearchedCity != null)
+            {
+                resourceGuide.Agencies = await AgencyDB.GetAgenciesByCategoryAndCity(_context,
+                    searchModel.SearchedCategory, searchModel.SearchedCity);
+            }
+            else if (searchModel.SearchedCategory != null)
             {
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
             }
-            if (searchModel.SearchedCity != null)
+            else if (searchModel.SearchedCity != null)
             {
                 resourceGuide.CurrentCity = searchModel.SearchedCity;
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
