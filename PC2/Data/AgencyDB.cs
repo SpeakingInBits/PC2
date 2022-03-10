@@ -80,6 +80,26 @@ namespace PC2.Data
                           select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
         }
 
+        /// <summary>
+        /// Gets a list of every agency with a matching category and city
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="categoryName">The category to search for</param>
+        /// <param name="city">The city to search for</param>
+        public static async Task<List<Agency>> GetAgenciesByCategoryAndCity(ApplicationDbContext context,
+            string categoryName, string city)
+        {
+            IQueryable<Agency> agencyResults = context.Agency
+                .Include(nameof(Agency.AgencyCategories))
+                .Where(agency => agency.City == city);
+
+            return await agencyResults
+                .Where(agency => agency.AgencyCategories
+                .Where(cat => cat.AgencyCategoryName == categoryName)
+                .Any())
+                .ToListAsync();
+        }
+
         public static async Task<Agency?> GetAgencyAsync(ApplicationDbContext context, int id)
         {
             return await (from a in context.Agency
