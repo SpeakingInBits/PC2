@@ -18,6 +18,24 @@ namespace PC2.Controllers
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ResourceGuide(int categoryID)
+        {
+            ResourceGuideModel resourceGuide = new ResourceGuideModel();
+            if (categoryID != 0)
+            {
+                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, categoryID);
+                resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
+            }
+
+            resourceGuide.AgencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
+            resourceGuide.AgenciesForDataList = await AgencyDB.GetDistinctAgenciesAsync(_context);
+            resourceGuide.City = await AgencyDB.GetAllCities(_context);
+
+            return View(resourceGuide);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> ResourceGuide(ResourceGuideModel searchModel)
         {
             ResourceGuideModel resourceGuide = new ResourceGuideModel();
