@@ -18,6 +18,10 @@ namespace PC2.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Searches for agencies with the category the user selected from the table of categories.
+        /// </summary>
+        /// <param name="categoryID">The categoryID of the user's selection.</param>
         [HttpGet]
         public async Task<IActionResult> ResourceGuide(int categoryID)
         {
@@ -33,6 +37,10 @@ namespace PC2.Controllers
             return View(resourceGuide);
         }
 
+        /// <summary>
+        /// Searches for agencies that match the criteria the user searched for.
+        /// </summary>
+        /// <param name="searchModel">A model containing what the user searched for.</param>
         [HttpPost]
         public async Task<IActionResult> ResourceGuide(ResourceGuideModel searchModel)
         {
