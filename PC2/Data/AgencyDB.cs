@@ -169,6 +169,20 @@ namespace PC2.Data
             return result;
         }
 
+        /// <summary>
+        /// Helper method to get the data that populates the datalists
+        /// in the resource guide.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="resourceGuide">The model to store the lists in.</param>
+        public static async Task GetDataForDataLists(ApplicationDbContext context,
+            ResourceGuideModel resourceGuide)
+        {
+            resourceGuide.AgencyCategoriesForDataList = await AgencyCategoryDB.GetAgencyCategoriesAsync(context);
+            resourceGuide.AgenciesForDataList = await GetDistinctAgenciesAsync(context);
+            resourceGuide.CitiesForDataList = await GetAllCities(context);
+        }
+
         public static async Task Delete(ApplicationDbContext context, Agency agency)
         {
             context.Entry(agency).State = EntityState.Deleted;
