@@ -28,9 +28,9 @@ namespace PC2.Controllers
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
             }
 
-            resourceGuide.AgencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
+            resourceGuide.AgencyCategoriesForDataList = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
             resourceGuide.AgenciesForDataList = await AgencyDB.GetDistinctAgenciesAsync(_context);
-            resourceGuide.City = await AgencyDB.GetAllCities(_context);
+            resourceGuide.CitiesForDataList = await AgencyDB.GetAllCities(_context);
 
             return View(resourceGuide);
         }
@@ -60,10 +60,10 @@ namespace PC2.Controllers
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
             }
 
-            resourceGuide.AgencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
+            resourceGuide.AgencyCategoriesForDataList = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
             resourceGuide.AgenciesForDataList = await AgencyDB.GetDistinctAgenciesAsync(_context);
             resourceGuide.YPos = searchModel.YPos;
-            resourceGuide.City = await AgencyDB.GetAllCities(_context);
+            resourceGuide.CitiesForDataList = await AgencyDB.GetAllCities(_context);
 
             return View(resourceGuide);
         }
