@@ -157,16 +157,10 @@ namespace PC2.Data
 
         public static async Task<List<string>> GetAllCities(ApplicationDbContext context)
         {
-            List<Agency> list = await (from a in context.Agency
-                                       where a.City != null
-                                       select a).ToListAsync();
-            List<string> result = new List<string>();
-            for (int i = 0; i < list.Count; i++)
-            {
-                result.Add(list[i].City);
-            }
-            result = result.OrderBy(a => a).Distinct().ToList();
-            return result;
+            return await (from agency in context.Agency
+                        where agency.City != null
+                        orderby agency.City
+                        select agency.City).Distinct().ToListAsync();
         }
 
         /// <summary>
