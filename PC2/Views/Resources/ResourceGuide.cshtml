@@ -169,7 +169,7 @@
 }
 else
 {
-    <div>
+    <div id="results">
         <table class="table table-striped table-hover">
             @if (Model.Category != null)
             {
@@ -218,8 +218,9 @@ else
         </table>
     </div>
 }
-<script>
-    if (@Model.YPos != 0) {
-        window.scrollTo(0, @Model.YPos);
-    }</script>
-<script src="~/js/resource-guide.js"></script>
+
+@section Scripts{
+    <script>
+        window.scrollTo(0, $("#results").offset().top);
+    </script>
+}
