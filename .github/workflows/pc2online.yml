@@ -38,7 +38,7 @@ jobs:
         dotnet new tool-manifest
         dotnet tool install --global dotnet-ef
         dotnet tool restore
-        dotnet ef database update -p AutomatedAzureDeploymentTest --connection "${{ env.DB_CONNECTION_STRING }}"
+        dotnet ef database update -p PC2 --connection "${{ env.DB_CONNECTION_STRING }}"
     - name: Publish Artifacts
       uses: actions/upload-artifact@v1.0.0
       with:
