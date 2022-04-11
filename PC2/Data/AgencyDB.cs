@@ -73,11 +73,31 @@ namespace PC2.Data
             return result;
         }
 
-        public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, string zipCode)
+        public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, string city)
         {
             return await (from a in context.Agency
-                          where a.Zip !=  null && a.Zip == zipCode
+                          where a.City !=  null && a.City == city
                           select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
+        }
+
+        /// <summary>
+        /// Gets a list of every agency with a matching category and city
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="categoryName">The category to search for</param>
+        /// <param name="city">The city to search for</param>
+        public static async Task<List<Agency>> GetAgenciesByCategoryAndCity(ApplicationDbContext context,
+            string categoryName, string city)
+        {
+            IQueryable<Agency> agencyResults = context.Agency
+                .Include(nameof(Agency.AgencyCategories))
+                .Where(agency => agency.City == city);
+
+            return await agencyResults
+                .Where(agency => agency.AgencyCategories
+                .Where(cat => cat.AgencyCategoryName == categoryName)
+                .Any())
+                .ToListAsync();
         }
 
         public static async Task<Agency?> GetAgencyAsync(ApplicationDbContext context, int id)
@@ -135,18 +155,26 @@ namespace PC2.Data
                           select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
         }
 
-        public static async Task<List<string>> GetAllZipCode(ApplicationDbContext context)
+        public static async Task<List<string>> GetAllCities(ApplicationDbContext context)
         {
-            List<Agency> list = await (from a in context.Agency
-                                       where a.Zip != null
-                                       select a).ToListAsync();
-            List<string> result = new List<string>();
-            for (int i = 0; i < list.Count; i++)
-            {
-                result.Add(list[i].Zip);
-            }
-            result = result.OrderBy(a => a).Distinct().ToList();
-            return result;
+            return await (from agency in context.Agency
+                        where agency.City != null
+                        orderby agency.City
+                        select agency.City).Distinct().ToListAsync();
+        }
+
+        /// <summary>
+        /// Helper method to get the data that populates the datalists
+        /// in the resource guide.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="resourceGuide">The model to store the lists in.</param>
+        public static async Task GetDataForDataLists(ApplicationDbContext context,
+            ResourceGuideModel resourceGuide)
+        {
+            resourceGuide.AgencyCategoriesForDataList = await AgencyCategoryDB.GetAgencyCategoriesAsync(context);
+            resourceGuide.AgenciesForDataList = await GetDistinctAgenciesAsync(context);
+            resourceGuide.CitiesForDataList = await GetAllCities(context);
         }
 
         public static async Task Delete(ApplicationDbContext context, Agency agency)

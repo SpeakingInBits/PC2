@@ -18,8 +18,12 @@ namespace PC2.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ResourceGuide(int categoryID, int yPosition, string? agencyName, string? agencyCategory, 
-            string? zipCode)
+        /// <summary>
+        /// Searches for agencies with the category the user selected from the table of categories.
+        /// </summary>
+        /// <param name="categoryID">The categoryID of the user's selection.</param>
+        [HttpGet]
+        public async Task<IActionResult> ResourceGuide(int categoryID)
         {
             ResourceGuideModel resourceGuide = new ResourceGuideModel();
             if (categoryID != 0)
@@ -27,25 +31,42 @@ namespace PC2.Controllers
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, categoryID);
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
             }
-            if (agencyName != null)
+
+            await AgencyDB.GetDataForDataLists(_context, resourceGuide);
+
+            return View(resourceGuide);
+        }
+
+        /// <summary>
+        /// Searches for agencies that match the criteria the user searched for.
+        /// </summary>
+        /// <param name="searchModel">A model containing what the user searched for.</param>
+        [HttpPost]
+        public async Task<IActionResult> ResourceGuide(ResourceGuideModel searchModel)
+        {
+            ResourceGuideModel resourceGuide = new ResourceGuideModel();
+            if (searchModel.SearchedAgency != null)
             {
-                resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, agencyName);
+                resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, searchModel.SearchedAgency);
             }
-            if (agencyCategory != null)
+            else if (searchModel.SearchedCategory != null
+                && searchModel.SearchedCity != null)
             {
-                resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, agencyCategory);
+                resourceGuide.Agencies = await AgencyDB.GetAgenciesByCategoryAndCity(_context,
+                    searchModel.SearchedCategory, searchModel.SearchedCity);
+            }
+            else if (searchModel.SearchedCategory != null)
+            {
+                resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
             }
-            if (zipCode != null)
+            else if (searchModel.SearchedCity != null)
             {
-                resourceGuide.CurrentZip = zipCode;
-                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, zipCode);
+                resourceGuide.CurrentCity = searchModel.SearchedCity;
+                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
             }
 
-            resourceGuide.AgencyCategories = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
-            resourceGuide.AgenciesForDataList = await AgencyDB.GetDistinctAgenciesAsync(_context);
-            resourceGuide.YPos = yPosition;
-            resourceGuide.ZipCode = await AgencyDB.GetAllZipCode(_context);
+            await AgencyDB.GetDataForDataLists(_context, resourceGuide);
 
             return View(resourceGuide);
         }

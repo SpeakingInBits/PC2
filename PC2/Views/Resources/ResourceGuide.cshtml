@@ -73,68 +73,60 @@
 <h1>SEARCH FOR A RESOURCE</h1>
 <div class="divider"></div>
 <br />
-    <form id="submit" asp-action="ResourceGuide" method="post">
-        <div class="form-group row d-flex justify-content-center">
-            <div class="col-md-4">
-                <label for="list-of-agencies">Choose an agency from the list:</label>
-            </div>
-            <div class="col-md-4">
-                <input list="list-of-agencies" name="list-of-agencies" id="list-of-agency" class="form-control">
-                <datalist id="list-of-agencies">
-                    @for (int i = 0; i < Model.AgenciesForDataList.Count; i++)
-                    {
-                        <option class="agencyName" value="@Model.AgenciesForDataList[i].AgencyName" />
-                    }
-                </datalist>
-            </div>
-            <div class="col-md-2">
-                <input type="submit" class="agency-submit btn btn-primary" id="agency-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyName="agency-name">
-            </div>
+
+<form id="submit" asp-action="ResourceGuide" method="post">
+    <div class="form-group row d-flex justify-content-center">
+        <div class="col-md-4">
+            <label asp-for="SearchedAgency" class="control-label">Choose an agency from the list:</label>
         </div>
-    </form>
-
-    <br />
-    <form id="submit" asp-action="ResourceGuide" method="post">
-        <div class="form-group row d-flex justify-content-center">
-            <div class="col-md-4">
-                <label for="list-of-services">Choose an agency service from the list:</label>
-            </div>
-            <div class="col-md-4">
-                <input list="list-of-services" name="list-of-services" id="list-of-service" class="form-control">
-                <datalist id="list-of-services">
-                    @for (int i = 0; i < Model.AgencyCategories.Count; i++)
-                    {
-                        <option class="agencyName" value="@Model.AgencyCategories[i].AgencyCategoryName" />
-                    }
-                </datalist>
-            </div>
-            <div class="col-md-2">
-                <input type="submit" class="category-submit btn btn-primary" id="category-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-agencyCategory="agency-category">
-            </div>
+        <div class="col-md-4">
+            <input asp-for="SearchedAgency" list="list-of-agencies" class="form-control">
+            <datalist id="list-of-agencies">
+                @for (int i = 0; i < Model.AgenciesForDataList.Count; i++)
+                {
+                    <option class="agencyName" value="@Model.AgenciesForDataList[i].AgencyName" />
+                }
+            </datalist>
         </div>
-    </form>
-
+    </div>
     <br />
-    <form id="submit" asp-action="ResourceGuide" method="post">
-        <div class="form-group row d-flex justify-content-center">
-            <div class="col-md-4">
-                <label for="list-of-zipcodes">Search for an agency by zip code:</label>
-            </div>
-            <div class="col-md-4">
-                <input list="list-of-zipcodes" name="list-of-zipcodes" id="list-of-zipcode" class="form-control">
-                <datalist id="list-of-zipcodes">
-                    @for (int i = 0; i < Model.ZipCode.Count; i++)
-                    {
-                        <option class="zipcode" value="@Model.ZipCode[i]" />
-                    }
-                </datalist>
-            </div>
-            <div class="col-md-2">
-                <input type="submit" class="zip-submit btn btn-primary" id="zip-submit" asp-route-categoryID="0" asp-route-yPosition="tempY" asp-route-zipCode="zip-code">
-            </div>
-        </div>    
-    </form>
 
+    <div class="form-group row d-flex justify-content-center">
+        <div class="col-md-4">
+            <label asp-for="SearchedCategory" class="control-label">Choose an agency service from the list:</label>
+        </div>
+        <div class="col-md-4">
+            <input asp-for="SearchedCategory" list="list-of-services" class="form-control">
+            <datalist id="list-of-services">
+                @for (int i = 0; i < Model.AgencyCategoriesForDataList.Count; i++)
+                {
+                    <option class="agencyName" value="@Model.AgencyCategoriesForDataList[i].AgencyCategoryName" />
+                }
+            </datalist>
+        </div>
+    </div>
+    <br />
+
+    <div class="form-group row d-flex justify-content-center">
+        <div class="col-md-4">
+            <label asp-for="SearchedCity" class="control-label">Search for an agency by city:</label>
+        </div>
+        <div class="col-md-4">
+            <input asp-for="SearchedCity" list="list-of-cities" class="form-control">
+            <datalist id="list-of-cities">
+                @for (int i = 0; i < Model.CitiesForDataList.Count; i++)
+                {
+                    <option class="city" value="@Model.CitiesForDataList[i]" />
+                }
+            </datalist>
+        </div>
+    </div>
+    <br />
+
+    <div class="d-flex justify-content-center">
+        <input type="submit" class="btn btn-primary">
+    </div>
+</form>
 <br />
 
 @if (Model.Agencies.Count == 0)
@@ -143,12 +135,12 @@
         <table class="table table-striped table-hover">
             <tbody>
 
-                @for (int i = 0; i < Model.AgencyCategories.Count() / 2; i++)
+                @for (int i = 0; i < Model.AgencyCategoriesForDataList.Count() / 2; i++)
                 {
                     <tr>
                         <td>
                             <a class="left-agency" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY">
-                                @Html.DisplayFor(modelItem => Model.AgencyCategories.ElementAt(i).AgencyCategoryName)
+                                @Html.DisplayFor(modelItem => Model.AgencyCategoriesForDataList.ElementAt(i).AgencyCategoryName)
                             </a>
                         </td>
                     </tr>
@@ -161,12 +153,12 @@
         <table class="table table-striped table-hover">
             <tbody>
 
-                @for (int i = Model.AgencyCategories.Count() / 2; i < Model.AgencyCategories.Count(); i++)
+                @for (int i = Model.AgencyCategoriesForDataList.Count() / 2; i < Model.AgencyCategoriesForDataList.Count(); i++)
                 {
                     <tr>
                         <td>
                             <a class="right-agency" asp-action="ResourceGuide" asp-route-categoryID="@(i + 1)" asp-route-yPosition="tempY">
-                                @Html.DisplayFor(modelItem => Model.AgencyCategories.ElementAt(i).AgencyCategoryName)
+                                @Html.DisplayFor(modelItem => Model.AgencyCategoriesForDataList.ElementAt(i).AgencyCategoryName)
                             </a>
                         </td>
                     </tr>
@@ -177,24 +169,28 @@
 }
 else
 {
-    <div>
+    <div id="results" class="table-responsive">
         <table class="table table-striped table-hover">
             @if (Model.Category != null)
             {
                 <thead>
                     <tr>
                         <td></td>
+                        <td></td>
                         <td><h1>@Model.Category.AgencyCategoryName</h1></td>
+                        <td></td>
                         <td></td>
                     </tr>
                 </thead>
             }
-            else if (Model.CurrentZip != null)
+            else if (Model.CurrentCity != null)
             {
                 <thead>
                     <tr>
                         <td></td>
-                        <td><h1>@Model.CurrentZip</h1></td>
+                        <td></td>
+                        <td><h1>@Model.CurrentCity</h1></td>
+                        <td></td>
                         <td></td>
                     </tr>
                 </thead>
@@ -220,14 +216,23 @@ else
                     {
                         <td><a href="mailto: @Model.Agencies[i].Email">@Model.Agencies[i].Email</a></td>
                     }
+                    @if (Model.Agencies[i].City != null)
+                    {
+                        <td>@Model.Agencies[i].City : @Model.Agencies[i].Zip</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
                     <td><a type="button" asp-controller="Resources" asp-action="Details" asp-route-id="@Model.Agencies[i].AgencyId" value="Details">Details</a></td>
                 </tr>
             }
         </table>
     </div>
 }
-<script>
-    if (@Model.YPos != 0) {
-        window.scrollTo(0, @Model.YPos);
-    }</script>
-<script src="~/js/resource-guide.js"></script>
+
+@section Scripts{
+    <script>
+        window.scrollTo(0, $("#results").offset().top);
+    </script>
+}
