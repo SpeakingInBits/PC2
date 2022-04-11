@@ -11,6 +11,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddApplicationInsightsTelemetry(options =>
+    options.ConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value);
+
 builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOptions)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
