@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="5.7.5" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.1" />
@@ -40,6 +41,7 @@
     <Folder Include="wwwroot\images\resource\" />
     <Folder Include="wwwroot\PDF\legislative-links\" />
     <Folder Include="wwwroot\PDF\focus-newsletters\" />
+    <Folder Include="wwwroot\PDF\DisabilityAwareness\" />
   </ItemGroup>
 
   <ItemGroup>
