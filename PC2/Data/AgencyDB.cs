@@ -37,6 +37,11 @@ namespace PC2.Data
                           select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
         }
 
+        public static async Task<int> GetAgencyCountAsync(ApplicationDbContext context)
+        {
+            return await context.Agency.CountAsync();
+        }
+
         /// <summary>
         /// Gets all agencies by page and page size
         /// </summary>
