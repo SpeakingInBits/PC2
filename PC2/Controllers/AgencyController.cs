@@ -21,8 +21,8 @@ namespace PC2.Controllers
             const int PageSize = 40;
             ViewData["CurrentPage"] = pageNum;
 
-            List<Agency> totalAgencies = await AgencyDB.GetAllAgenciesAsync(_context);
-            ViewData["MaxPage"] = (int)Math.Ceiling((double)totalAgencies.Count / PageSize);
+            int totalAgencies = await AgencyDB.GetAgencyCountAsync(_context);
+            ViewData["MaxPage"] = (int)Math.Ceiling((double)totalAgencies / PageSize);
 
             List<Agency> agencies = await AgencyDB.GetAllAgenciesAsync(_context, PageSize, pageNum);
             return View(agencies);
