@@ -49,12 +49,13 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
+#if DEBUG
 var serviceProvider = app.Services.GetRequiredService<IServiceProvider>().CreateScope();
 IdentityHelper.CreateRoles(serviceProvider.ServiceProvider, IdentityHelper.Admin)
               .Wait();
 IdentityHelper.CreateDefaultAdmin(serviceProvider.ServiceProvider, IdentityHelper.Admin)
               .Wait();
-
+#endif
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapGet("/Identity/Account/Register", context => Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
