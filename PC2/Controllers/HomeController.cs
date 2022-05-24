@@ -5,6 +5,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using OfficeOpenXml;
 using PC2.Data;
 using PC2.Models;
+using SendGrid;
 using System.Diagnostics;
 
 namespace PC2.Controllers
@@ -55,7 +56,11 @@ namespace PC2.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _emailSender.SendEmailAsync(contactPageModel.Name, contactPageModel.Email, contactPageModel.Phone, contactPageModel.Subject, contactPageModel.Message);
+                Response result = await _emailSender.SendEmailAsync(contactPageModel.Name, contactPageModel.Email, contactPageModel.Phone, contactPageModel.Subject, contactPageModel.Message);
+                if (result.IsSuccessStatusCode)
+                {
+                    ViewData["EmailSent"] = true;
+                }
             }
             return View();
         }

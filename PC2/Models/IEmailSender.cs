@@ -5,7 +5,7 @@ namespace IdentityLogin.Models
 {
     public interface IEmailSender
     {
-        Task SendEmailAsync(string Name, string Email, string Phone, string Subject, string Message);
+        Task<Response> SendEmailAsync(string Name, string Email, string Phone, string Subject, string Message);
     }
 
     public class EmailSenderSendGrid : IEmailSender
@@ -25,7 +25,7 @@ namespace IdentityLogin.Models
         /// <param name="Phone">The users phone number</param>
         /// <param name="Subject">The subject of the email</param>
         /// <param name="Message">The message of the email</param>
-        public async Task SendEmailAsync(string Name, string Email, string Phone, string Subject, string Message)
+        public async Task<Response> SendEmailAsync(string Name, string Email, string Phone, string Subject, string Message)
         {
             string apiKey = _config.GetSection("PC2SendGridAPIKey").Value;
             string PC2Email = _config.GetSection("PC2Email").Value;
@@ -41,7 +41,7 @@ namespace IdentityLogin.Models
                 Message,
             };
             msg.AddTo(new EmailAddress(PC2Email, "PC2 Team"));
-            var response = await client.SendEmailAsync(msg);
+            return await client.SendEmailAsync(msg);
         }
     }
 }
