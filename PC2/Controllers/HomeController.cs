@@ -57,10 +57,7 @@ namespace PC2.Controllers
             if (ModelState.IsValid)
             {
                 Response result = await _emailSender.SendEmailAsync(contactPageModel.Name, contactPageModel.Email, contactPageModel.Phone, contactPageModel.Subject, contactPageModel.Message);
-                if (result.IsSuccessStatusCode)
-                {
-                    ViewData["EmailSent"] = true;
-                }
+                ViewData["EmailSent"] = result.IsSuccessStatusCode;
             }
             return View();
         }
