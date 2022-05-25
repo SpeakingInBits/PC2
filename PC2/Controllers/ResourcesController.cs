@@ -44,30 +44,36 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> ResourceGuide(ResourceGuideModel searchModel)
         {
-            ResourceGuideModel resourceGuide = new ResourceGuideModel();
-            if (searchModel.SearchedAgency != null)
+            ResourceGuideModel resourceGuide = new();
+
+            if (!string.IsNullOrEmpty(searchModel.UserSearchedByAgency))
             {
-                resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, searchModel.SearchedAgency);
+                if (searchModel.SearchedAgency != null)
+                {
+                    resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, searchModel.SearchedAgency);
+                }
             }
-            else if (searchModel.SearchedCategory != null
+            else if (!string.IsNullOrEmpty(searchModel.UserSearchedByCityOrService))
+            {
+                if (searchModel.SearchedCategory != null
                 && searchModel.SearchedCity != null)
-            {
-                resourceGuide.Agencies = await AgencyDB.GetAgenciesByCategoryAndCity(_context,
-                    searchModel.SearchedCategory, searchModel.SearchedCity);
+                {
+                    resourceGuide.Agencies = await AgencyDB.GetAgenciesByCategoryAndCity(_context,
+                        searchModel.SearchedCategory, searchModel.SearchedCity);
+                }
+                else if (searchModel.SearchedCategory != null)
+                {
+                    resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
+                    resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
+                }
+                else if (searchModel.SearchedCity != null)
+                {
+                    resourceGuide.CurrentCity = searchModel.SearchedCity;
+                    resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
+                }
             }
-            else if (searchModel.SearchedCategory != null)
-            {
-                resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
-                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
-            }
-            else if (searchModel.SearchedCity != null)
-            {
-                resourceGuide.CurrentCity = searchModel.SearchedCity;
-                resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
-            }
-
+            
             await AgencyDB.GetDataForDataLists(_context, resourceGuide);
-
             return View(resourceGuide);
         }
 

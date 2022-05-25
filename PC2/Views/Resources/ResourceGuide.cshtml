@@ -88,6 +88,9 @@
                 }
             </datalist>
         </div>
+        <div class="d-flex justify-content-center">
+            <input type="submit" class="btn btn-primary" value="Search by Agency" asp-for="UserSearchedByAgency">
+        </div>
     </div>
     <br />
 
@@ -124,7 +127,7 @@
     <br />
 
     <div class="d-flex justify-content-center">
-        <input type="submit" class="btn btn-primary">
+        <input type="submit" class="btn btn-primary" asp-for="UserSearchedByCityOrService" value="Search by city/service">
     </div>
 </form>
 <br />
