@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
-    <Content Remove="Views\Home\ConfirmImportExcel.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
