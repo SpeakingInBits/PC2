@@ -8,6 +8,24 @@
 
 <div class="divider"></div>
 
+@if (ViewData["EmailSent"] is bool EmailSentSuccessful)
+{
+    @if (EmailSentSuccessful)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Your email was sent successfully!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>We were not able to send your email at this time, please try again later!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    } 
+}
+
 <div>
     <div class="row justify-content-center">
         <div class="col-4">
@@ -60,6 +78,5 @@
         </div>
         <div class="divider"></div>
         <iframe width="768" height="500" id="gmap_canvas" src="https://maps.google.com/maps?q=3716%20Pacific%20Avenue%20%20Suite%20A%20%20Tacoma,%20WA%20%2098418&t=&z=15&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
-        <style>.mapouter{position:relative;text-align:right;height:500px;width:768px;}</style>embedding google maps into website<style>.gmap_canvas {overflow:hidden;background:none!important;height:500px;width:768px;}</style>
     </div>
 </div>

@@ -37,6 +37,11 @@ namespace PC2.Data
                           select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
         }
 
+        public static async Task<int> GetAgencyCountAsync(ApplicationDbContext context)
+        {
+            return await context.Agency.CountAsync();
+        }
+
         /// <summary>
         /// Gets all agencies by page and page size
         /// </summary>
@@ -45,10 +50,15 @@ namespace PC2.Data
         /// <returns></returns>
         public static async Task<List<Agency>> GetAllAgenciesAsync(ApplicationDbContext context, int pageSize, int pageNum)
         {
-            List<Agency> agencies = await (from a in context.Agency
-                          select a).OrderBy(a => a.AgencyName)
-                          .Include(nameof(Agency.AgencyCategories)).ToListAsync();
-            return agencies.Skip(pageSize * (pageNum - 1)).Take(pageSize).ToList();
+            List<Agency> agencies = await
+                                    (from a in context.Agency
+                                    select a)
+                                    .OrderBy(a => a.AgencyName)
+                                    .Include(nameof(Agency.AgencyCategories))
+                                    .Skip(pageSize * (pageNum - 1))
+                                    .Take(pageSize)
+                                    .ToListAsync();
+            return agencies;
         }
 
         /// <summary>
