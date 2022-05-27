@@ -127,10 +127,22 @@
     <br />
 
     <div class="d-flex justify-content-center">
-        <input type="submit" class="btn btn-primary" asp-for="UserSearchedByCityOrService" value="Search by city/service">
+        <input type="submit" class="btn btn-primary me-3" asp-for="UserSearchedByCityOrService" value="Search by city and/or service">
+        <input type="button" class="btn btn-secondary" value="Clear Search" onclick="clearForm()">
     </div>
 </form>
 <br />
+
+@{
+    bool userPerformedSearch = Model.UserSearchedByAgency != null || Model.UserSearchedByCityOrService != null;
+}
+
+@if (Model.Agencies.Count == 0 && userPerformedSearch)
+{
+    <div class="alert alert-danger" id="results">
+        <h4 class="alert-heading">There are no results for your search</h4>
+    </div>
+}
 
 @if (Model.Agencies.Count == 0)
 {
@@ -236,6 +248,15 @@ else
 
 @section Scripts{
     <script>
-        window.scrollTo(0, $("#results").offset().top);
+            window.scrollTo(0, $("#results").offset().top);
+    </script>
+
+    <script>
+        function clearForm() {
+            let searchFormSections = document.querySelectorAll("#submit input[list]");
+            for (let i = 0; i < searchFormSections.length; i++) {
+                searchFormSections[i].value = "";
+            }
+        }
     </script>
 }

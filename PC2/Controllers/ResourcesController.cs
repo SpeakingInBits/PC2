@@ -44,7 +44,11 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> ResourceGuide(ResourceGuideModel searchModel)
         {
-            ResourceGuideModel resourceGuide = new();
+            ResourceGuideModel resourceGuide = new()
+            {
+                UserSearchedByCityOrService = searchModel.UserSearchedByCityOrService,
+                UserSearchedByAgency = searchModel.UserSearchedByAgency
+            };
 
             if (!string.IsNullOrEmpty(searchModel.UserSearchedByAgency))
             {
