@@ -7,5 +7,7 @@ database driven, searchable resource guide to replace/complement the physical bo
 - ASP.NET and web development workload
 - .NET 6 (Included in VS2022)
 
-Run ```update-database``` in the ```PC2``` project. Then switch to the ```ImportExcel``` project to import Resource Guide information which include Agencies, Categories, and
-Agency Categories.
+## Create the database and insert test data
+- Run ```update-database``` in the ```PC2``` project. 
+- Open the ```PC2-TestData.sql``` script in the ```Solution Items``` folder. Execute it against localdb
+- Run the website to create the default roles and admin login

@@ -5,7 +5,10 @@ VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PC2", "PC2\PC2.csproj", "{230B9FA8-2AC9-430C-8A27-1689D540448C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportExcel", "ImportExcel\ImportExcel.csproj", "{94BAB15D-FEA2-402D-87A0-251D3600731A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9C9EFAD3-432F-4B6B-BF4E-EADC7A203F0A}"
+	ProjectSection(SolutionItems) = preProject
+		PC2-TestData.sql = PC2-TestData.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +20,6 @@ Global
 		{230B9FA8-2AC9-430C-8A27-1689D540448C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{230B9FA8-2AC9-430C-8A27-1689D540448C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{230B9FA8-2AC9-430C-8A27-1689D540448C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{94BAB15D-FEA2-402D-87A0-251D3600731A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{94BAB15D-FEA2-402D-87A0-251D3600731A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{94BAB15D-FEA2-402D-87A0-251D3600731A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{94BAB15D-FEA2-402D-87A0-251D3600731A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
