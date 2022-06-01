@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Resources\" />
     <Folder Include="wwwroot\images\events\" />
     <Folder Include="wwwroot\images\age-specific-issues\" />
     <Folder Include="wwwroot\images\legislative-links\" />
@@ -46,12 +45,6 @@
 
   <ItemGroup>
     <None Include="compilerconfig.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Data\Resources\2020.rg.breakout.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
