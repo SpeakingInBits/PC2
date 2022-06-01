@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Mvc;
 using PC2.Data;
 using PC2.Models;
 
@@ -7,10 +8,12 @@ namespace PC2.Controllers
     public class ResourcesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly TelemetryClient _telemetryClient;
 
-        public ResourcesController(ApplicationDbContext context)
+        public ResourcesController(ApplicationDbContext context, TelemetryClient telemetryClient = null)
         {
             _context = context;
+            _telemetryClient = telemetryClient;
         }
 
         public IActionResult Index()
@@ -54,6 +57,11 @@ namespace PC2.Controllers
             {
                 if (searchModel.SearchedAgency != null)
                 {
+                    _telemetryClient.TrackEvent("ResourceGuideSearch", 
+                        new Dictionary<string, string>{
+                        { "SearchType", "Agency" },
+                        { "SearchTerm", searchModel.SearchedAgency }
+                    });
                     resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, searchModel.SearchedAgency);
                 }
             }
@@ -62,16 +70,31 @@ namespace PC2.Controllers
                 if (searchModel.SearchedCategory != null
                 && searchModel.SearchedCity != null)
                 {
+                    _telemetryClient.TrackEvent("ResourceGuideSearch",
+                        new Dictionary<string, string>{
+                        { "SearchType", "CityAndCategory" },
+                        { "SearchTerm", $"{searchModel.SearchedCity} - {searchModel.SearchedCategory}" }
+                    });
                     resourceGuide.Agencies = await AgencyDB.GetAgenciesByCategoryAndCity(_context,
                         searchModel.SearchedCategory, searchModel.SearchedCity);
                 }
                 else if (searchModel.SearchedCategory != null)
                 {
+                    _telemetryClient.TrackEvent("ResourceGuideSearch",
+                        new Dictionary<string, string>{
+                        { "SearchType", "Service" },
+                        { "SearchTerm", $"{searchModel.SearchedCategory}" }
+                    });
                     resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
                     resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
                 }
                 else if (searchModel.SearchedCity != null)
                 {
+                    _telemetryClient.TrackEvent("ResourceGuideSearch",
+                        new Dictionary<string, string>{
+                        { "SearchType", "City" },
+                        { "SearchTerm", $"{searchModel.SearchedCity}" }
+                    });
                     resourceGuide.CurrentCity = searchModel.SearchedCity;
                     resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
                 }
