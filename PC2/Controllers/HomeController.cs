@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CSharp.RuntimeBinder;
+using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Models;
 using SendGrid;
@@ -35,10 +36,13 @@ namespace PC2.Controllers
             aboutUs.SteeringCommittee = await SteeringCommitteeDB.GetAllSteeringCommittee(_context);
             return View(aboutUs);
         }
-
-        public IActionResult HousingProgram()
+        
+        public async Task<IActionResult> HousingProgram()
         {
-            return View();
+            var housingData = await _context.HousingProgram
+                                .OrderBy(data => data.HouseHoldSize)
+                                .ToListAsync();
+            return View(housingData);
         }
 
         public IActionResult Privacy()
