@@ -381,6 +381,9 @@ namespace PC2.Data.Migrations
                     b.Property<int>("HouseHoldSize")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
                     b.Property<double>("MaximumIncome")
                         .HasColumnType("float");
 

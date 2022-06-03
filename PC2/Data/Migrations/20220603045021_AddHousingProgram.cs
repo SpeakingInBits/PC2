@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using PC2.Models;
 
 #nullable disable
@@ -14,7 +15,8 @@ namespace PC2.Data.Migrations
                 columns: table => new
                 {
                     HouseHoldSize = table.Column<int>(type: "int", nullable: false),
-                    MaximumIncome = table.Column<double>(type: "float", nullable: false)
+                    MaximumIncome = table.Column<double>(type: "float", nullable: false),
+                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -31,8 +33,8 @@ namespace PC2.Data.Migrations
             static void AddHousingProgramRow(MigrationBuilder migrationBuilder, int houseHoldSize, double maxIncome)
             {
                 migrationBuilder.InsertData(table: "HousingProgram",
-                                columns: new[] { nameof(HousingProgram.HouseHoldSize), nameof(HousingProgram.MaximumIncome) },
-                                values: new object[] { houseHoldSize,  maxIncome });
+                                columns: new[] { nameof(HousingProgram.HouseHoldSize), nameof(HousingProgram.MaximumIncome), nameof(HousingProgram.LastUpdated) },
+                                values: new object[] { houseHoldSize, maxIncome, "9/1/2021" });
             }
         }
 

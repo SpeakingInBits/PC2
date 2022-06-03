@@ -12,7 +12,7 @@ using PC2.Data;
 namespace PC2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220602200638_AddHousingProgram")]
+    [Migration("20220603045021_AddHousingProgram")]
     partial class AddHousingProgram
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -382,6 +382,9 @@ namespace PC2.Data.Migrations
                 {
                     b.Property<int>("HouseHoldSize")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
 
                     b.Property<double>("MaximumIncome")
                         .HasColumnType("float");
