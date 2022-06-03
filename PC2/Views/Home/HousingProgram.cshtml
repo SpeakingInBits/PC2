@@ -54,7 +54,8 @@
               <tfoot>
                   <tr>
                       <td>Income guidelines</td>
-                      <td>updated 9/7/2021</td>
+                      @* Select the most recent update date*@
+                      <td>@Model.Select(data => data.LastUpdated).Max().ToShortDateString()</td>
                 </tr>
               </tfoot>
             </table>

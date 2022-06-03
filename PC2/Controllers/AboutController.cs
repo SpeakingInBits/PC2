@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Models;
 
@@ -193,6 +194,27 @@ namespace PC2.Controllers
             SteeringCommittee steeringCommittee = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id);
             await SteeringCommitteeDB.Delete(_context, steeringCommittee);
             return RedirectToAction("IndexSteeringCommittee");
+        }
+
+        public async Task<IActionResult> HousingProgramData()
+        {
+            var data = await _context.HousingProgram.OrderBy(hp => hp.HouseHoldSize).ToListAsync();
+            return View(data);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> HousingProgramData(IFormCollection form)
+        {
+            HousingProgram entry = new()
+            {
+                HouseHoldSize = int.Parse(form["HouseHoldSize"]),
+                MaximumIncome = double.Parse(form["MaximumIncome"]),
+                LastUpdated = DateTime.Today
+            };
+            _context.Entry(entry).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            TempData["Message"] = $"Entry for Household size {entry.HouseHoldSize} updated Successfully";
+            return RedirectToAction("HousingProgramData");
         }
     }
 }

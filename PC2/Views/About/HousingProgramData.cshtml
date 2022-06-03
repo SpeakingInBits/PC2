@@ -1,0 +1,51 @@
+﻿@model IEnumerable<PC2.Models.HousingProgram>
+
+@{
+    ViewData["Title"] = "Housing Program Data";
+}
+
+<h1>Housing Program Data</h1>
+
+@if(TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      @TempData["Message"]
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.HouseHoldSize)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaximumIncome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastUpdated)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) 
+{
+        <tr>
+            <td>
+                @item.HouseHoldSize
+            </td>
+            <td>
+                <form method="post">
+                    <input type="hidden" name="HouseHoldSize" value="@item.HouseHoldSize">
+                    $<input name="MaximumIncome" value="@item.MaximumIncome" />
+                    <input type="submit" value="Update Entry" class="btn btn-primary">
+                </form>
+            </td>
+            <td>
+                @item.LastUpdated.ToShortDateString()
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
