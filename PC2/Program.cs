@@ -30,7 +30,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedCultures = new List<CultureInfo>
     {
         new CultureInfo("en-US")
-    }
+    };
 });
 
 var app = builder.Build();

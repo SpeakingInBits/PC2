@@ -1,4 +1,5 @@
-﻿@model IEnumerable<HousingProgram>
+﻿@using System.Globalization
+@model IEnumerable<HousingProgram>
 @{
     ViewData["Title"] = "PC2's Housing Program";
 }
@@ -47,7 +48,8 @@
                   {
                     <tr>
                       <td>@housingData.HouseHoldSize</td>
-                      <td>@housingData.MaximumIncome.ToString("c0")</td>
+                      @* Always format as US currency regardless of selected Culture*@
+                      <td>@string.Format(new CultureInfo("en-US"), "{0:c0}", housingData.MaximumIncome)</td>
                     </tr>
                   }
               </tbody>
