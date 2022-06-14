@@ -64,8 +64,12 @@
                         <td>
                             <p>@Model.Staff[i].Name</p>
                             <p>@Model.Staff[i].Title</p>
-                            <a href="tel:@Model.Staff[i].Phone">@Model.Staff[i].Phone x @Model.Staff[i].Extension</a>
-                            <br>
+                            @if(Model.Staff[i].PhoneDisplay != null)
+                            {
+                                <p>
+                                    <a href="tel:@Model.Staff[i].Phone">@Model.Staff[i].PhoneDisplay</a>
+                                </p>
+                            }
                             <a href="mailto:@Model.Staff[i].Email">@Model.Staff[i].Email</a>
                         </td>
                     </tr>
