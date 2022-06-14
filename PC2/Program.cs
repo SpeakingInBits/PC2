@@ -4,9 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using System.Globalization;
 
-// Set default culture for currency formatting
-CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -26,6 +23,16 @@ builder.Services.AddControllersWithViews();
 // email provider
 builder.Services.AddTransient<IEmailSender, EmailSenderSendGrid>();
 
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US");
+    // Add culture language support here
+    options.SupportedCultures = new List<CultureInfo>
+    {
+        new CultureInfo("en-US")
+    }
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,7 +49,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseRequestLocalization();
 app.UseRouting();
 
 app.UseAuthentication();
