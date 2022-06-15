@@ -25,6 +25,8 @@
     }
 </datalist>
 
+<p id="result"></p>
+
 <a class="btn btn-primary" target="_blank" id="edit-link" asp-action="Edit">Edit</a> |
 <a class="btn btn-danger" target="_blank" id="delete-link" asp-action="Delete">Delete</a>
 
@@ -42,5 +44,8 @@ function populateButtons() {
 
     document.getElementById("edit-link").href = originalEditLink + "/" + selectedAgencyId;
     document.getElementById("delete-link").href = originalDeleteLink + "/" + selectedAgencyId;
+
+    let selectedAgencyName = document.querySelector('option[value="' + selectedAgencyId + '"]').label;
+    document.getElementById("result").innerText = "You selected: " + selectedAgencyName;
 }
 </script>
