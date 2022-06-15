@@ -16,6 +16,17 @@ namespace PC2.Data
             context.Agency.Add(agency);
             await context.SaveChangesAsync();
         }
+        
+        public async static Task<List<AgencyDisplayViewModel>> GetAgencySearchList(ApplicationDbContext context)
+        {
+            return await (from agency in context.Agency
+                          select new AgencyDisplayViewModel
+                          {
+                              AgencyId = agency.AgencyId,
+                              AgencyName = agency.AgencyName,
+                              City = agency.City
+                          }).ToListAsync();
+        }
 
         /// <summary>
         /// Gets all Agencies that are distinct from the database

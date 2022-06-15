@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PC2.Models.Agency>
+﻿@model IEnumerable<AgencyDisplayViewModel>
 
 @{
     ViewData["Title"] = "Agencies";
@@ -9,50 +9,38 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.AgencyName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AgencyName2)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.AgencyName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AgencyName2)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.AgencyId">Edit</a> |
-                <a asp-controller="Resources" asp-action="Details" asp-route-id="@item.AgencyId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AgencyId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-<ul class="pagination">
-    @for (int i = 1; i <= (int)ViewData["MaxPage"]; i++)
+
+<label for="agency">Choose an Agency: </label>
+<input list="agencyList" name="agency" id="agency" onchange="populateButtons();" />
+
+<datalist id="agencyList">
+    @foreach(AgencyDisplayViewModel agency in Model)
     {
-        if (i == (int)ViewData["CurrentPage"])
-        {
-            <li class="page-item active">
-                <a class="page-link" asp-action="Index" asp-route-id="@i">@i</a>
-            </li>
+        <option value="@agency.AgencyId">@agency.AgencyName 
+            @if (agency.City != null)
+            {
+                <text>- @agency.City</text>
+            }
+        </option>
     }
-        else
-        {
-            <li class="page-item">
-                <a class="page-link" asp-action="Index" asp-route-id="@i">@i</a>
-            </li>
-        }
+</datalist>
+
+<a class="btn btn-primary" target="_blank" id="edit-link" asp-action="Edit">Edit</a> |
+<a class="btn btn-danger" target="_blank" id="delete-link" asp-action="Delete">Delete</a>
+
+<script>
+const originalEditLink = document.getElementById("edit-link").href;
+const originalDeleteLink = document.getElementById("delete-link").href;
+
+function populateButtons() {
+    let selectedAgency = document.getElementById("agency");
+    if (selectedAgency.value == "") {
+        return;
     }
-</ul>
+
+    let selectedAgencyId = selectedAgency.value;
+
+    document.getElementById("edit-link").href = originalEditLink + "/" + selectedAgencyId;
+    document.getElementById("delete-link").href = originalDeleteLink + "/" + selectedAgencyId;
+}
+</script>

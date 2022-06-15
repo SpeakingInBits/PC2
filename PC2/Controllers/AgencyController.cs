@@ -15,16 +15,9 @@ namespace PC2.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index()
         {
-            int pageNum = id ?? 1;
-            const int PageSize = 40;
-            ViewData["CurrentPage"] = pageNum;
-
-            int totalAgencies = await AgencyDB.GetAgencyCountAsync(_context);
-            ViewData["MaxPage"] = (int)Math.Ceiling((double)totalAgencies / PageSize);
-
-            List<Agency> agencies = await AgencyDB.GetAllAgenciesAsync(_context, PageSize, pageNum);
+            List<AgencyDisplayViewModel> agencies = await AgencyDB.GetAgencySearchList(_context);
             return View(agencies);
         }
 
