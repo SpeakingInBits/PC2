@@ -35,7 +35,6 @@
     <Folder Include="wwwroot\images\videos\" />
     <Folder Include="wwwroot\images\resource-index\" />
     <Folder Include="wwwroot\images\resource\" />
-    <Folder Include="wwwroot\PDF\focus-newsletters\" />
     <Folder Include="wwwroot\PDF\DisabilityAwareness\" />
   </ItemGroup>
 
