@@ -103,7 +103,7 @@ namespace PC2.Controllers
 
             return RedirectToAction("Index");
         }
-
+    }
     public class CalendarCreateEventViewModel
     {
         /// <summary>
@@ -115,12 +115,12 @@ namespace PC2.Controllers
         /// Time the event starts
         /// </summary>
         public TimeOnly StartingTime { get; set; }
-        
+
         /// <summary>
         /// Time the event ends
         /// </summary>
         public TimeOnly EndingTime { get; set; }
-        
+
         /// <summary>
         /// Description of the event
         /// </summary>

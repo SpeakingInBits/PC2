@@ -76,16 +76,11 @@
                             {
                             <tr>
                                 <td class="agenda-time">
-                                    <!--Checking if the starting time is equal to 13 to set it to 1-->
-                                    @if (Model.CalendarDate[i].Events[j].StartingTime.Substring(0, 2) == "13")
-                                    {
-                                        Model.CalendarDate[i].Events[j].StartingTime = "1" + Model.CalendarDate[i].Events[j].StartingTime.Substring(Model.CalendarDate[i].Events[j].StartingTime.IndexOf(":"));
-                                    }
                                     @Model.CalendarDate[i].Events[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].Events[j].EndingTime
                                 </td>
                                 <td class="agenda-events">
                                     <div class="agenda-event">
-                                            @Model.CalendarDate[i].Events[j].EventDescription
+                                        @Model.CalendarDate[i].Events[j].EventDescription
                                     </div>
                                 </td>
                                 <td>
@@ -96,10 +91,6 @@
                             else
                             {
                             <td class="agenda-time">
-                                @if (Model.CalendarDate[i].Events[j].StartingTime.Substring(0, 2) == "13")
-                                {
-                                    Model.CalendarDate[i].Events[j].StartingTime = "1" + Model.CalendarDate[i].Events[j].StartingTime.Substring(Model.CalendarDate[i].Events[j].StartingTime.IndexOf(":"));
-                                }
                                 @Model.CalendarDate[i].Events[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].Events[j].EndingTime
                             </td>
                             <td class="agenda-events">
