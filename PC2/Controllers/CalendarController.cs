@@ -88,30 +88,17 @@ namespace PC2.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             CalendarEvent calendarEvent = await CalendarEventDB.GetEvent(_context, id);
-            calendarEvent.StartingTime = calendarEvent.StartingTime;
-            calendarEvent.EndingTime = calendarEvent.EndingTime;
-
             return View(calendarEvent);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(CalendarEvent calendarEvent)
         {
-            // If event type is changed the opposite type needs to be set to false
-            if (calendarEvent.PC2Event)
-            {
-                calendarEvent.CountyEvent = false;
-            }
-            else
-            {
-                calendarEvent.PC2Event = false;
-            }
-
             bool success = await CalendarEventDB.UpdateEvent(_context, calendarEvent);
 
             if (!success)
             {
-                TempData["UpdateFailed"] = "An error occured updating the event";
+                TempData["UpdateFailed"] = "An error occurred updating the event";
             }
 
             return RedirectToAction("Index");
