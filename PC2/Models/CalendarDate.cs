@@ -7,7 +7,7 @@ namespace PC2.Models
         [Key]
         public int CalendarDateID {  get; set; }
 
-        public DateTime Date {  get; set; }
+        public DateOnly Date {  get; set; }
 
         public List<CalendarEvent> Events {  get; set; }
     }

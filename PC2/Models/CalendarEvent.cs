@@ -8,10 +8,10 @@ namespace PC2.Models
         public int CalendarEventID { get; set; }
 
         [Required]
-        public string StartingTime {  get; set; }
+        public TimeOnly StartingTime {  get; set; }
 
         [Required]
-        public string EndingTime {  get; set; }
+        public TimeOnly EndingTime {  get; set; }
 
         [Required]
         public string EventDescription {  get; set; }

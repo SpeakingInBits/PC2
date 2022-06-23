@@ -33,26 +33,28 @@ namespace PC2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(string date, string startingTime, string endingTime, string description)
+        public async Task<IActionResult> Create(CalendarCreateEventViewModel model)
         {
             CalendarDate calendarDate = new CalendarDate();
-            calendarDate.Date = DateTime.Parse(date);
+            calendarDate.Date = model.Date;
 
             CalendarEvent calendarEvent = new CalendarEvent();
-            startingTime = FormatStartingTime(startingTime);
-            endingTime = FormatEndingTime(endingTime);
 
-            calendarEvent.StartingTime = startingTime;
-            calendarEvent.EndingTime = endingTime;
-            calendarEvent.EventDescription = description;
+            calendarEvent.StartingTime = model.StartingTime;
+            calendarEvent.EndingTime = model.EndingTime;
+            calendarEvent.EventDescription = model.Description;
 
-            if (Request.Form["pc2"] == "PC2")
+            if (model.IsPc2Event)
             {
                 calendarEvent.PC2Event = true;
             }
-            else
+            else if (model.IsCountyEvent)
             {
                 calendarEvent.CountyEvent = true;
+            }
+            else
+            {
+                ModelState.AddModelError(String.Empty, "You must check a box for type of event");
             }
 
             // Checking to see if the date already exists in the database
@@ -86,51 +88,10 @@ namespace PC2.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             CalendarEvent calendarEvent = await CalendarEventDB.GetEvent(_context, id);
-            calendarEvent.StartingTime = UnformatTime(calendarEvent.StartingTime);
-            calendarEvent.EndingTime = UnformatTime(calendarEvent.EndingTime);
+            calendarEvent.StartingTime = calendarEvent.StartingTime;
+            calendarEvent.EndingTime = calendarEvent.EndingTime;
 
             return View(calendarEvent);
-        }
-
-        /// <summary>
-        /// Returns the time to a format that the input can read
-        /// </summary>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        private static string UnformatTime(string time)
-        {
-            int temp = Int32.Parse(time.Substring(0, time.IndexOf(":")));
-            string ampmTemp = time.Substring(time.IndexOf(" ") + 1);
-            string backPortion = "";
-
-            // If the time is two digits then indexof goes 1 too far
-            // If the time is one digit then indexof goes 2 too far
-            if (temp > 9)
-            {
-                backPortion = time.Substring(time.IndexOf(":"), time.IndexOf(" ") - 2);
-            }
-            else
-            {
-                backPortion = time.Substring(time.IndexOf(":"), time.IndexOf(" ") - 1);
-            }
-
-            string frontPortion = "";
-
-            if (ampmTemp == "PM" && temp != 13 && temp != 12)
-            {
-                temp += 12;
-                frontPortion = temp + "";
-            }
-            else if (temp < 10)
-            {
-                frontPortion = "0" + temp;
-            }
-            else
-            {
-                frontPortion = temp + "";
-            }
-
-            return frontPortion + backPortion;
         }
 
         [HttpPost]
@@ -146,9 +107,6 @@ namespace PC2.Controllers
                 calendarEvent.PC2Event = false;
             }
 
-            calendarEvent.StartingTime = FormatStartingTime(calendarEvent.StartingTime);
-            calendarEvent.EndingTime = FormatEndingTime(calendarEvent.EndingTime);
-
             bool success = await CalendarEventDB.UpdateEvent(_context, calendarEvent);
 
             if (!success)
@@ -159,70 +117,36 @@ namespace PC2.Controllers
             return RedirectToAction("Index");
         }
 
+    public class CalendarCreateEventViewModel
+    {
         /// <summary>
-        /// Formats the ending time from a 24 hour time to a standard 12 hour
-        /// with am or pm attached
+        /// The date of the event
         /// </summary>
-        /// <param name="endingTime"></param>
-        /// <returns></returns>
-        private static string FormatEndingTime(string endingTime)
-        {
-            int temp = Int32.Parse(endingTime.Substring(0, 2));
-            if (temp > 12)
-            {
-                temp -= 12;
-                endingTime = temp + endingTime.Substring(2) + " PM";
-            }
-            else if (temp == 12)
-            {
-                endingTime = temp + endingTime.Substring(2) + " PM";
-            }
-            else if (temp == 0)
-            {
-                temp += 12;
-                endingTime = temp + endingTime.Substring(2) + " AM";
-            }
-            else
-            {
-                endingTime = temp + endingTime.Substring(2) + " AM";
-            }
-
-            return endingTime;
-        }
+        public DateOnly Date { get; set; }
 
         /// <summary>
-        /// Formats the starting time from a 24 hour time to a 12 hour time
-        /// with am or pm attached
+        /// Time the event starts
         /// </summary>
-        /// <param name="startingTime"></param>
-        /// <returns></returns>
-        private static string FormatStartingTime(string startingTime)
-        {
-            int temp = Int32.Parse(startingTime.Substring(0, 2));
-            if (temp > 12)
-            {
-                // Want to keep 1:00 set at 13:00 for sorting times. 1:00 will always be set before 12:00
-                if (temp != 13)
-                {
-                    temp -= 12;
-                }
-                startingTime = temp + startingTime.Substring(2) + " PM";
-            }
-            else if (temp == 12)
-            {
-                startingTime = temp + startingTime.Substring(2) + " PM";
-            }
-            else if (temp == 0)
-            {
-                temp += 12;
-                startingTime = temp + startingTime.Substring(2) + " AM";
-            }
-            else
-            {
-                startingTime = temp + startingTime.Substring(2) + " AM";
-            }
+        public TimeOnly StartingTime { get; set; }
+        
+        /// <summary>
+        /// Time the event ends
+        /// </summary>
+        public TimeOnly EndingTime { get; set; }
+        
+        /// <summary>
+        /// Description of the event
+        /// </summary>
+        public string Description { get; set; }
 
-            return startingTime;
-        }
+        /// <summary>
+        /// Is the event a PC2 sponsored event
+        /// </summary>
+        public bool IsPc2Event { get; set; }
+
+        /// <summary>
+        /// Is the event a county sponsored event
+        /// </summary>
+        public bool IsCountyEvent { get; set; }
     }
 }
