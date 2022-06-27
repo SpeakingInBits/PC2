@@ -13,12 +13,9 @@ namespace PC2.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            EventsModel events = new EventsModel();
-            events.CalendarDate = await CalendarDateDB.GetAllDates(_context);
-            
-            return View(events);
+            return View();
         }
 
         public async Task<IActionResult> EventsAndActivities()
