@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PC2.Data;
 using PC2.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace PC2.Controllers
 {
@@ -17,9 +18,34 @@ namespace PC2.Controllers
 
         public async Task<IActionResult> Index()
         {
-            EventsModel eventsModel = new EventsModel();
-            eventsModel.CalendarDate = await CalendarDateDB.GetAllDates(_context);
-            return View(eventsModel);
+            List<CalendarDate> dateInfo = await CalendarDateDB.GetAllDates(_context);
+            List<CalendarDisplayEventViewModel> calendarData = new();
+
+            // Convert DB data to ViewModel
+            for (int i = 0; i < dateInfo.Count; i++)
+            {
+                calendarData.Add(new()
+                {
+                    // Convert DateOnly from DB to DateTime (time is ignored)
+                    DateOfEvent = dateInfo[i].Date.ToDateTime(new TimeOnly(i))
+                });
+
+                for (int j = 0; j < dateInfo[i].Events.Count; j++)
+                {
+                    calendarData[i].EventsForDate.Add(new()
+                    {
+                        EventId = dateInfo[i].Events[j].CalendarEventID,
+                        Date = dateInfo[i].Date.ToDateTime(new TimeOnly(i)),
+                        Description = dateInfo[i].Events[j].EventDescription,
+                        IsPc2Event = dateInfo[i].Events[j].PC2Event,
+                        IsCountyEvent = dateInfo[i].Events[j].CountyEvent,
+                        StartingTime = dateInfo[i].Events[j].StartingTime.ToShortTimeString(),
+                        EndingTime = dateInfo[i].Events[j].EndingTime.ToShortTimeString()
+                    });
+                }
+            }
+
+            return View(calendarData);
         }
 
         /// <summary>
@@ -35,13 +61,18 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CalendarCreateEventViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             CalendarDate calendarDate = new CalendarDate();
-            calendarDate.Date = model.Date;
+            calendarDate.Date = DateOnly.FromDateTime(model.Date);
 
             CalendarEvent calendarEvent = new CalendarEvent();
 
-            calendarEvent.StartingTime = model.StartingTime;
-            calendarEvent.EndingTime = model.EndingTime;
+            calendarEvent.StartingTime = TimeOnly.Parse(model.StartingTime);
+            calendarEvent.EndingTime = TimeOnly.Parse(model.EndingTime);
             calendarEvent.EventDescription = model.Description;
 
             if (model.IsPc2Event)
@@ -55,6 +86,7 @@ namespace PC2.Controllers
             else
             {
                 ModelState.AddModelError(String.Empty, "You must check a box for type of event");
+                return View(model);
             }
 
             // Checking to see if the date already exists in the database
@@ -107,24 +139,30 @@ namespace PC2.Controllers
     public class CalendarCreateEventViewModel
     {
         /// <summary>
+        /// PK value used to Edit/Delete event
+        /// </summary>
+        public int EventId { get; set; }
+
+        /// <summary>
         /// The date of the event
         /// </summary>
-        public DateOnly Date { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime Date { get; set; }
 
         /// <summary>
         /// Time the event starts
         /// </summary>
-        public TimeOnly StartingTime { get; set; }
+        public string StartingTime { get; set; } = null!;
 
         /// <summary>
         /// Time the event ends
         /// </summary>
-        public TimeOnly EndingTime { get; set; }
+        public string EndingTime { get; set; } = null!;
 
         /// <summary>
         /// Description of the event
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
 
         /// <summary>
         /// Is the event a PC2 sponsored event
@@ -135,5 +173,12 @@ namespace PC2.Controllers
         /// Is the event a county sponsored event
         /// </summary>
         public bool IsCountyEvent { get; set; }
+    }
+
+    public class CalendarDisplayEventViewModel
+    {
+        public DateTime DateOfEvent { get; set; }
+
+        public List<CalendarCreateEventViewModel> EventsForDate { get; set; } = new();
     }
 }

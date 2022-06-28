@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "Create Event";
 }
-<link rel="stylesheet" href="~/css/dtsel.css" />
 
 <div class="justify-content-center">
     <h1>@ViewData["Title"]</h1>
@@ -10,10 +9,11 @@
 
 <div class="row justify-content-center">
     <div class="col-md-4">
+        <div asp-validation-summary="All" class="text-danger"></div>
         <form id="create" class="form" asp-action="Create" method="post">
             <div class="form-group">
                 <label class="control-label">Set date for event</label>
-                <input asp-for="Date" class="form-control" type="text" value="@DateTime.Today.ToString("MM/dd/yyyy")" />
+                <input asp-for="Date" class="form-control" type="date" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -47,4 +47,6 @@
     </div>
 </div>
 
-<script src="~/js/dtsel.js"></script>
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
