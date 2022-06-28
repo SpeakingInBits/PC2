@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PC2.Data;
 using PC2.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace PC2.Controllers
 {
@@ -17,9 +18,34 @@ namespace PC2.Controllers
 
         public async Task<IActionResult> Index()
         {
-            EventsModel eventsModel = new EventsModel();
-            eventsModel.CalendarDate = await CalendarDateDB.GetAllDates(_context);
-            return View(eventsModel);
+            List<CalendarDate> dateInfo = await CalendarDateDB.GetAllDates(_context);
+            List<CalendarDisplayEventViewModel> calendarData = new();
+
+            // Convert DB data to ViewModel
+            for (int i = 0; i < dateInfo.Count; i++)
+            {
+                calendarData.Add(new()
+                {
+                    // Convert DateOnly from DB to DateTime (time is ignored)
+                    DateOfEvent = dateInfo[i].Date.ToDateTime(new TimeOnly(i))
+                });
+
+                for (int j = 0; j < dateInfo[i].Events.Count; j++)
+                {
+                    calendarData[i].EventsForDate.Add(new()
+                    {
+                        EventId = dateInfo[i].Events[j].CalendarEventID,
+                        Date = dateInfo[i].Date.ToDateTime(new TimeOnly(i)),
+                        Description = dateInfo[i].Events[j].EventDescription,
+                        IsPc2Event = dateInfo[i].Events[j].PC2Event,
+                        IsCountyEvent = dateInfo[i].Events[j].CountyEvent,
+                        StartingTime = dateInfo[i].Events[j].StartingTime.ToShortTimeString(),
+                        EndingTime = dateInfo[i].Events[j].EndingTime.ToShortTimeString()
+                    });
+                }
+            }
+
+            return View(calendarData);
         }
 
         /// <summary>
@@ -33,26 +59,34 @@ namespace PC2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(string date, string startingTime, string endingTime, string description)
+        public async Task<IActionResult> Create(CalendarCreateEventViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             CalendarDate calendarDate = new CalendarDate();
-            calendarDate.Date = DateTime.Parse(date);
+            calendarDate.Date = DateOnly.FromDateTime(model.Date);
 
             CalendarEvent calendarEvent = new CalendarEvent();
-            startingTime = FormatStartingTime(startingTime);
-            endingTime = FormatEndingTime(endingTime);
 
-            calendarEvent.StartingTime = startingTime;
-            calendarEvent.EndingTime = endingTime;
-            calendarEvent.EventDescription = description;
+            calendarEvent.StartingTime = TimeOnly.Parse(model.StartingTime);
+            calendarEvent.EndingTime = TimeOnly.Parse(model.EndingTime);
+            calendarEvent.EventDescription = model.Description;
 
-            if (Request.Form["pc2"] == "PC2")
+            if (model.IsPc2Event)
             {
                 calendarEvent.PC2Event = true;
             }
-            else
+            else if (model.IsCountyEvent)
             {
                 calendarEvent.CountyEvent = true;
+            }
+            else
+            {
+                ModelState.AddModelError(String.Empty, "You must check a box for type of event");
+                return View(model);
             }
 
             // Checking to see if the date already exists in the database
@@ -86,143 +120,92 @@ namespace PC2.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             CalendarEvent calendarEvent = await CalendarEventDB.GetEvent(_context, id);
-            calendarEvent.StartingTime = UnformatTime(calendarEvent.StartingTime);
-            calendarEvent.EndingTime = UnformatTime(calendarEvent.EndingTime);
-
-            return View(calendarEvent);
-        }
-
-        /// <summary>
-        /// Returns the time to a format that the input can read
-        /// </summary>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        private static string UnformatTime(string time)
-        {
-            int temp = Int32.Parse(time.Substring(0, time.IndexOf(":")));
-            string ampmTemp = time.Substring(time.IndexOf(" ") + 1);
-            string backPortion = "";
-
-            // If the time is two digits then indexof goes 1 too far
-            // If the time is one digit then indexof goes 2 too far
-            if (temp > 9)
+            CalendarCreateEventViewModel editEvent = new()
             {
-                backPortion = time.Substring(time.IndexOf(":"), time.IndexOf(" ") - 2);
-            }
-            else
-            {
-                backPortion = time.Substring(time.IndexOf(":"), time.IndexOf(" ") - 1);
-            }
+                Date = calendarEvent.CalendarDate.Date.ToDateTime(new TimeOnly()),
+                Description = calendarEvent.EventDescription,
+                EndingTime = calendarEvent.EndingTime.ToShortTimeString(),
+                EventId = calendarEvent.CalendarEventID,
+                IsCountyEvent = calendarEvent.CountyEvent,
+                StartingTime = calendarEvent.StartingTime.ToLongTimeString(),
+                IsPc2Event = calendarEvent.PC2Event
+            };
 
-            string frontPortion = "";
-
-            if (ampmTemp == "PM" && temp != 13 && temp != 12)
-            {
-                temp += 12;
-                frontPortion = temp + "";
-            }
-            else if (temp < 10)
-            {
-                frontPortion = "0" + temp;
-            }
-            else
-            {
-                frontPortion = temp + "";
-            }
-
-            return frontPortion + backPortion;
+            return View(editEvent);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(CalendarEvent calendarEvent)
+        public async Task<IActionResult> Edit(CalendarCreateEventViewModel model)
         {
-            // If event type is changed the opposite type needs to be set to false
-            if (calendarEvent.PC2Event)
-            {
-                calendarEvent.CountyEvent = false;
-            }
-            else
-            {
-                calendarEvent.PC2Event = false;
-            }
+            if (!ModelState.IsValid)
+                return View(model);
 
-            calendarEvent.StartingTime = FormatStartingTime(calendarEvent.StartingTime);
-            calendarEvent.EndingTime = FormatEndingTime(calendarEvent.EndingTime);
+            CalendarEvent calendarEvent = new()
+            {
+                CalendarEventID = model.EventId,
+                CountyEvent = model.IsCountyEvent,
+                PC2Event = model.IsPc2Event,
+                StartingTime = TimeOnly.Parse(model.StartingTime),
+                EndingTime = TimeOnly.Parse(model.EndingTime),
+                EventDescription = model.Description
+            };
 
             bool success = await CalendarEventDB.UpdateEvent(_context, calendarEvent);
 
             if (!success)
             {
-                TempData["UpdateFailed"] = "An error occured updating the event";
+                TempData["UpdateFailed"] = "An error occurred updating the event";
             }
 
             return RedirectToAction("Index");
         }
+    }
+    public class CalendarCreateEventViewModel
+    {
+        /// <summary>
+        /// PK value used to Edit/Delete event
+        /// </summary>
+        public int EventId { get; set; }
 
         /// <summary>
-        /// Formats the ending time from a 24 hour time to a standard 12 hour
-        /// with am or pm attached
+        /// The date of the event
         /// </summary>
-        /// <param name="endingTime"></param>
-        /// <returns></returns>
-        private static string FormatEndingTime(string endingTime)
-        {
-            int temp = Int32.Parse(endingTime.Substring(0, 2));
-            if (temp > 12)
-            {
-                temp -= 12;
-                endingTime = temp + endingTime.Substring(2) + " PM";
-            }
-            else if (temp == 12)
-            {
-                endingTime = temp + endingTime.Substring(2) + " PM";
-            }
-            else if (temp == 0)
-            {
-                temp += 12;
-                endingTime = temp + endingTime.Substring(2) + " AM";
-            }
-            else
-            {
-                endingTime = temp + endingTime.Substring(2) + " AM";
-            }
-
-            return endingTime;
-        }
+        [DataType(DataType.Date)]
+        public DateTime Date { get; set; }
 
         /// <summary>
-        /// Formats the starting time from a 24 hour time to a 12 hour time
-        /// with am or pm attached
+        /// Time the event starts
         /// </summary>
-        /// <param name="startingTime"></param>
-        /// <returns></returns>
-        private static string FormatStartingTime(string startingTime)
-        {
-            int temp = Int32.Parse(startingTime.Substring(0, 2));
-            if (temp > 12)
-            {
-                // Want to keep 1:00 set at 13:00 for sorting times. 1:00 will always be set before 12:00
-                if (temp != 13)
-                {
-                    temp -= 12;
-                }
-                startingTime = temp + startingTime.Substring(2) + " PM";
-            }
-            else if (temp == 12)
-            {
-                startingTime = temp + startingTime.Substring(2) + " PM";
-            }
-            else if (temp == 0)
-            {
-                temp += 12;
-                startingTime = temp + startingTime.Substring(2) + " AM";
-            }
-            else
-            {
-                startingTime = temp + startingTime.Substring(2) + " AM";
-            }
+        [Required]
+        public string StartingTime { get; set; } = null!;
 
-            return startingTime;
-        }
+        /// <summary>
+        /// Time the event ends
+        /// </summary>
+        [Required]
+        public string EndingTime { get; set; } = null!;
+
+        /// <summary>
+        /// Description of the event
+        /// </summary>
+        [Required]
+        public string Description { get; set; } = null!;
+
+        /// <summary>
+        /// Is the event a PC2 sponsored event
+        /// </summary>
+        public bool IsPc2Event { get; set; }
+
+        /// <summary>
+        /// Is the event a county sponsored event
+        /// </summary>
+        public bool IsCountyEvent { get; set; }
+    }
+
+    public class CalendarDisplayEventViewModel
+    {
+        public DateTime DateOfEvent { get; set; }
+
+        public List<CalendarCreateEventViewModel> EventsForDate { get; set; } = new();
     }
 }

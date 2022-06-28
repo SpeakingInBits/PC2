@@ -13,24 +13,24 @@ namespace PC2.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            EventsModel events = new EventsModel();
-            events.CalendarDate = await CalendarDateDB.GetAllDates(_context);
-            
-            return View(events);
+            return View();
         }
 
         public async Task<IActionResult> EventsAndActivities()
         {
             EventsModel eventsModel = new EventsModel();
             eventsModel.CalendarDate = await CalendarDateDB.GetAllDates(_context);
-            for (int i = 0; i < eventsModel.CalendarDate.Count; i++)
+
+            // Loop through each date on the Calendar
+            for (int i = eventsModel.CalendarDate.Count - 1; i >= 0; i--)
             {
-                for (int j = 0; j < eventsModel.CalendarDate[i].Events.Count; j++)
+                // Loop through all events for the day, remove from the end of list
+                for (int j = eventsModel.CalendarDate[i].Events.Count - 1; j >= 0; j--)
                 {
                     // If it is not a PC2 event then it should not be in the list
-                    if (eventsModel.CalendarDate[i].Events[j].CountyEvent == false)
+                    if (eventsModel.CalendarDate[i].Events[j].PC2Event == false)
                     {
                         eventsModel.CalendarDate[i].Events.RemoveAt(j);
                     }
@@ -48,12 +48,15 @@ namespace PC2.Controllers
         {
             EventsModel eventsModel = new EventsModel();
             eventsModel.CalendarDate = await CalendarDateDB.GetAllDates(_context);
-            for (int i = 0; i < eventsModel.CalendarDate.Count; i++)
+
+            // Loop through each date on the Calendar
+            for (int i = eventsModel.CalendarDate.Count - 1; i >= 0; i--)
             {
-                for (int j = 0; j < eventsModel.CalendarDate[i].Events.Count; j++)
+                // Loop through all events for the day, remove from the end of list
+                for (int j = eventsModel.CalendarDate[i].Events.Count - 1; j >= 0; j--)
                 {
-                    // If it is not a county event then it should not be in the list
-                    if (eventsModel.CalendarDate[i].Events[j].PC2Event == false)
+                    // If it is not a County event then it should not be in the list
+                    if (eventsModel.CalendarDate[i].Events[j].CountyEvent == false)
                     {
                         eventsModel.CalendarDate[i].Events.RemoveAt(j);
                     }
