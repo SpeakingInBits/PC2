@@ -120,12 +120,36 @@ namespace PC2.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             CalendarEvent calendarEvent = await CalendarEventDB.GetEvent(_context, id);
-            return View(calendarEvent);
+            CalendarCreateEventViewModel editEvent = new()
+            {
+                Date = calendarEvent.CalendarDate.Date.ToDateTime(new TimeOnly()),
+                Description = calendarEvent.EventDescription,
+                EndingTime = calendarEvent.EndingTime.ToShortTimeString(),
+                EventId = calendarEvent.CalendarEventID,
+                IsCountyEvent = calendarEvent.CountyEvent,
+                StartingTime = calendarEvent.StartingTime.ToLongTimeString(),
+                IsPc2Event = calendarEvent.PC2Event
+            };
+
+            return View(editEvent);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(CalendarEvent calendarEvent)
+        public async Task<IActionResult> Edit(CalendarCreateEventViewModel model)
         {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            CalendarEvent calendarEvent = new()
+            {
+                CalendarEventID = model.EventId,
+                CountyEvent = model.IsCountyEvent,
+                PC2Event = model.IsPc2Event,
+                StartingTime = TimeOnly.Parse(model.StartingTime),
+                EndingTime = TimeOnly.Parse(model.EndingTime),
+                EventDescription = model.Description
+            };
+
             bool success = await CalendarEventDB.UpdateEvent(_context, calendarEvent);
 
             if (!success)
@@ -152,16 +176,19 @@ namespace PC2.Controllers
         /// <summary>
         /// Time the event starts
         /// </summary>
+        [Required]
         public string StartingTime { get; set; } = null!;
 
         /// <summary>
         /// Time the event ends
         /// </summary>
+        [Required]
         public string EndingTime { get; set; } = null!;
 
         /// <summary>
         /// Description of the event
         /// </summary>
+        [Required]
         public string Description { get; set; } = null!;
 
         /// <summary>
