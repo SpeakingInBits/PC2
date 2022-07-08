@@ -73,4 +73,15 @@ namespace PC2.Models
             }
         }
     }
+
+    public class AgencyDisplayViewModel
+    {
+        public int AgencyId { get; set; }
+
+        public string AgencyName { get; set; } = null!;
+
+        public string? AgencyName2 { get; set; }
+
+        public string? City { get; set; }
+    }
 }

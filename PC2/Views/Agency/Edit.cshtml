@@ -6,6 +6,14 @@
     List<AgencyCategory> newAgencyCategories = (List<AgencyCategory>)ViewData["Categories"];
 }
 
+@if (TempData["EditSuccess"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      Agency was updated successfully
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <h1>Edit @Model.AgencyName</h1>
 
 <h4>Agency</h4>
@@ -136,10 +144,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 <script src=~/js/edit.js></script>
