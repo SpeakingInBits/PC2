@@ -26,9 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\images\events\" />
     <Folder Include="wwwroot\images\age-specific-issues\" />
-    <Folder Include="wwwroot\images\legislative-links\" />
     <Folder Include="wwwroot\images\resource-newsletters\" />
     <Folder Include="wwwroot\images\resource-closet\" />
     <Folder Include="wwwroot\images\resource-emergency\" />
@@ -36,8 +34,6 @@
     <Folder Include="wwwroot\images\videos\" />
     <Folder Include="wwwroot\images\resource-index\" />
     <Folder Include="wwwroot\images\resource\" />
-    <Folder Include="wwwroot\PDF\legislative-links\" />
-    <Folder Include="wwwroot\PDF\focus-newsletters\" />
     <Folder Include="wwwroot\PDF\DisabilityAwareness\" />
   </ItemGroup>
 

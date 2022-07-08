@@ -1,4 +1,4 @@
-﻿@model PC2.Models.EventsModel
+﻿@model List<PC2.Controllers.CalendarDisplayEventViewModel>
 @{
     ViewData["Title"] = "Event Calendar";
 }
@@ -62,56 +62,47 @@
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 0; i < Model.CalendarDate.Count; i++)
+                @for (int i = 0; i < Model.Count; i++)
                 {
                     <tr>
-                        <td class="agenda-date" class="active" rowspan="@Model.CalendarDate[i].Events.Count">
-                            <div class="dayofmonth">@Model.CalendarDate[i].Date.Day</div>
-                            <div class="dayofweek">@Model.CalendarDate[i].Date.DayOfWeek</div>
-                            <div class="shortdate text-muted">@Model.CalendarDate[i].Date.ToString("MMMM"),&nbsp;@Model.CalendarDate[i].Date.Year</div>
+                        <td class="agenda-date" class="active" rowspan="@Model[i].EventsForDate.Count">
+                            <div class="dayofmonth">@Model[i].DateOfEvent.Day</div>
+                            <div class="dayofweek">@Model[i].DateOfEvent.DayOfWeek</div>
+                            <div class="shortdate text-muted">@Model[i].DateOfEvent.ToString("MMMM"),&nbsp;@Model[i].DateOfEvent.Year</div>
                         </td>
-                        @for (int j = 0; j < Model.CalendarDate[i].Events.Count; j++)
+                        @for (int j = 0; j < Model[i].EventsForDate.Count; j++)
                         {
+                            var currentEvent = Model[i].EventsForDate[j];
                             @if (j > 0)
                             {
-                            <tr>
-                                <td class="agenda-time">
-                                    <!--Checking if the starting time is equal to 13 to set it to 1-->
-                                    @if (Model.CalendarDate[i].Events[j].StartingTime.Substring(0, 2) == "13")
-                                    {
-                                        Model.CalendarDate[i].Events[j].StartingTime = "1" + Model.CalendarDate[i].Events[j].StartingTime.Substring(Model.CalendarDate[i].Events[j].StartingTime.IndexOf(":"));
-                                    }
-                                    @Model.CalendarDate[i].Events[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].Events[j].EndingTime
-                                </td>
-                                <td class="agenda-events">
-                                    <div class="agenda-event">
-                                            @Model.CalendarDate[i].Events[j].EventDescription
-                                    </div>
-                                </td>
-                                <td>
-                                    <a asp-action="Edit" asp-route-id="@Model.CalendarDate[i].Events[j].CalendarEventID">Edit Event</a>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td class="agenda-time">
+                                        @currentEvent.StartingTime &nbsp;-&nbsp; @currentEvent.EndingTime
+                                    </td>
+                                    <td class="agenda-events">
+                                        <div class="agenda-event">
+                                            @currentEvent.Description
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@currentEvent.EventId">Edit Event</a>
+                                    </td>
+                                </tr>
                             }
                             else
                             {
-                            <td class="agenda-time">
-                                @if (Model.CalendarDate[i].Events[j].StartingTime.Substring(0, 2) == "13")
-                                {
-                                    Model.CalendarDate[i].Events[j].StartingTime = "1" + Model.CalendarDate[i].Events[j].StartingTime.Substring(Model.CalendarDate[i].Events[j].StartingTime.IndexOf(":"));
-                                }
-                                @Model.CalendarDate[i].Events[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].Events[j].EndingTime
-                            </td>
-                            <td class="agenda-events">
-                                <div class="agenda-event">
-                                    @Model.CalendarDate[i].Events[j].EventDescription
-                                </div>
-                            </td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@Model.CalendarDate[i].Events[j].CalendarEventID">Edit Event</a>
-                            </td>
+                                <td class="agenda-time">
+                                    @currentEvent.StartingTime &nbsp;-&nbsp; @currentEvent.EndingTime
+                                </td>
+                                <td class="agenda-events">
+                                    <div class="agenda-event">
+                                        @currentEvent.Description
+                                    </div>
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@currentEvent.EventId">Edit Event</a>
+                                </td>
                             }
-
                         }
                 </tr>
                 }

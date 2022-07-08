@@ -61,6 +61,12 @@ namespace PC2.Controllers
             {
                 Response result = await _emailSender.SendEmailAsync(contactPageModel.Name, contactPageModel.Email, contactPageModel.Phone, contactPageModel.Subject, contactPageModel.Message);
                 ViewData["EmailSent"] = result.IsSuccessStatusCode;
+                if (result.IsSuccessStatusCode)
+                {
+                    // Clear the data from the model
+                    ModelState.Clear(); 
+                    return View(new ContactPageModel());
+                }
             }
             return View();
         }

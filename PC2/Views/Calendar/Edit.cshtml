@@ -1,4 +1,4 @@
-﻿@model PC2.Models.CalendarEvent
+﻿@model PC2.Controllers.CalendarCreateEventViewModel
 
 @{
     ViewData["Title"] = "Edit Event";
@@ -12,7 +12,7 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CalendarEventID" />
+            <input type="hidden" asp-for="EventId" />
             <div class="form-group">
                 <label asp-for="StartingTime" class="control-label"></label>
                 <input asp-for="StartingTime" class="form-control" type="time" />
@@ -24,18 +24,18 @@
                 <span asp-validation-for="EndingTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EventDescription" class="control-label"></label>
-                <textarea asp-for="EventDescription" class="form-control" rows="5"></textarea>
-                <span asp-validation-for="EventDescription" class="text-danger"></span>
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="PC2Event" /> @Html.DisplayNameFor(model => model.PC2Event)
+                    <input class="form-check-input" asp-for="IsPc2Event" /> @Html.DisplayNameFor(model => model.IsPc2Event)
                 </label>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="CountyEvent" /> @Html.DisplayNameFor(model => model.CountyEvent)
+                    <input class="form-check-input" asp-for="IsCountyEvent" /> @Html.DisplayNameFor(model => model.IsCountyEvent)
                 </label>
             </div>
             <div class="form-group">

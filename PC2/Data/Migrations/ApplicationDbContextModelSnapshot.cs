@@ -17,7 +17,7 @@ namespace PC2.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -333,7 +333,7 @@ namespace PC2.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CalendarDateID"), 1L, 1);
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.HasKey("CalendarDateID");
 
@@ -354,9 +354,8 @@ namespace PC2.Data.Migrations
                     b.Property<bool>("CountyEvent")
                         .HasColumnType("bit");
 
-                    b.Property<string>("EndingTime")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<TimeSpan>("EndingTime")
+                        .HasColumnType("time");
 
                     b.Property<string>("EventDescription")
                         .IsRequired()
@@ -365,9 +364,8 @@ namespace PC2.Data.Migrations
                     b.Property<bool>("PC2Event")
                         .HasColumnType("bit");
 
-                    b.Property<string>("StartingTime")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<TimeSpan>("StartingTime")
+                        .HasColumnType("time");
 
                     b.HasKey("CalendarEventID");
 
