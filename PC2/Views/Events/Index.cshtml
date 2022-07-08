@@ -65,60 +65,68 @@ else
 }
 <br />
 
-
-<div class="agenda">
-    <div class="table-responsive">
-        <table class="table table-condensed table-bordered">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Event</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < Model.CalendarDate.Count; i++)
-                {
+@if (Model.CalendarDate.Count > 0)
+{
+    <div class="agenda">
+        <div class="table-responsive">
+            <table class="table table-condensed table-bordered">
+                <thead>
                     <tr>
-                        <td class="agenda-date" class="active" rowspan="@Model.CalendarDate[i].Events.Count">
-                            <div class="dayofmonth">@Model.CalendarDate[i].Date.Day</div>
-                            <div class="dayofweek">@Model.CalendarDate[i].Date.DayOfWeek</div>
-                            <div class="shortdate text-muted">@Model.CalendarDate[i].Date.ToString("MMMM"),&nbsp;@Model.CalendarDate[i].Date.Year</div>
-                        </td>
-                        @for (int j = 0; j < Model.CalendarDate[i].Events.Count; j++)
-                        {
-                            @if (j > 0)
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Event</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.CalendarDate.Count; i++)
+                    {
+                        <tr>
+                            <td class="agenda-date" class="active" rowspan="@Model.CalendarDate[i].Events.Count">
+                                <div class="dayofmonth">@Model.CalendarDate[i].Date.Day</div>
+                                <div class="dayofweek">@Model.CalendarDate[i].Date.DayOfWeek</div>
+                                <div class="shortdate text-muted">@Model.CalendarDate[i].Date.ToString("MMMM"),&nbsp;@Model.CalendarDate[i].Date.Year</div>
+                            </td>
+                            @for (int j = 0; j < Model.CalendarDate[i].Events.Count; j++)
                             {
-                            <tr>
-                                <td class="agenda-time">
+                                @if (j > 0)
+                                {
+                                <tr>
+                                    <td class="agenda-time">
+                                            @Model.CalendarDate[i].Events[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].Events[j].EndingTime
+                                    </td>
+                                    <td class="agenda-events">
+                                        <div class="agenda-event">
+                                                @Model.CalendarDate[i].Events[j].EventDescription
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                                else
+                                {
+                            <td class="agenda-time">
                                         @Model.CalendarDate[i].Events[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].Events[j].EndingTime
-                                </td>
-                                <td class="agenda-events">
-                                    <div class="agenda-event">
+                            </td>
+                            <td class="agenda-events">
+                                <div class="agenda-event">
                                             @Model.CalendarDate[i].Events[j].EventDescription
-                                    </div>
-                                </td>
-                            </tr>
-                            }
-                            else
-                            {
-                        <td class="agenda-time">
-                                    @Model.CalendarDate[i].Events[j].StartingTime &nbsp;-&nbsp; @Model.CalendarDate[i].Events[j].EndingTime
-                        </td>
-                        <td class="agenda-events">
-                            <div class="agenda-event">
-                                        @Model.CalendarDate[i].Events[j].EventDescription
-                            </div>
-                        </td>
-                            }
+                                </div>
+                            </td>
+                                }
 
-                        }
-                </tr>
-                }
-            </tbody>
-        </table>
+                            }
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
+}
+else
+{
+    <h2>There are no upcoming @ViewData["Title"] on the Calendar</h2>
+    <br />
+}
+
 <div class="text-center">
     <img class="img-fluid" height="600" src="~/images/events/June2022-NewEventActivityFlyer.jpg" alt="June 2022 New Activity Event Flyer">
 </div>
