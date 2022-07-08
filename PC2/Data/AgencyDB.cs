@@ -24,6 +24,7 @@ namespace PC2.Data
                           {
                               AgencyId = agency.AgencyId,
                               AgencyName = agency.AgencyName,
+                              AgencyName2 = agency.AgencyName2,
                               City = agency.City
                           }).ToListAsync();
         }

@@ -9,43 +9,66 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<br />
 
-<label for="agency">Choose an Agency: </label>
-<input list="agencyList" name="agency" id="agency" onchange="populateButtons();" />
+<p>
+    <input type="text" id="agency-filter" placeholder="Filter Results" onkeyup="filterTable();" />
+</p>
+<br />
 
-<datalist id="agencyList">
-    @foreach(AgencyDisplayViewModel agency in Model)
-    {
-        <option value="@agency.AgencyId">@agency.AgencyName 
-            @if (agency.City != null)
-            {
-                <text>- @agency.City</text>
+@section Scripts{
+    <script>
+
+        let agencyTable = document.querySelector("#agency-table > tbody");
+        let rows = agencyTable.getElementsByTagName("tr");
+
+        function filterTable() {
+            let query = document.getElementById("agency-filter").value.toLowerCase();
+
+            // Loop through all rows of table, and hide row if Agency Name does not match
+            for (let i = 0; i < rows.length; i++) {
+                let agencyName = rows[i].getElementsByTagName("td")[0].innerText.toLowerCase(); // Get the first <td> in the row (Agency Name)
+                if (agencyName.startsWith(query)) {
+                    rows[i].style.display = "";
+                }
+                else {
+                    rows[i].style.display = "none";
+                }
             }
-        </option>
-    }
-</datalist>
-
-<p id="result"></p>
-
-<a class="btn btn-primary" target="_blank" id="edit-link" asp-action="Edit">Edit</a> |
-<a class="btn btn-danger" target="_blank" id="delete-link" asp-action="Delete">Delete</a>
-
-<script>
-const originalEditLink = document.getElementById("edit-link").href;
-const originalDeleteLink = document.getElementById("delete-link").href;
-
-function populateButtons() {
-    let selectedAgency = document.getElementById("agency");
-    if (selectedAgency.value == "") {
-        return;
-    }
-
-    let selectedAgencyId = selectedAgency.value;
-
-    document.getElementById("edit-link").href = originalEditLink + "/" + selectedAgencyId;
-    document.getElementById("delete-link").href = originalDeleteLink + "/" + selectedAgencyId;
-
-    let selectedAgencyName = document.querySelector('option[value="' + selectedAgencyId + '"]').label;
-    document.getElementById("result").innerText = "You selected: " + selectedAgencyName;
+        }
+    </script>
 }
-</script>
+
+<table id="agency-table" class="table-bordered text-center">
+    <thead>
+        <tr>
+            <th>Agency Name</th>
+            <th>Agency Name 2</th>
+            <th>City</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (AgencyDisplayViewModel agency in Model)
+        {
+            <tr>
+                <td>
+                    @agency.AgencyName
+                </td>
+                <td>
+                    @agency.AgencyName2
+                </td>
+                <td>
+                    @if (agency.City != null)
+                    {
+                        @agency.City
+                    }
+                </td>
+                <td>
+                    <a class="btn btn-outline-primary" target="_blank" id="edit-link" asp-action="Edit" asp-route-id="@agency.AgencyId">Edit</a> |
+                    <a class="btn btn-outline-danger" target="_blank" id="delete-link" asp-action="Delete" asp-route-id="@agency.AgencyId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
