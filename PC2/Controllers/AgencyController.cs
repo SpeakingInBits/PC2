@@ -80,8 +80,10 @@ namespace PC2.Controllers
                     }
                 }
                 await AgencyDB.UpdateAgencyAsync(_context, agency, removedCategories);
+                TempData["EditSuccess"] = true;
             }
-            return RedirectToAction("Index");
+
+            return RedirectToAction("Edit", agency);
         }
 
         [HttpGet]
