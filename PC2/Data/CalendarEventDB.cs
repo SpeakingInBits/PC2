@@ -45,5 +45,33 @@ namespace PC2.Data
                 return false;
             }
         }
+        
+        /// <summary>
+        /// Delete target event and remove parent date from Calendar if no entries remain from same day
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static async Task DeleteEvent(ApplicationDbContext context, int id)
+        {
+            CalendarEvent? targetEvent = await context.CalendarEvents.FindAsync(id);
+
+            if (targetEvent == null)
+                return;
+
+            CalendarDate? parentDate = await context.CalendarDates.Where(c => c.Events.Count == 1).FirstOrDefaultAsync();
+
+            // Only a single event was found this day, delete entire date from Calendar
+            if (parentDate != null)
+            {
+                context.Entry(parentDate).State = EntityState.Deleted;
+                await context.SaveChangesAsync();
+            }
+            else // More than one event was found this day, delete target event only
+            {
+                context.Entry(targetEvent).State = EntityState.Deleted;
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

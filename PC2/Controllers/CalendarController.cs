@@ -159,6 +159,13 @@ namespace PC2.Controllers
 
             return RedirectToAction("Index");
         }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            await CalendarEventDB.DeleteEvent(_context, id);
+            TempData["EventDeleted"] = true;
+            return RedirectToAction("Index");
+        }
     }
     public class CalendarCreateEventViewModel
     {

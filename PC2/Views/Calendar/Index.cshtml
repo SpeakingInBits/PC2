@@ -50,6 +50,15 @@
     </div>
 }
 
+@if (TempData["EventDeleted"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        Event was deleted successfully!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        </button>
+    </div>
+}
+
 <div class="agenda">
     <div class="table-responsive">
         <table class="table table-condensed table-bordered">
@@ -85,7 +94,8 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a asp-action="Edit" asp-route-id="@currentEvent.EventId">Edit Event</a>
+                                        <a asp-action="Edit" asp-route-id="@currentEvent.EventId">Edit Event</a> |
+                                        <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@currentEvent.EventId">Delete Event</a>
                                     </td>
                                 </tr>
                             }
@@ -100,7 +110,8 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <a asp-action="Edit" asp-route-id="@currentEvent.EventId">Edit Event</a>
+                                    <a asp-action="Edit" asp-route-id="@currentEvent.EventId">Edit Event</a> |
+                                    <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@currentEvent.EventId">Delete Event</a>
                                 </td>
                             }
                         }
@@ -110,3 +121,14 @@
         </table>
     </div>
 </div>
+
+@section Scripts{
+    <script>
+        function confirmEventDeletion() {
+            let userConfirmed = confirm("Are you sure you want to delete this event?");
+            if (!userConfirmed) {
+                event.preventDefault();
+            }
+        }
+    </script>
+}
