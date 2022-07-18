@@ -124,10 +124,10 @@ namespace PC2.Controllers
             {
                 Date = calendarEvent.CalendarDate.Date.ToDateTime(new TimeOnly()),
                 Description = calendarEvent.EventDescription,
-                EndingTime = calendarEvent.EndingTime.ToShortTimeString(),
+                EndingTime = calendarEvent.EndingTime.ToString("HH:mm"),
                 EventId = calendarEvent.CalendarEventID,
                 IsCountyEvent = calendarEvent.CountyEvent,
-                StartingTime = calendarEvent.StartingTime.ToLongTimeString(),
+                StartingTime = calendarEvent.StartingTime.ToString("HH:mm"),
                 IsPc2Event = calendarEvent.PC2Event
             };
 
