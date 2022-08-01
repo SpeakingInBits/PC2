@@ -24,3 +24,12 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Test Coverage with CoverLet
+      uses: b3b00/coverlet-action@1.1.9
+      with:
+        testProject: PC2Tests/PC2Tests.csproj
+        output: 'lcov.info'
+        outputFormat: 'lcov'
+        excludes: '[program]*,[test]test.*'
+        # percent of new code that must be covered by tests
+        # threshold: 50 
