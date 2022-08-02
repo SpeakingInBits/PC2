@@ -33,11 +33,27 @@ namespace PC2.Controllers
             {
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, categoryID);
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
+                TrackResourceGuideTelemetry("Manual/Category", resourceGuide.Category.AgencyCategoryName);
             }
 
             await AgencyDB.GetDataForDataLists(_context, resourceGuide);
 
             return View(resourceGuide);
+        }
+
+        /// <summary>
+        /// Logs telemetry data for search events in the Resource Guide
+        /// </summary>
+        /// <param name="searchType">The type of search the user performed. This is a key in the telemetry system 
+        /// and can be filtered and queried</param>
+        /// <param name="searchTerm">The term used for searching (city, agency, etc)</param>
+        private void TrackResourceGuideTelemetry(string searchType, string searchTerm)
+        {
+            _telemetryClient.TrackEvent("ResourceGuideSearch",
+                        new Dictionary<string, string>{
+                        { "SearchType", searchType },
+                        { "SearchTerm", searchTerm }
+            });
         }
 
         /// <summary>
@@ -57,11 +73,7 @@ namespace PC2.Controllers
             {
                 if (searchModel.SearchedAgency != null)
                 {
-                    _telemetryClient.TrackEvent("ResourceGuideSearch", 
-                        new Dictionary<string, string>{
-                        { "SearchType", "Agency" },
-                        { "SearchTerm", searchModel.SearchedAgency }
-                    });
+                    TrackResourceGuideTelemetry("Agency", searchModel.SearchedAgency);
                     resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, searchModel.SearchedAgency);
                 }
             }
@@ -70,31 +82,19 @@ namespace PC2.Controllers
                 if (searchModel.SearchedCategory != null
                 && searchModel.SearchedCity != null)
                 {
-                    _telemetryClient.TrackEvent("ResourceGuideSearch",
-                        new Dictionary<string, string>{
-                        { "SearchType", "CityAndCategory" },
-                        { "SearchTerm", $"{searchModel.SearchedCity} - {searchModel.SearchedCategory}" }
-                    });
+                    TrackResourceGuideTelemetry("CityAndCategory", $"{searchModel.SearchedCity} - {searchModel.SearchedCategory}");
                     resourceGuide.Agencies = await AgencyDB.GetAgenciesByCategoryAndCity(_context,
                         searchModel.SearchedCategory, searchModel.SearchedCity);
                 }
                 else if (searchModel.SearchedCategory != null)
                 {
-                    _telemetryClient.TrackEvent("ResourceGuideSearch",
-                        new Dictionary<string, string>{
-                        { "SearchType", "Service" },
-                        { "SearchTerm", $"{searchModel.SearchedCategory}" }
-                    });
+                    TrackResourceGuideTelemetry("Service", $"{searchModel.SearchedCategory}");
                     resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
                     resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
                 }
                 else if (searchModel.SearchedCity != null)
                 {
-                    _telemetryClient.TrackEvent("ResourceGuideSearch",
-                        new Dictionary<string, string>{
-                        { "SearchType", "City" },
-                        { "SearchTerm", $"{searchModel.SearchedCity}" }
-                    });
+                    TrackResourceGuideTelemetry("City", searchModel.SearchedCity);
                     resourceGuide.CurrentCity = searchModel.SearchedCity;
                     resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
                 }
