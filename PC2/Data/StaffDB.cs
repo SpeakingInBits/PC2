@@ -22,6 +22,16 @@ namespace PC2.Data
                           select s).ToListAsync();
         }
 
+        /// <summary>
+        /// Returns a list of staff sorted in alphabetical order for admin ease of editing
+        /// </summary>
+        public static async Task<List<Staff>> GetAllStaffForEditing(ApplicationDbContext context)
+        {
+            return await (from s in context.StaffMembers
+                          orderby s.Name ascending
+                          select s).ToListAsync();
+        }
+
         public static async Task<Staff?> GetStaffMember(ApplicationDbContext context, int id)
         {
             return await (from s in context.StaffMembers

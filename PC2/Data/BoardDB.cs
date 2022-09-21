@@ -16,6 +16,16 @@ namespace PC2.Data
                           select b).ToListAsync();
         }
 
+        /// <summary>
+        /// Returns a list of board members sorted in alphabetical order for admin ease of editing
+        /// </summary>
+        public static async Task<List<Board>> GetAllBoardMembersForEditing(ApplicationDbContext context)
+        {
+            return await (from b in context.BoardMembers
+                          orderby b.Name ascending
+                          select b).ToListAsync();
+        }
+
         public static async Task CreateBoardMember(ApplicationDbContext context, Board board)
         {
             context.BoardMembers.Add(board);

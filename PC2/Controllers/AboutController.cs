@@ -18,7 +18,7 @@ namespace PC2.Controllers
 
         public async Task<IActionResult> IndexStaff()
         {
-            return View(await StaffDB.GetAllStaff(_context));
+            return View(await StaffDB.GetAllStaffForEditing(_context));
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace PC2.Controllers
 
         public async Task<IActionResult> IndexBoard()
         {
-            return View(await BoardDB.GetAllBoardMembers(_context));
+            return View(await BoardDB.GetAllBoardMembersForEditing(_context));
         }
 
         /// <summary>
