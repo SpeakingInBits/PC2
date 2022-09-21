@@ -7,6 +7,21 @@ namespace PC2.Data
     public static class CalendarEventDB
     {
         /// <summary>
+        /// Get all upcoming events for the calendar
+        /// </summary>
+        /// <param name="pc2Events">If true, pull PC2 events, otherwise pull county events</param>
+        public static async Task<List<CalendarEvent>> GetAllPC2Events(ApplicationDbContext context, bool pc2Events)
+        {
+            return await (from calEvents in context.CalendarEvents
+                          where calEvents.PC2Event == pc2Events
+                          orderby calEvents.DateOfEvent descending
+                          orderby calEvents.StartingTime ascending
+                         select calEvents).ToListAsync();
+        }
+
+
+
+        /// <summary>
         /// Adds an event to the database
         /// </summary>
         /// <param name="context"></param>
@@ -15,7 +30,6 @@ namespace PC2.Data
         public static async Task AddEvent(ApplicationDbContext context, CalendarEvent calendarEvent)
         {
             context.CalendarEvents.Add(calendarEvent);
-            context.CalendarDates.Attach(calendarEvent.CalendarDate);
             await context.SaveChangesAsync();
         }
 
@@ -29,7 +43,7 @@ namespace PC2.Data
         {
             return await (from c in context.CalendarEvents
                           where c.CalendarEventID == id
-                          select c).Include(nameof(CalendarEvent.CalendarDate)).FirstOrDefaultAsync();
+                          select c).FirstOrDefaultAsync();
         }
 
         public static async Task<bool> UpdateEvent(ApplicationDbContext context, CalendarEvent calendarEvent)
@@ -59,19 +73,8 @@ namespace PC2.Data
             if (targetEvent == null)
                 return;
 
-            CalendarDate? parentDate = await context.CalendarDates.Where(c => c.Events.Count == 1).FirstOrDefaultAsync();
-
-            // Only a single event was found this day, delete entire date from Calendar
-            if (parentDate != null)
-            {
-                context.Entry(parentDate).State = EntityState.Deleted;
-                await context.SaveChangesAsync();
-            }
-            else // More than one event was found this day, delete target event only
-            {
-                context.Entry(targetEvent).State = EntityState.Deleted;
-                await context.SaveChangesAsync();
-            }
+            context.Entry(targetEvent).State = EntityState.Deleted;
+            await context.SaveChangesAsync();
         }
     }
 }
