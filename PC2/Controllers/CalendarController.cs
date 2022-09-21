@@ -15,7 +15,7 @@ namespace PC2.Controllers
         {
             _context = context;
         }
-
+        /*
         public async Task<IActionResult> Index()
         {
             List<CalendarDate> dateInfo = await CalendarDateDB.GetAllDates(_context);
@@ -166,6 +166,7 @@ namespace PC2.Controllers
             TempData["EventDeleted"] = true;
             return RedirectToAction("Index");
         }
+        */
     }
     public class CalendarCreateEventViewModel
     {
