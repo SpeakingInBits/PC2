@@ -17,13 +17,13 @@ namespace PC2.Data
         }
 
         /// <summary>
-        /// Gets all the categories in the database
+        /// Gets all the categories in the database in alphabetical order
         /// </summary>
         /// <param name="context"></param>
         public static async Task<List<AgencyCategory>> GetAgencyCategoriesAsync(ApplicationDbContext context)
         {
             return await (from a in context.AgencyCategory
-                          select a).ToListAsync();
+                          select a).OrderBy(agencyCat => agencyCat.AgencyCategoryName).ToListAsync();
         }
 
         /// <summary>
