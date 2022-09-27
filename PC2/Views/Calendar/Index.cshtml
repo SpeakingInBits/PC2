@@ -1,6 +1,13 @@
-﻿@model List<PC2.Controllers.CalendarDisplayEventViewModel>
+﻿@model List<CalendarEvent>
 @{
     ViewData["Title"] = "Event Calendar";
+
+    List<List<CalendarEvent>> eventDateGroups =
+            Model
+            .GroupBy(calEvent => calEvent.DateOfEvent)
+            .Select(group => group.OrderByDescending(x => x.StartingTime).ToList())
+            .OrderByDescending(group => group.First())
+            .ToList();
 }
 
 <style>
@@ -71,51 +78,55 @@
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 0; i < Model.Count; i++)
+                @for (int currentDate = 0; currentDate < eventDateGroups.Count; currentDate++)
                 {
                     <tr>
-                        <td class="agenda-date" class="active" rowspan="@Model[i].EventsForDate.Count">
-                            <div class="dayofmonth">@Model[i].DateOfEvent.Day</div>
-                            <div class="dayofweek">@Model[i].DateOfEvent.DayOfWeek</div>
-                            <div class="shortdate text-muted">@Model[i].DateOfEvent.ToString("MMMM"),&nbsp;@Model[i].DateOfEvent.Year</div>
+                        <td class="agenda-date" class="active" rowspan="@eventDateGroups[currentDate].Count">
+                            <div class="dayofmonth">@eventDateGroups[currentDate][0].DateOfEvent.Day</div>
+                            <div class="dayofweek">@eventDateGroups[currentDate][0].DateOfEvent.DayOfWeek</div>
+                            <div class="shortdate text-muted">@eventDateGroups[currentDate][0].DateOfEvent.ToString("MMMM"),&nbsp;@eventDateGroups[currentDate][0].DateOfEvent.Year</div>
                         </td>
-                        @for (int j = 0; j < Model[i].EventsForDate.Count; j++)
+
+                        @for (int currentEvent = 0; currentEvent < eventDateGroups[currentDate].Count; currentEvent++)
                         {
-                            var currentEvent = Model[i].EventsForDate[j];
-                            @if (j > 0)
+                            @if (currentEvent > 0) // Create a whole row after the first event of each day
                             {
                                 <tr>
                                     <td class="agenda-time">
-                                        @currentEvent.StartingTime &nbsp;-&nbsp; @currentEvent.EndingTime
+                                        @eventDateGroups[currentDate][currentEvent].StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].EndingTime
                                     </td>
                                     <td class="agenda-events">
                                         <div class="agenda-event">
-                                            @currentEvent.Description
+                                            @eventDateGroups[currentDate][currentEvent].EventDescription
                                         </div>
                                     </td>
                                     <td>
-                                        <a asp-action="Edit" asp-route-id="@currentEvent.EventId">Edit Event</a> |
-                                        <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@currentEvent.EventId">Delete Event</a>
+                                        <p>
+                                            <a asp-action="Edit" asp-route-id="@eventDateGroups[currentDate][currentEvent].CalendarEventID">Edit Event</a> |
+                                            <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@eventDateGroups[currentDate][currentEvent].CalendarEventID">Delete Event</a>
+                                        </p>
                                     </td>
                                 </tr>
                             }
                             else
                             {
                                 <td class="agenda-time">
-                                    @currentEvent.StartingTime &nbsp;-&nbsp; @currentEvent.EndingTime
+                                    @eventDateGroups[currentDate][currentEvent].StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].EndingTime
                                 </td>
                                 <td class="agenda-events">
                                     <div class="agenda-event">
-                                        @currentEvent.Description
+                                        @eventDateGroups[currentDate][currentEvent].EventDescription
                                     </div>
                                 </td>
                                 <td>
-                                    <a asp-action="Edit" asp-route-id="@currentEvent.EventId">Edit Event</a> |
-                                    <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@currentEvent.EventId">Delete Event</a>
+                                    <p>
+                                        <a asp-action="Edit" asp-route-id="@eventDateGroups[currentDate][currentEvent].CalendarEventID">Edit Event</a> |
+                                        <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@eventDateGroups[currentDate][currentEvent].CalendarEventID">Delete Event</a>
+                                    </p>
                                 </td>
                             }
                         }
-                </tr>
+                    </tr>
                 }
             </tbody>
         </table>
