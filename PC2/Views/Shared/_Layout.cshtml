@@ -128,7 +128,7 @@ cfg: { // Application Insights Configuration
                             </li>
                         }
                         else
-                        {
+                        {                    
                             <li id="Home-Index" class="nav-item menu-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">HOME</a>
                         </li>
@@ -146,23 +146,21 @@ cfg: { // Application Insights Configuration
                                 <span class="navbar-toggler-icon d-none"></span>
                             </button>
                             <div class="" id="navbarNavDarkDropdown">
-                                <ul class="navbar-nav priority">
-                                    <li class="nav-item dropdown menu-item">
-                                        <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        RESOURCES
-                                        </p>
-                                        <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink">
-                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="Index">Resources</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="FocusNewsletters">Focus Newsletters</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceLinks">Resource Links</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="AgeSpecificIssues">Age-Specific Issues</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Legislative Links and Events</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="EmergencyPreparedness">Emergency Preparedness</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Resources" asp-action="VirtualCloset">Virtual Closet</a></li>
-                                        </ul>
-                                    </li>
+                                <ul class="navbar-nav priority">                                   
+                                    <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    RESOURCES
+                                    </p>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink">
+                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="Index">Resources</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="FocusNewsletters">Focus Newsletters</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceLinks">Resource Links</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="AgeSpecificIssues">Age-Specific Issues</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Legislative Links and Events</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="EmergencyPreparedness">Emergency Preparedness</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="VirtualCloset">Virtual Closet</a></li>
+                                    </ul>
                                 </ul>
                             </div>
                         </li>
@@ -175,15 +173,13 @@ cfg: { // Application Insights Configuration
                                 </button>
                                 <div class="" id="navbarNavDarkDropdown">
                                     <ul class="navbar-nav priority">
-                                        <li class="nav-item dropdown menu-item">
-                                            <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            ABOUT US
-                                            </p>
-                                            <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink">
-                                                <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="About">About Us</a></li>
-                                                <li><a class="dropdown-item" asp-controller="Home" asp-action="ContactPage">Contact Us</a></li>
-                                            </ul>
-                                        </li>
+                                        <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        ABOUT US
+                                        </p>
+                                        <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink">
+                                            <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="About">About Us</a></li>
+                                            <li><a class="dropdown-item" asp-controller="Home" asp-action="ContactPage">Contact Us</a></li>
+                                        </ul>
                                     </ul>
                                 </div>
                         </li>
