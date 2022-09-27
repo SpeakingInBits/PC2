@@ -15,37 +15,11 @@ namespace PC2.Controllers
         {
             _context = context;
         }
-        /*
+        
         public async Task<IActionResult> Index()
         {
-            List<CalendarDate> dateInfo = await CalendarDateDB.GetAllDates(_context);
-            List<CalendarDisplayEventViewModel> calendarData = new();
-
-            // Convert DB data to ViewModel
-            for (int i = 0; i < dateInfo.Count; i++)
-            {
-                calendarData.Add(new()
-                {
-                    // Convert DateOnly from DB to DateTime (time is ignored)
-                    DateOfEvent = dateInfo[i].Date.ToDateTime(new TimeOnly(i))
-                });
-
-                for (int j = 0; j < dateInfo[i].Events.Count; j++)
-                {
-                    calendarData[i].EventsForDate.Add(new()
-                    {
-                        EventId = dateInfo[i].Events[j].CalendarEventID,
-                        Date = dateInfo[i].Date.ToDateTime(new TimeOnly(i)),
-                        Description = dateInfo[i].Events[j].EventDescription,
-                        IsPc2Event = dateInfo[i].Events[j].PC2Event,
-                        IsCountyEvent = dateInfo[i].Events[j].CountyEvent,
-                        StartingTime = dateInfo[i].Events[j].StartingTime.ToShortTimeString(),
-                        EndingTime = dateInfo[i].Events[j].EndingTime.ToShortTimeString()
-                    });
-                }
-            }
-
-            return View(calendarData);
+            List<CalendarEvent> calendarEvents = await CalendarEventDB.GetAllEvents(_context);
+            return View(calendarEvents);
         }
 
         /// <summary>
@@ -66,47 +40,29 @@ namespace PC2.Controllers
                 return View(model);
             }
 
-            CalendarDate calendarDate = new CalendarDate();
-            calendarDate.Date = DateOnly.FromDateTime(model.Date);
-
-            CalendarEvent calendarEvent = new CalendarEvent();
-
-            calendarEvent.StartingTime = TimeOnly.Parse(model.StartingTime);
-            calendarEvent.EndingTime = TimeOnly.Parse(model.EndingTime);
-            calendarEvent.EventDescription = model.Description;
+            CalendarEvent newEvent = new()
+            {
+                DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent),
+                StartingTime = TimeOnly.Parse(model.StartingTime),
+                EndingTime = TimeOnly.Parse(model.EndingTime),
+                EventDescription = model.Description
+            };
 
             if (model.IsPc2Event)
             {
-                calendarEvent.PC2Event = true;
+                newEvent.PC2Event = true;
             }
             else if (model.IsCountyEvent)
             {
-                calendarEvent.CountyEvent = true;
+                newEvent.CountyEvent = true;
             }
             else
             {
-                ModelState.AddModelError(String.Empty, "You must check a box for type of event");
+                ModelState.AddModelError(string.Empty, "You must check a box for type of event");
                 return View(model);
             }
 
-            // Checking to see if the date already exists in the database
-            CalendarDate existingDate = await CalendarDateDB.GetCalendarDate(_context, calendarDate.Date);
-
-            if (existingDate != null)
-            {
-                calendarEvent.CalendarDate = existingDate;
-                await CalendarEventDB.AddEvent(_context, calendarEvent);
-                existingDate.Events.Add(calendarEvent);
-                CalendarDateDB.AddCalendarEventToDate(_context, existingDate);
-            }
-            else
-            {
-                await CalendarDateDB.AddCalendarDate(_context, calendarDate);
-                calendarEvent.CalendarDate = calendarDate;
-                await CalendarEventDB.AddEvent(_context, calendarEvent);
-                calendarDate.Events.Add(calendarEvent);
-                CalendarDateDB.AddCalendarEventToDate(_context, calendarDate);
-            }
+            await CalendarEventDB.AddEvent(_context, newEvent);
 
             return RedirectToAction("Index");
         }
@@ -119,10 +75,16 @@ namespace PC2.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            CalendarEvent calendarEvent = await CalendarEventDB.GetEvent(_context, id);
+            CalendarEvent? calendarEvent = await CalendarEventDB.GetEvent(_context, id);
+
+            if (calendarEvent == null)
+            {
+                return NotFound();
+            }
+
             CalendarCreateEventViewModel editEvent = new()
             {
-                Date = calendarEvent.CalendarDate.Date.ToDateTime(new TimeOnly()),
+                DateOfEvent = calendarEvent.DateOfEvent.ToDateTime(new TimeOnly()),
                 Description = calendarEvent.EventDescription,
                 EndingTime = calendarEvent.EndingTime.ToString("HH:mm"),
                 EventId = calendarEvent.CalendarEventID,
@@ -147,7 +109,8 @@ namespace PC2.Controllers
                 PC2Event = model.IsPc2Event,
                 StartingTime = TimeOnly.Parse(model.StartingTime),
                 EndingTime = TimeOnly.Parse(model.EndingTime),
-                EventDescription = model.Description
+                EventDescription = model.Description,
+                DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent)
             };
 
             bool success = await CalendarEventDB.UpdateEvent(_context, calendarEvent);
@@ -166,7 +129,7 @@ namespace PC2.Controllers
             TempData["EventDeleted"] = true;
             return RedirectToAction("Index");
         }
-        */
+        
     }
     public class CalendarCreateEventViewModel
     {
@@ -179,7 +142,7 @@ namespace PC2.Controllers
         /// The date of the event
         /// </summary>
         [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+        public DateTime DateOfEvent { get; set; }
 
         /// <summary>
         /// Time the event starts
@@ -208,12 +171,5 @@ namespace PC2.Controllers
         /// Is the event a county sponsored event
         /// </summary>
         public bool IsCountyEvent { get; set; }
-    }
-
-    public class CalendarDisplayEventViewModel
-    {
-        public DateTime DateOfEvent { get; set; }
-
-        public List<CalendarCreateEventViewModel> EventsForDate { get; set; } = new();
     }
 }
