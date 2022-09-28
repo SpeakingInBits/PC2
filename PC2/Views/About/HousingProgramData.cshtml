@@ -6,15 +6,19 @@
 
 <h1>Housing Program Data</h1>
 
-@if(TempData["Message"] != null)
-{
+@{
+    bool hasTempData = TempData["Message"] != null;
+    
+    if(hasTempData)
+    {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-      @TempData["Message"]
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    }
 }
 
-<table class="table">
+<table id="data_table" class="table">
     <thead>
         <tr>
             <th>
@@ -39,9 +43,7 @@
                 <form method="post">
                     <input type="hidden" name="HouseHoldSize" value="@item.HouseHoldSize">
                     $<input name="MaximumIncome" value="@item.MaximumIncome" />
-                    <a href="#@item.HouseHoldSize">
-                        <input type="submit" value="Update Entry" id="@item.HouseHoldSize" class="btn btn-primary">
-                    </a>
+                    <input type="submit" value="Update Entry" id="@item.HouseHoldSize" class="btn btn-primary">
                 </form>
             </td>
             <td>
@@ -51,3 +53,9 @@
 }
     </tbody>
 </table>
+@if(hasTempData)
+{
+    <script>
+            document.getElementById("data_table").scrollIntoView();
+    </script>
+}
