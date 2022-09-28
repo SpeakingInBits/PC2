@@ -6,15 +6,19 @@
 
 <h1>Housing Program Data</h1>
 
-@if(TempData["Message"] != null)
-{
+@{
+    bool hasTempData = TempData["Message"] != null;
+    
+    if(hasTempData)
+    {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-      @TempData["Message"]
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    }
 }
 
-<table class="table">
+<table id="data_table" class="table">
     <thead>
         <tr>
             <th>
@@ -49,3 +53,9 @@
 }
     </tbody>
 </table>
+@if(hasTempData)
+{
+    <script>
+            document.getElementById("data_table").scrollIntoView();
+    </script>
+}
