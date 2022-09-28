@@ -37,9 +37,11 @@
             </td>
             <td>
                 <form method="post">
-                    <input type="hidden" name="HouseHoldSize" value="@item.HouseHoldSize">
-                    $<input name="MaximumIncome" value="@item.MaximumIncome" />
-                    <input type="submit" value="Update Entry" class="btn btn-primary">
+                    <a href="#@item.HouseHoldSize">
+                        <input type="hidden" name="HouseHoldSize" value="@item.HouseHoldSize">
+                        $<input name="MaximumIncome" value="@item.MaximumIncome" />
+                        <input type="submit" value="Update Entry" id="@item.HouseHoldSize" class="btn btn-primary">
+                    </a>
                 </form>
             </td>
             <td>
