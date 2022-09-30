@@ -19,8 +19,8 @@ builder.Services.AddApplicationInsightsTelemetry(options =>
 // Add minifier and bundler
 builder.Services.AddWebOptimizer(pipeline =>
 {
-    pipeline.MinifyJsFiles("/js/site.js");
-    pipeline.MinifyCssFiles("/css/site.css");
+    pipeline.MinifyJsFiles("/js/**/*.js");
+    pipeline.MinifyCssFiles("/css/**/*.css");
     pipeline.AddCssBundle("/css/site.css", "/css/**/*.css");
     pipeline.AddJavaScriptBundle("/js/site.js", "/js/**/*.js");
 });
