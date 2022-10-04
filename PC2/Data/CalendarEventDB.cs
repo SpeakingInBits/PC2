@@ -10,7 +10,7 @@ namespace PC2.Data
         /// Get all upcoming events for the calendar
         /// </summary>
         /// <param name="pc2Events">If true, pull PC2 events, otherwise pull county events</param>
-        public static async Task<List<CalendarEvent>> GetAllPC2Events(ApplicationDbContext context, bool pc2Events)
+        public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context, bool pc2Events)
         {
             return await (from calEvents in context.CalendarEvents
                           where calEvents.PC2Event == pc2Events

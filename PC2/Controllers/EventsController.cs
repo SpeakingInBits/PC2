@@ -19,7 +19,7 @@ namespace PC2.Controllers
             EventsModel eventsModel = new()
             {
                 IsPC2EventCalendar = getPc2Events,
-                CalendarEvents = await CalendarEventDB.GetAllPC2Events(_context, getPc2Events)
+                CalendarEvents = await CalendarEventDB.GetAllEvents(_context, getPc2Events)
             };
 
             return View(eventsModel);
