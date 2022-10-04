@@ -14,6 +14,11 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="EventId" />
             <div class="form-group">
+                <label asp-for="DateOfEvent" class="control-label"></label>
+                <input asp-for="DateOfEvent" class="form-control" type="date" />
+                <span asp-validation-for="DateOfEvent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="StartingTime" class="control-label"></label>
                 <input asp-for="StartingTime" class="form-control" type="time" />
                 <span asp-validation-for="StartingTime" class="text-danger"></span>
