@@ -16,6 +16,15 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddApplicationInsightsTelemetry(options =>
     options.ConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value);
 
+// Add minifier and bundler
+builder.Services.AddWebOptimizer(pipeline =>
+{
+    pipeline.MinifyJsFiles("/js/**/*.js");
+    pipeline.MinifyCssFiles("/css/**/*.css");
+    pipeline.AddCssBundle("/css/site.css", "/css/**/*.css");
+    pipeline.AddJavaScriptBundle("/js/site.js", "/js/**/*.js");
+});
+
 builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOptions)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -51,6 +60,7 @@ else
     app.UseHsts();
 }
 
+app.UseWebOptimizer();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRequestLocalization();
