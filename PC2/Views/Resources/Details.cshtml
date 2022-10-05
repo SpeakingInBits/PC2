@@ -118,9 +118,8 @@
                         // if the string contains "(xxx)"
                         if (phone[i] == '(' && phone[i + 4] == ')')
                         {
-                            //display the number
+                            //display the number and move to the end of it
                             <a href="tel:@phone.Substring(i, 14)">@phone.Substring(i, 14)</a>
-                            // skip to the end of the number
                             i = i + 14;
                         }
                         // else display the character
@@ -131,8 +130,7 @@
                     }
                 </dd>
             }
-        }
-        
+        }       
         @if (Model.TollFree != null)
         {
             <dt class = "col-sm-2">
