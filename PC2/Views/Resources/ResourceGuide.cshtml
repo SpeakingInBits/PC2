@@ -262,8 +262,28 @@ else
                     }
                     @if (Model.Agencies[i].Email != null)
                     {
+                        string email = Model.Agencies[i].Email;
+                        int emailStart = 0;
+                        
                         <td>
-                            <a href="mailto: @Model.Agencies[i].Email" >@Model.Agencies[i].Email</a>
+                            @for (int j = 0; j < email.Length; j++)
+                            {
+                                // if the string contains a space
+                                if (email[j] == ' ')
+                                {                                    
+                                    // display all characters before email start to j as an email
+                                    string singleEmail = email.Substring(emailStart, j - emailStart);
+                                    <a href="mailto:@singleEmail">@singleEmail</a>
+                                    <br>
+                                    emailStart = j;
+                                }
+                            }
+                            @*display final email*@
+                            @{ 
+                                string finalEmail = email.Substring(emailStart, email.Length - emailStart);
+                            }
+                            <a href="mailto:@finalEmail">@finalEmail</a>
+
                         </td>
                     }
                     else
