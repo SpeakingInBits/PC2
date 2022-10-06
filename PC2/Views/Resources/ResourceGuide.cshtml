@@ -225,11 +225,48 @@ else
                     }
                     @if (Model.Agencies[i].Phone != null)
                     {
-                        <td>@Model.Agencies[i].Phone</td>
+                        // create a variable for Model.Agencies[i].Phone
+                        string phoneNumber = Model.Agencies[i].Phone;
+                        
+                        <td>
+                        @if (phoneNumber.Substring(0, 3) == "tel")
+                        {
+                            <a href="@phoneNumber)">phoneNumber</a>
+                        }
+                        else 
+                        {
+                            @for (int j = 0; j < phoneNumber.Length; j++)
+                            {
+                                // if the string contains "(xxx)"
+                                if (phoneNumber[j] == '(' && phoneNumber[j + 4] == ')')
+                                {
+                                    //display as a clickable number and move to the end of it
+                                    <a href="tel:@phoneNumber.Substring(j, 14)">@phoneNumber.Substring(j, 14)</a>
+                                    <br>                               
+                                    j = j + 14;
+                                }
+                                // else display the character
+                                else
+                                {
+                                    @phoneNumber[j];
+                                }                          
+                            }
+                        }
+                        </td>
                     }
                     else
                     {
-                        <td>@Model.Agencies[i].Email</td>
+                        <td></td>
+                    }
+                    @if (Model.Agencies[i].Email != null)
+                    {
+                        <td>
+                            <a href="mailto: @Model.Agencies[i].Email" >@Model.Agencies[i].Email</a>
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
                     }
                     @if (Model.Agencies[i].City != null)
                     {

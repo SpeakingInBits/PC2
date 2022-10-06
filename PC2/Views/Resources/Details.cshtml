@@ -118,7 +118,7 @@
                         // if the string contains "(xxx)"
                         if (phone[i] == '(' && phone[i + 4] == ')')
                         {
-                            //display the number and move to the end of it
+                            //display as a clickable number and move to the end of it
                             <a href="tel:@phone.Substring(i, 14)">@phone.Substring(i, 14)</a>
                             i = i + 14;
                         }
