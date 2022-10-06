@@ -243,12 +243,11 @@ else
                                     @if (j > 0) {
                                         <br>
                                     }
-                                    //display phone number as clickable number and move to the end of it
+                                    // display phone number as clickable number and move to the end of it
                                     <a href="tel:@phoneNumber.Substring(j, 14)">@phoneNumber.Substring(j, 14)</a>
                                     <br>                               
                                     j = j + 14;
                                 }
-                                
                                 else // display the character
                                 {
                                     @phoneNumber[j];
