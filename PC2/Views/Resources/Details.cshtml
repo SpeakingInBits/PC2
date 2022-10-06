@@ -109,8 +109,8 @@
                 <dd class = "col-sm-10">
                     <a href="@phone)">@Model.Phone</a>
                 </dd>
-            }
-            else 
+            }       
+            else @*handle inconsistencies in phone number data*@
             {
                 <dd class = "col-sm-10">
                     @for (int i = 0; i < phone.Length; i++)
@@ -118,12 +118,11 @@
                         // if the string contains "(xxx)"
                         if (phone[i] == '(' && phone[i + 4] == ')')
                         {
-                            //display as a clickable number and move to the end of it
+                            //display phone number as clickable number and move to the end of it
                             <a href="tel:@phone.Substring(i, 14)">@phone.Substring(i, 14)</a>
                             i = i + 14;
-                        }
-                        // else display the character
-                        else
+                        }                      
+                        else // display the character
                         {
                             @phone[i]
                         }
