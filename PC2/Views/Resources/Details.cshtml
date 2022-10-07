@@ -186,11 +186,30 @@
         }
         @if (Model.Email != null)
         {
+            string email = Model.Email;
+            int emailStart = 0;
+                
             <dt class = "col-sm-2">
                 @Html.DisplayNameFor(model => model.Email)
             </dt>
             <dd class = "col-sm-10">
-                <a href="mailto: @Html.DisplayFor(model => model.Email)" >@Model.Email</a>
+                @*separate multiple emails*@
+                @for (int j = 0; j < email.Length; j++)
+                {
+                    // if the email contains a space
+                    if (email[j] == ' ')
+                    {
+                        // display all characters from emailStart to current index as link
+                        string singleEmail = email.Substring(emailStart, j - emailStart);
+                        <a href="mailto:@singleEmail">@singleEmail</a>
+                        <br>
+                        emailStart = j;
+                    }
+                }
+                @{ // display link as final email
+                    string finalEmail = email.Substring(emailStart, email.Length - emailStart);
+                }
+                <a href="mailto:@finalEmail">@finalEmail</a>
             </dd>
         }
         @if (Model.Website != null)

@@ -266,20 +266,20 @@ else
                         int emailStart = 0;
                         
                         <td>
+                            @*separate multiple emails*@
                             @for (int j = 0; j < email.Length; j++)
                             {
-                                // if the string contains a space
+                                // if the email contains a space
                                 if (email[j] == ' ')
-                                {                                    
-                                    // display all characters before email start to j as an email
+                                {
+                                    // display all characters from emailStart to current index as link
                                     string singleEmail = email.Substring(emailStart, j - emailStart);
                                     <a href="mailto:@singleEmail">@singleEmail</a>
                                     <br>
                                     emailStart = j;
                                 }
                             }
-                            @*display final email*@
-                            @{ 
+                            @{ // display link as final email
                                 string finalEmail = email.Substring(emailStart, email.Length - emailStart);
                             }
                             <a href="mailto:@finalEmail">@finalEmail</a>
