@@ -221,22 +221,29 @@ namespace PC2.Controllers
             return RedirectToAction("HousingProgramData");
         }
 
+        [HttpGet]
+        public IActionResult UploadNewsletter()
+        {
+            return View();
+        }
+
         [HttpPost]
         public IActionResult UploadNewsletter(IFormFile newsletterFile)
         {
             if (newsletterFile != null)
             {
-                // direct path to wwwroot/PDF/focus-newsletter folder
+                // set path to wwwroot/PDF/focus-newsletter/file.pdf
                 string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
-
                 string fileName = Path.GetFileName(newsletterFile.FileName);
                 string filePath = Path.Combine(directory, fileName);
+                //copy file to path
                 using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
                     newsletterFile.CopyTo(fileStream);
                 }
                 TempData["Message"] = $"File {fileName} uploaded successfully";
             }
+            
             return View();
         }
     }
