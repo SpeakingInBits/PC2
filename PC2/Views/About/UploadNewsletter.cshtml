@@ -8,22 +8,20 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-controller="About" asp-action="UploadNewsletter" enctype="multipart/form-data" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="UploadNewsletter" enctype="multipart/form-data" method="post">
             <div class="form-group">
-                <input type="file" name="newsletterFile" />
-                <span class="text-danger"></span>
+                <input type="file" name="newsletterFile"/>
+                <span class="text-danger"></span>               
             </div>
             <br />
             <div class="form-group">
-                <input type="submit" value="Upload" class="btn btn-primary" />
+                 <input type="submit" value="Create" class="btn btn-primary" /> 
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    @*redirect to Resources/FocusNewsletters *@
     <br />
     <a asp-action="FocusNewsLetters" asp-controller="Resources" /> To Focus Newsletters</a>
 </div>

@@ -220,21 +220,20 @@ namespace PC2.Controllers
             TempData["Message"] = $"Entry for Household size {entry.HouseHoldSize} updated Successfully";
             return RedirectToAction("HousingProgramData");
         }
-        
-        public IActionResult UploadNewsletter(IFormFile newslettterFile)
-        {
 
-            
-            if (newslettterFile != null)
+        [HttpPost]
+        public IActionResult UploadNewsletter(IFormFile newsletterFile)
+        {
+            if (newsletterFile != null)
             {
                 // direct path to wwwroot/PDF/focus-newsletter folder
                 string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
 
-                string fileName = Path.GetFileName(newslettterFile.FileName);
+                string fileName = Path.GetFileName(newsletterFile.FileName);
                 string filePath = Path.Combine(directory, fileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
-                    newslettterFile.CopyTo(fileStream);
+                    newsletterFile.CopyTo(fileStream);
                 }
                 TempData["Message"] = $"File {fileName} uploaded successfully";
             }
