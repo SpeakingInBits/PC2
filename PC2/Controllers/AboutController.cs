@@ -11,9 +11,13 @@ namespace PC2.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public AboutController(ApplicationDbContext context)
+        private readonly IWebHostEnvironment _hostingEnvironment;
+
+        // Iwebhost environment is used to get the path to the wwwroot folder
+        public AboutController(ApplicationDbContext context, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task<IActionResult> IndexStaff()
@@ -215,6 +219,26 @@ namespace PC2.Controllers
             await _context.SaveChangesAsync();
             TempData["Message"] = $"Entry for Household size {entry.HouseHoldSize} updated Successfully";
             return RedirectToAction("HousingProgramData");
+        }
+        
+        public IActionResult UploadNewsletter(IFormFile newslettterFile)
+        {
+
+            
+            if (newslettterFile != null)
+            {
+                // direct path to wwwroot/PDF/focus-newsletter folder
+                string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
+
+                string fileName = Path.GetFileName(newslettterFile.FileName);
+                string filePath = Path.Combine(directory, fileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    newslettterFile.CopyTo(fileStream);
+                }
+                TempData["Message"] = $"File {fileName} uploaded successfully";
+            }
+            return View();
         }
     }
 }
