@@ -31,8 +31,16 @@
         </form>
     </div>
 </div>
-
-<div>
-    <br />
-    <a asp-action="FocusNewsLetters" asp-controller="Resources" /> To Focus Newsletters</a>
-</div>
+<br />
+@{   
+    string[] files = Directory.GetFiles("wwwroot/PDF/focus-newsletters"); 
+    // TODO: tell user what the name will be
+    // TODO: sort by most recent
+    
+    @foreach (string file in files)
+    {
+        string filename = file.Substring(file.LastIndexOf("\\") + 1);
+        <a href="~/pdf/focus-newsletters/@filename">@filename</a>
+        <br />
+    }   
+}

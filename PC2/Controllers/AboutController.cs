@@ -228,7 +228,7 @@ namespace PC2.Controllers
         }
 
         [HttpPost]
-        public IActionResult UploadNewsletter(IFormFile newsletterFile)
+        public async Task<IActionResult> UploadNewsletter(IFormFile newsletterFile)
         {
             if (newsletterFile != null)
             {
@@ -236,15 +236,15 @@ namespace PC2.Controllers
                 string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
                 string fileName = Path.GetFileName(newsletterFile.FileName);
                 string filePath = Path.Combine(directory, fileName);
-                //copy file to path
+                // copy file to path
                 using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
                     newsletterFile.CopyTo(fileStream);
                 }
-                TempData["Message"] = $"File {fileName} uploaded successfully";
+                TempData["Message"] = $"File {fileName} uploaded successfully";               
             }
-            
-            return View();
+
+            return RedirectToAction("UploadNewsletter");
         }
     }
 }
