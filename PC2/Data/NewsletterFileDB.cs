@@ -35,7 +35,17 @@ namespace PC2.Data
 
         public static async Task<NewsletterFile> GetFileAsync(ApplicationDbContext context, int id)
         {
-            return await context.NewsletterFile.FindAsync(id);
+            NewsletterFile? newsletterFile = await context.NewsletterFile.FindAsync(id);
+            // check if NewsletterFile is null
+            if (newsletterFile != null)
+            {
+                return newsletterFile;
+            }
+            else
+            {
+                throw new FileNotFoundException("NewsletterFileId not found within database");
+            }
+
         }
     }
 }

@@ -237,12 +237,13 @@ namespace PC2.Controllers
                 string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
                 string fileName = Path.GetFileName(userFile.FileName);
                 string filePath = Path.Combine(directory, fileName);
-                // copy file to path
+                
+                // copy physical file to path
                 using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
                     userFile.CopyTo(fileStream);
                 }
-                TempData["Message"] = $"File {fileName} uploaded successfully";
+                TempData["Message"] = $"{fileName} uploaded successfully";
 
                 NewsletterFile newsLetterFile = new()
                 {
@@ -266,9 +267,19 @@ namespace PC2.Controllers
         [HttpPost]
         [ActionName("DeleteNewsletter")]
         public async Task<IActionResult> ConfirmDeleteNewsletter(int id)
-        {       
+        {             
             NewsletterFile newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
+            // delete actual file from wwwroot/PDF/focus-newsletters
+            if (newsletter.Name != null)
+            {
+                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters", newsletter.Name);
+                System.IO.File.Delete(filePath);
+            }
+              
+            // remove from DB
             await NewsletterFileDB.DeleteAsync(_context, newsletter.NewsletterId);
+            TempData["Message"] = $"{newsletter.Name} deleted successfully";
+
             return RedirectToAction("UploadNewsletter");
         }
     }
