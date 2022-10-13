@@ -4,14 +4,14 @@ namespace PC2.Models
 {
     public class NewsletterFile
     {
-        [Key] // for naming the newsletter
+        [Key] // for naming the newsletter  
         public int NewsletterId { get; set; }
 
         [Required] // must be the filename
-        public string? NewsletterName { get; set; }
+        public string? Name { get; set; }
 
         [Required] // used to create dynamic links
-        public string? NewsletterFileLocation { get; set; }
+        public string? Location { get; set; }
 
     }
 }

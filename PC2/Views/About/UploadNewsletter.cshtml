@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Upload Newsletter";
+    
+    List<NewsletterFile> newsletterFiles = (List<NewsletterFile>)ViewData["NewsletterFiles"];
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -21,7 +23,7 @@
     <div class="col-md-4">
         <form asp-action="UploadNewsletter" enctype="multipart/form-data" method="post">
             <div class="form-group">
-                <input type="file" name="newsletterFile"/>
+                <input type="file" name="userFile"/>
                 <span class="text-danger"></span>               
             </div>
             <br />
@@ -32,15 +34,23 @@
     </div>
 </div>
 <br />
-@{   
-    string[] files = Directory.GetFiles("wwwroot/PDF/focus-newsletters"); 
-    // TODO: tell user what the name will be
-    // TODO: sort by most recent
-    
-    @foreach (string file in files)
-    {
-        string filename = file.Substring(file.LastIndexOf("\\") + 1);
-        <a href="~/pdf/focus-newsletters/@filename">@filename</a>
-        <br />
-    }   
-}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = newsletterFiles.Count - 1; i >= 0; i--)
+        {
+            <tr>
+                <td>
+                    <a href="newsletterFile.Location">@newsletterFiles[i].Name</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

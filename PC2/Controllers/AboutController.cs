@@ -220,28 +220,38 @@ namespace PC2.Controllers
             TempData["Message"] = $"Entry for Household size {entry.HouseHoldSize} updated Successfully";
             return RedirectToAction("HousingProgramData");
         }
-
+        
         [HttpGet]
-        public IActionResult UploadNewsletter()
+        public async Task<IActionResult> UploadNewsletter()
         {
+            ViewData["NewsletterFiles"] = await NewsletterFileDB.GetAllNewsletterFilesAsync(_context);
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadNewsletter(IFormFile newsletterFile)
+        public async Task<IActionResult> UploadNewsletter(IFormFile userFile)
         {
-            if (newsletterFile != null)
+            if (userFile != null)
             {
                 // set path to wwwroot/PDF/focus-newsletter/file.pdf
                 string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
-                string fileName = Path.GetFileName(newsletterFile.FileName);
+                string fileName = Path.GetFileName(userFile.FileName);
                 string filePath = Path.Combine(directory, fileName);
                 // copy file to path
                 using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
-                    newsletterFile.CopyTo(fileStream);
+                    userFile.CopyTo(fileStream);
                 }
-                TempData["Message"] = $"File {fileName} uploaded successfully";               
+                TempData["Message"] = $"File {fileName} uploaded successfully";
+
+                NewsletterFile newsLetterFile = new()
+                {
+                    Name = fileName,
+                    Location = $"~/PDF/focus-newsletters/{fileName}",
+                };
+
+                // add newsletterFile to the DB
+                await NewsletterFileDB.AddNewsletterFileAsync(_context, newsLetterFile);
             }
 
             return RedirectToAction("UploadNewsletter");
