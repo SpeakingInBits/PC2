@@ -224,7 +224,7 @@ namespace PC2.Controllers
         [HttpGet]
         public async Task<IActionResult> UploadNewsletter()
         {
-            ViewData["NewsletterFiles"] = await NewsletterFileDB.GetAllNewsletterFilesAsync(_context);
+            ViewData["NewsletterFiles"] = await NewsletterFileDB.GetAllAsync(_context);
             return View();
         }
 
@@ -251,9 +251,24 @@ namespace PC2.Controllers
                 };
 
                 // add newsletterFile to the DB
-                await NewsletterFileDB.AddNewsletterFileAsync(_context, newsLetterFile);
+                await NewsletterFileDB.AddAsync(_context, newsLetterFile);
             }
 
+            return RedirectToAction("UploadNewsletter");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteNewsletter(int id)
+        {
+            return View(await NewsletterFileDB.GetFileAsync(_context, id));
+        }
+
+        [HttpPost]
+        [ActionName("DeleteNewsletter")]
+        public async Task<IActionResult> ConfirmDeleteNewsletter(int id)
+        {       
+            NewsletterFile newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
+            await NewsletterFileDB.DeleteAsync(_context, newsletter.NewsletterId);
             return RedirectToAction("UploadNewsletter");
         }
     }

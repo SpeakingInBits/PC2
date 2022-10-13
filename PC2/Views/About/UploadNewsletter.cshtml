@@ -48,7 +48,10 @@
         {
             <tr>
                 <td>
-                    <a href="newsletterFile.Location">@newsletterFiles[i].Name</a>
+                    <a href="newsletterFiles[i].Location">@newsletterFiles[i].Name</a>
+                </td>
+                <td>
+                    <a asp-action="DeleteNewsletter" asp-route-id="@newsletterFiles[i].NewsletterId">Delete</a>
                 </td>
             </tr>
         }
