@@ -268,9 +268,9 @@ namespace PC2.Controllers
         [ActionName("DeleteNewsletter")]
         public async Task<IActionResult> ConfirmDeleteNewsletter(int id)
         {
-            NewsletterFile newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
+            NewsletterFile? newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
             // delete actual file from wwwroot/PDF/focus-newsletters
-            if (newsletter.Name != null)
+            if (newsletter != null)
             {
                 // actual file name is never changed and object location is never changed when renaming
                 string? originalFile = Path.GetFileName(newsletter.Location);
@@ -279,11 +279,11 @@ namespace PC2.Controllers
                     string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters", originalFile);
                     System.IO.File.Delete(filePath);
                 }
+                
+                // remove from DB
+                await NewsletterFileDB.DeleteAsync(_context, newsletter.NewsletterId);
+                TempData["Message"] = $"{newsletter.Name} deleted successfully";
             }
-
-            // remove from DB
-            await NewsletterFileDB.DeleteAsync(_context, newsletter.NewsletterId);
-            TempData["Message"] = $"{newsletter.Name} deleted successfully";
 
             return RedirectToAction("UploadNewsletter");
         }
@@ -300,12 +300,16 @@ namespace PC2.Controllers
         [ActionName("RenameNewsletter")]
         public async Task<IActionResult> ConfirmRenameNewsletter(int id)
         {
-            NewsletterFile newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
-            string? oldName = newsletter.Name;          
-            string newName = Request.Form["Name"];
+            NewsletterFile? newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
+            
+            if (newsletter != null)
+            {
+                string oldName = newsletter.Name;          
+                string newName = Request.Form["Name"];
      
-            await NewsletterFileDB.RenameFileAsync(_context, id, newName);
-            TempData["Message"] = $"Newsletter {oldName} renamed to {newName}";
+                await NewsletterFileDB.RenameFileAsync(_context, id, newName);
+                TempData["Message"] = $"Newsletter {oldName} renamed to {newName}";
+            }
             
             return RedirectToAction("UploadNewsletter");
         }
