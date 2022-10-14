@@ -99,25 +99,37 @@
                 @Html.DisplayFor(model => model.MailingAddress)
             </dd>
         }
-        @if (Model.Phone != null)
-        {
+
+        @if (Model.Phone != null){
             <dt class = "col-sm-2">
                 Phone Number
             </dt>
-                @if (phone.Substring(0, 3) == "tel")
-                {
-                    <dd class = "col-sm-10">
-                        <a href="@phone)">@Model.Phone</a>
-                    </dd>
-                }
-                else
-                {
-                    <dd class = "col-sm-10">
-                        @phone
-                    </dd>
-                }
-            
-        }
+            @if (phone.Substring(0, 3) == "tel")
+            {
+                <dd class = "col-sm-10">
+                    <a href="@phone)">@Model.Phone</a>
+                </dd>
+            }       
+            else @*handle inconsistencies in phone number data*@
+            {
+                <dd class = "col-sm-10">
+                    @for (int i = 0; i < phone.Length; i++)
+                    {
+                        // if the string contains "(xxx)"
+                        if (phone[i] == '(' && phone[i + 4] == ')')
+                        {
+                            // display phone number as clickable number and move to the end of it
+                            <a href="tel:@phone.Substring(i, 14)">@phone.Substring(i, 14)</a>
+                            i += 14;
+                        }                      
+                        else // display the character
+                        {
+                            @phone[i]
+                        }
+                    }
+                </dd>
+            }
+        }       
         @if (Model.TollFree != null)
         {
             <dt class = "col-sm-2">
@@ -174,11 +186,30 @@
         }
         @if (Model.Email != null)
         {
+            string email = Model.Email;
+            int emailStart = 0;
+                
             <dt class = "col-sm-2">
                 @Html.DisplayNameFor(model => model.Email)
             </dt>
             <dd class = "col-sm-10">
-                <a href="mailto: @Html.DisplayFor(model => model.Email)" >@Model.Email</a>
+                @*separate multiple emails*@
+                @for (int j = 0; j < email.Length; j++)
+                {
+                    // if the email contains a space
+                    if (email[j] == ' ')
+                    {
+                        // display all characters from emailStart to current index as link
+                        string singleEmail = email.Substring(emailStart, j - emailStart);
+                        <a href="mailto:@singleEmail">@singleEmail</a>
+                        <br>
+                        emailStart = j;
+                    }
+                }
+                @{ // display link as final email
+                    string finalEmail = email.Substring(emailStart, email.Length - emailStart);
+                }
+                <a href="mailto:@finalEmail">@finalEmail</a>
             </dd>
         }
         @if (Model.Website != null)
@@ -190,11 +221,14 @@
                 <a href="http://@Html.DisplayFor(model => model.Website)">@Model.Website</a>
             </dd>
         }
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
+        @if (Model.Description != null){
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+        }
+
     </dl>
 </div>
