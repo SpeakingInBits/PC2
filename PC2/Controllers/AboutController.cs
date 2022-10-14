@@ -220,7 +220,7 @@ namespace PC2.Controllers
             TempData["Message"] = $"Entry for Household size {entry.HouseHoldSize} updated Successfully";
             return RedirectToAction("HousingProgramData");
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> UploadNewsletter()
         {
@@ -237,7 +237,7 @@ namespace PC2.Controllers
                 string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
                 string fileName = Path.GetFileName(userFile.FileName);
                 string filePath = Path.Combine(directory, fileName);
-                
+
                 // copy physical file to path
                 using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
@@ -267,19 +267,41 @@ namespace PC2.Controllers
         [HttpPost]
         [ActionName("DeleteNewsletter")]
         public async Task<IActionResult> ConfirmDeleteNewsletter(int id)
-        {             
+        {
             NewsletterFile newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
             // delete actual file from wwwroot/PDF/focus-newsletters
             if (newsletter.Name != null)
             {
-                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters", newsletter.Name);
+                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters", Path.GetFileName(newsletter.Location));
                 System.IO.File.Delete(filePath);
             }
-              
+
             // remove from DB
             await NewsletterFileDB.DeleteAsync(_context, newsletter.NewsletterId);
             TempData["Message"] = $"{newsletter.Name} deleted successfully";
 
+            return RedirectToAction("UploadNewsletter");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RenameNewsletter(int id)
+        {
+            {
+                return View(await NewsletterFileDB.GetFileAsync(_context, id));
+            }
+        }
+
+        [HttpPost]
+        [ActionName("RenameNewsletter")]
+        public async Task<IActionResult> ConfirmRenameNewsletter(int id)
+        {
+            NewsletterFile newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
+            string? oldName = newsletter.Name;          
+            string newName = Request.Form["Name"];
+            
+            await NewsletterFileDB.RenameFileAsync(_context, id, newName);
+            TempData["Message"] = $"Newsletter {oldName} renamed to {newName}";
+            
             return RedirectToAction("UploadNewsletter");
         }
     }

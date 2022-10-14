@@ -47,5 +47,21 @@ namespace PC2.Data
             }
 
         }
+
+        public static async Task RenameFileAsync(ApplicationDbContext context, int id, string newName)
+        {
+            NewsletterFile? newsletterFile = await context.NewsletterFile.FindAsync(id);
+            // check if NewsletterFile is null
+            if (newsletterFile != null)
+            {
+                // update database
+                newsletterFile.Name = newName;
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new FileNotFoundException("NewsletterFileId not found within database");
+            }
+        }
     }
 }
