@@ -282,7 +282,7 @@ else
                             @{ // display link as final email
                                 string finalEmail = email.Substring(emailStart, email.Length - emailStart);
                             }
-                            <a href="mailto:@finalEmail">@finalEmail</a>
+                            <a href="mailto:@finalEmail.Trim()">@finalEmail</a>
 
                         </td>
                     }
