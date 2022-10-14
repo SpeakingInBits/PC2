@@ -272,8 +272,13 @@ namespace PC2.Controllers
             // delete actual file from wwwroot/PDF/focus-newsletters
             if (newsletter.Name != null)
             {
-                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters", Path.GetFileName(newsletter.Location));
-                System.IO.File.Delete(filePath);
+                // actual file name is never changed and object location is never changed when renaming
+                string? originalFile = Path.GetFileName(newsletter.Location);
+                if (originalFile != null)
+                {
+                    string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters", originalFile);
+                    System.IO.File.Delete(filePath);
+                }
             }
 
             // remove from DB
@@ -298,7 +303,7 @@ namespace PC2.Controllers
             NewsletterFile newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
             string? oldName = newsletter.Name;          
             string newName = Request.Form["Name"];
-            
+     
             await NewsletterFileDB.RenameFileAsync(_context, id, newName);
             TempData["Message"] = $"Newsletter {oldName} renamed to {newName}";
             
