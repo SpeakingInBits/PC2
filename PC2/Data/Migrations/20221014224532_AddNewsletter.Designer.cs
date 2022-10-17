@@ -12,8 +12,8 @@ using PC2.Data;
 namespace PC2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221012221601_AddNewsletterFile")]
-    partial class AddNewsletterFile
+    [Migration("20221014224532_AddNewsletter")]
+    partial class AddNewsletter
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
