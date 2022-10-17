@@ -2,6 +2,8 @@
 }
 @{
     ViewData["Title"] = "PC2 Focus Newsletters";
+
+    List<NewsletterFile> newsletterFiles = (List<NewsletterFile>)ViewData["NewsletterFiles"];
 }
 
 <div class="d-flex justify-content-center">
@@ -19,6 +21,7 @@
 <p>If you'd like to get an email reminder when new issues are available, please send us a message at <a href="mailto:info@pc2online.org">info@pc2online.org</a>. </p>
 <br />
 <br />
-<p>Fall 2022 - <a href="~/PDF/focus-newsletters/Fall-2022.pdf" target="_blank">click here</a> for printable pdf</p>
-<p>Summer Fun 2022 - <a href="~/PDF/focus-newsletters/Summer-2022.pdf" target="_blank">click here</a> for printable pdf</p>
-<p>Fall, 2021 issue - <a href="~/PDF/focus-newsletters/Fall-2021.pdf" target="_blank">click here</a> for printable pdf</p>
+@for (int i = newsletterFiles.Count - 1; i >= 0; i--)
+    {
+        <p>@newsletterFiles[i].Name - <a href="newsletterFiles[i].Location" target="_blank">click here</a> for printable pdf</p>
+    }
