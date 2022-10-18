@@ -1,9 +1,8 @@
-﻿@section head {
+﻿@model IEnumerable<PC2.Models.NewsletterFile>
+@section head {
 }
 @{
     ViewData["Title"] = "PC2 Focus Newsletters";
-
-    List<NewsletterFile> newsletterFiles = (List<NewsletterFile>)ViewData["NewsletterFiles"];
 }
 
 <div class="d-flex justify-content-center">
@@ -21,7 +20,8 @@
 <p>If you'd like to get an email reminder when new issues are available, please send us a message at <a href="mailto:info@pc2online.org">info@pc2online.org</a>. </p>
 <br />
 <br />
-@for (int i = newsletterFiles.Count - 1; i >= 0; i--)
-    {
-        <p>@newsletterFiles[i].Name - <a href="newsletterFiles[i].Location" target="_blank">click here</a> for printable pdf</p>
-    }
+
+@for (int i = Model.Count() - 1; i >= 0; i--)
+{
+    <p>@Model.ElementAt(i).Name - <a href="@Model.ElementAt(i).Location" target="_blank"> click here </a> for printable pdf </p>
+}

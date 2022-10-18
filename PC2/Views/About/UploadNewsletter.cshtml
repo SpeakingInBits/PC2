@@ -1,9 +1,7 @@
-﻿@model PC2.Models.NewsletterFile
+﻿@model IEnumerable<PC2.Models.NewsletterFile>
 
 @{
     ViewData["Title"] = "Upload Newsletter";
-    
-    List<NewsletterFile> newsletterFiles = (List<NewsletterFile>)ViewData["NewsletterFiles"];
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -44,15 +42,15 @@
         </tr>
     </thead>
     <tbody>
-        @for (int i = newsletterFiles.Count - 1; i >= 0; i--)
+        @for (int i = Model.Count() - 1; i >= 0; i--)
         {
             <tr>
                 <td>
-                    <a href="newsletterFiles[i].Location">@newsletterFiles[i].Name</a>
+                    <a href="@Model.ElementAt(i).Location">@Model.ElementAt(i).Name</a>
                 </td>
                 <td>
-                    <a asp-action="DeleteNewsletter" asp-route-id="@newsletterFiles[i].NewsletterId">Delete</a> |
-                    <a asp-action="RenameNewsletter" asp-route-id="@newsletterFiles[i].NewsletterId">Rename</a>
+                    <a asp-action="DeleteNewsletter" asp-route-id="@Model.ElementAt(i).NewsletterId">Delete</a> |
+                    <a asp-action="RenameNewsletter" asp-route-id="@Model.ElementAt(i).NewsletterId">Rename</a>
                 </td>
             </tr>
         }

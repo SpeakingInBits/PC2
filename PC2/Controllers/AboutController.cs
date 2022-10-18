@@ -224,8 +224,8 @@ namespace PC2.Controllers
         [HttpGet]
         public async Task<IActionResult> UploadNewsletter()
         {
-            ViewData["NewsletterFiles"] = await NewsletterFileDB.GetAllAsync(_context);
-            return View();
+            List<NewsletterFile> newsletterFiles = await NewsletterFileDB.GetAllAsync(_context);
+            return View(newsletterFiles);
         }
 
         [HttpPost]
@@ -248,7 +248,7 @@ namespace PC2.Controllers
                 NewsletterFile newsLetterFile = new()
                 {
                     Name = fileName,
-                    Location = $"~/PDF/focus-newsletters/{fileName}",
+                    Location = $"/PDF/focus-newsletters/{fileName}",
                 };
 
                 // add newsletterFile to the DB

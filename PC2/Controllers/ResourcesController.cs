@@ -140,11 +140,11 @@ namespace PC2.Controllers
             return View();
         }
 
-        public async Task <IActionResult> FocusNewsletters(int id)
+        public async Task <IActionResult> FocusNewsletters()
         {
-            ViewData["NewsletterFiles"] = await NewsletterFileDB.GetAllAsync(_context);
+            List<NewsletterFile> newsletterFiles = await NewsletterFileDB.GetAllAsync(_context);
 
-            return View();
+            return View(newsletterFiles);
         }
     }
 }
