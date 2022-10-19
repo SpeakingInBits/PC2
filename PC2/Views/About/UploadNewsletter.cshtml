@@ -1,0 +1,58 @@
+﻿@model IEnumerable<PC2.Models.NewsletterFile>
+
+@{
+    ViewData["Title"] = "Upload Newsletter";
+}
+
+<h1>@ViewData["Title"]</h1>
+@{
+    bool hasTempData = TempData["Message"] != null;
+    
+    if(hasTempData)
+    {
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    }
+}
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UploadNewsletter" enctype="multipart/form-data" method="post">
+            <div class="form-group">
+                <input type="file" name="userFile"/>
+                <span class="text-danger"></span>               
+            </div>
+            <br />
+            <div class="form-group">
+                 <input type="submit" value="Upload" class="btn btn-primary" /> 
+            </div>
+        </form>
+    </div>
+</div>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = Model.Count() - 1; i >= 0; i--) // Loop backwards so newest newsletters appear first
+        {
+            <tr>
+                <td>
+                    <a href="@Model.ElementAt(i).Location" target="_blank">@Model.ElementAt(i).Name</a>
+                </td>
+                <td>
+                    <a asp-action="DeleteNewsletter" asp-route-id="@Model.ElementAt(i).NewsletterId">Delete</a> |
+                    <a asp-action="RenameNewsletter" asp-route-id="@Model.ElementAt(i).NewsletterId">Rename</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
