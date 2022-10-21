@@ -89,44 +89,40 @@
                         @*loop through all events on this date*@
                         @for (int currentEvent = 0; currentEvent < eventDateGroups[currentDate].Count; currentEvent++) 
                         {
+                            string eventDescription = eventDateGroups[currentDate][currentEvent].EventDescription;                         
                             @if (currentEvent > 0) // if this is not the first event on this date, then start a new row
-                            {
+                            {                             
                                 <tr>
                                     <td class="agenda-time">
                                         @eventDateGroups[currentDate][currentEvent].StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].EndingTime
                                     </td>
                                     <td class="agenda-events">
-                                        <div class="agenda-event">
-                                        @{
-                                            string eventDescription = eventDateGroups[currentDate][currentEvent].EventDescription;
-                                            
-                                            // loop through EventDescription string to search for links
-                                            for (int i = 0; i < eventDescription.Length; i++)  
-                                            {
-                                                // look for the first instance of "http"
-                                                if (eventDescription[i] == 'h' && eventDescription[i + 1] == 't'
-                                                    && eventDescription[i + 2] == 't' && eventDescription[i + 3] == 'p')
-                                                {                                                  
-                                                    // find the next space after the link if it exists 
-                                                    int linkEnd = eventDescription.IndexOf(" ", i);                                                   
-                                                    if (linkEnd == -1)
-                                                    {
-                                                        // if not the link is the last word in the string
-                                                        linkEnd = eventDescription.Length;
-                                                    }
-                                                    
-                                                     // create a substring of the link
-                                                    string link = eventDescription.Substring(i, linkEnd - i);
-                                                    <a href="@link" target="_blank"> @link</a>
-                                                    // skip to the end of the link
-                                                    i += linkEnd - i;
-                                                }
-                                                else
+                                        <div class="agenda-event">                                                                                  
+                                        @*loop through EventDescription string to search for links*@
+                                        @for (int i = 0; i < eventDescription.Length; i++)  
+                                        {
+                                            // look for the first instance of "http"
+                                            if (eventDescription[i] == 'h' && eventDescription[i + 1] == 't'
+                                                && eventDescription[i + 2] == 't' && eventDescription[i + 3] == 'p')
+                                            {                                                  
+                                                // find the next space after the link if it exists 
+                                                int linkEnd = eventDescription.IndexOf(" ", i);                                                   
+                                                if (linkEnd == -1)
                                                 {
-                                                    @eventDescription[i]
-                                                }
+                                                    // if not the link is the last word in the string
+                                                    linkEnd = eventDescription.Length;
+                                                }                                            
+                                                    // create a substring of the link
+                                                string link = eventDescription.Substring(i, linkEnd - i);
+                                                <a href="@link" target="_blank"> @link</a>
+                                                // skip to the end of the link
+                                                i += linkEnd - i;
                                             }
-                                        }  
+                                            else
+                                            {
+                                                @eventDescription[i]
+                                            }
+                                        }                                          
                                         </div>
                                     </td>
                                     <td>
@@ -157,37 +153,32 @@
                                     @eventDateGroups[currentDate][currentEvent].StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].EndingTime
                                 </td>
                                 <td class="agenda-events">
-                                    <div class="agenda-event">
-                                        @{
-                                            string eventDescription = eventDateGroups[currentDate][currentEvent].EventDescription;
-                                            
-                                            // loop through EventDescription string to search for links
-                                            for (int i = 0; i < eventDescription.Length; i++)  
-                                            {
-                                                // look for the first instance of "http"
-                                                if (eventDescription[i] == 'h' && eventDescription[i + 1] == 't'
-                                                    && eventDescription[i + 2] == 't' && eventDescription[i + 3] == 'p')
-                                                {                                                  
-                                                    // find the next space after the link if it exists 
-                                                    int linkEnd = eventDescription.IndexOf(" ", i);                                                   
-                                                    if (linkEnd == -1)
-                                                    {
-                                                        // if not the link is the last word in the string
-                                                        linkEnd = eventDescription.Length;
-                                                    }
-                                                    
-                                                     // create a substring of the link
-                                                    string link = eventDescription.Substring(i, linkEnd - i);
-                                                    <a href="@link" target="_blank"> @link</a>
-                                                    // skip to the end of the link
-                                                    i += linkEnd - i;
-                                                }
-                                                else
+                                    <div class="agenda-event">                                     
+                                        @*loop through EventDescription string to search for links*@
+                                        @for (int i = 0; i < eventDescription.Length; i++)  
+                                        {
+                                            // look for the first instance of "http"
+                                            if (eventDescription[i] == 'h' && eventDescription[i + 1] == 't'
+                                                && eventDescription[i + 2] == 't' && eventDescription[i + 3] == 'p')
+                                            {                                                  
+                                                // find the next space after the link if it exists 
+                                                int linkEnd = eventDescription.IndexOf(" ", i);                                                   
+                                                if (linkEnd == -1)
                                                 {
-                                                    @eventDescription[i]
-                                                }
+                                                    // if not the link is the last word in the string
+                                                    linkEnd = eventDescription.Length;
+                                                }                                                
+                                                // create a substring of the link
+                                                string link = eventDescription.Substring(i, linkEnd - i);
+                                                <a href="@link" target="_blank"> @link</a>
+                                                // skip to the end of the link
+                                                i += linkEnd - i;
                                             }
-                                        }                                          
+                                            else
+                                            {
+                                                @eventDescription[i]
+                                            }
+                                        }                                                                                
                                     </div>
                                 </td>
                                 <td>
