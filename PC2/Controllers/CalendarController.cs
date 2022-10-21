@@ -35,36 +35,53 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CalendarCreateEventViewModel model)
         {
+            bool errorExists = false;
+
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            CalendarEvent newEvent = new()
+            if (!model.IsCountyEvent || !model.IsPc2Event)
             {
-                DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent),
-                StartingTime = TimeOnly.Parse(model.StartingTime),
-                EndingTime = TimeOnly.Parse(model.EndingTime),
-                EventDescription = model.Description
-            };
-
-            if (model.IsPc2Event)
-            {
-                newEvent.PC2Event = true;
-            }
-            else if (model.IsCountyEvent)
-            {
-                newEvent.CountyEvent = true;
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "You must check a box for type of event");
-                return View(model);
+                // checkbox-error = "Please check the PC2 or County Event checkbox")
+                ModelState.AddModelError("IsCountyEvent", "Please check the PC2 or County Event checkbox");
+                errorExists = true;
+                
             }
 
-            await CalendarEventDB.AddEvent(_context, newEvent);
+            // if current time is after the start time
+            if (model.DateOfEvent < DateTime.Now.Date)
+            {
+                ModelState.AddModelError("DateOfEvent", "Starting time must at a future date");
+                errorExists = true;
+            }
+            
+            if (!errorExists)
+            {
+                CalendarEvent newEvent = new()
+                {
+                    DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent),
+                    StartingTime = TimeOnly.Parse(model.StartingTime),
+                    EndingTime = TimeOnly.Parse(model.EndingTime),
+                    EventDescription = model.Description
+                };
 
-            return RedirectToAction("Index");
+                if (model.IsPc2Event)
+                {
+                    newEvent.PC2Event = true;
+                }
+                else if (model.IsCountyEvent)
+                {
+                    newEvent.CountyEvent = true;
+                }
+
+                await CalendarEventDB.AddEvent(_context, newEvent);
+
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
         }
 
         /// <summary>
