@@ -11,9 +11,13 @@ namespace PC2.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public AboutController(ApplicationDbContext context)
+        private readonly IWebHostEnvironment _hostingEnvironment;
+
+        // Iwebhost environment is used to get the path to the wwwroot folder
+        public AboutController(ApplicationDbContext context, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task<IActionResult> IndexStaff()
@@ -215,6 +219,99 @@ namespace PC2.Controllers
             await _context.SaveChangesAsync();
             TempData["Message"] = $"Entry for Household size {entry.HouseHoldSize} updated Successfully";
             return RedirectToAction("HousingProgramData");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UploadNewsletter()
+        {
+            List<NewsletterFile> newsletterFiles = await NewsletterFileDB.GetAllAsync(_context);
+            return View(newsletterFiles);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadNewsletter(IFormFile userFile)
+        {
+            if (userFile != null)
+            {
+                // set path to wwwroot/PDF/focus-newsletter/file.pdf
+                string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
+                string fileName = Path.GetFileName(userFile.FileName);
+                string filePath = Path.Combine(directory, fileName);
+
+                // copy physical file to path
+                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    userFile.CopyTo(fileStream);
+                }
+                TempData["Message"] = $"{fileName} uploaded successfully";
+
+                NewsletterFile newsLetterFile = new()
+                {
+                    Name = fileName,
+                    Location = $"/PDF/focus-newsletters/{fileName}",
+                };
+
+                // add newsletterFile to the DB
+                await NewsletterFileDB.AddAsync(_context, newsLetterFile);
+            }
+
+            return RedirectToAction("UploadNewsletter");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteNewsletter(int id)
+        {
+            return View(await NewsletterFileDB.GetFileAsync(_context, id));
+        }
+
+        [HttpPost]
+        [ActionName("DeleteNewsletter")]
+        public async Task<IActionResult> ConfirmDeleteNewsletter(int id)
+        {
+            NewsletterFile? newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
+            // delete actual file from wwwroot/PDF/focus-newsletters
+            if (newsletter != null)
+            {
+                // actual file name is never changed and object location is never changed when renaming
+                string? originalFile = Path.GetFileName(newsletter.Location);
+                if (originalFile != null)
+                {
+                    string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters", originalFile);
+                    System.IO.File.Delete(filePath);
+                }
+                
+                // remove from DB
+                await NewsletterFileDB.DeleteAsync(_context, newsletter.NewsletterId);
+                TempData["Message"] = $"{newsletter.Name} deleted successfully";
+            }
+
+            return RedirectToAction("UploadNewsletter");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RenameNewsletter(int id)
+        {
+            {
+                return View(await NewsletterFileDB.GetFileAsync(_context, id));
+            }
+        }
+
+        [HttpPost]
+        [ActionName("RenameNewsletter")]
+        public async Task<IActionResult> ConfirmRenameNewsletter(int id)
+        {
+            NewsletterFile? newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
+            
+            if (newsletter != null)
+            {
+                string oldName = newsletter.Name;          
+                string newName = Request.Form["Name"];
+     
+                await NewsletterFileDB.RenameFileAsync(_context, id, newName);
+                TempData["Message"] = $"Newsletter {oldName} renamed to {newName}";
+            }
+            
+            return RedirectToAction("UploadNewsletter");
         }
     }
 }

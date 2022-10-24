@@ -39,7 +39,8 @@ namespace PC2.Data
         public virtual DbSet<Board> BoardMembers { get; set; }
         public virtual DbSet<SteeringCommittee> SteeringCommittee { get; set; }
         public virtual DbSet<People> People { get; set; }
-
+        public virtual DbSet<NewsletterFile> NewsletterFile { get; set; }
+    
         public virtual DbSet<HousingProgram> HousingProgram { get; set; }
     }
 
