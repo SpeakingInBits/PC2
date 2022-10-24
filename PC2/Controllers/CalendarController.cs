@@ -35,25 +35,32 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CalendarCreateEventViewModel model)
         {
-            bool errorExists = false;
-
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            if (!model.IsCountyEvent || !model.IsPc2Event)
+            bool errorExists = false;
+
+            // if neither check boxes are checked
+            if (!model.IsCountyEvent && !model.IsPc2Event)
             {
-                // checkbox-error = "Please check the PC2 or County Event checkbox")
                 ModelState.AddModelError("IsCountyEvent", "Please check the PC2 or County Event checkbox");
                 errorExists = true;
                 
             }
 
-            // if current time is after the start time
+            // if both are checked
+            if (model.IsCountyEvent && model.IsPc2Event)
+            {
+                ModelState.AddModelError("IsCountyEvent", "Please select only one checkbox");
+                errorExists = true;
+            }
+
+            // if the start date is before current date
             if (model.DateOfEvent < DateTime.Now.Date)
             {
-                ModelState.AddModelError("DateOfEvent", "Starting time must at a future date");
+                ModelState.AddModelError("DateOfEvent", "Starting day must be at a current or future date");
                 errorExists = true;
             }
             
