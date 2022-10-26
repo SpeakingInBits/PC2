@@ -102,8 +102,7 @@
                                         @for (int i = 0; i < eventDescription.Length; i++)  
                                         {
                                             // look for the first instance of "http"
-                                            if (eventDescription[i] == 'h' && eventDescription[i + 1] == 't'
-                                                && eventDescription[i + 2] == 't' && eventDescription[i + 3] == 'p')
+                                            if (eventDescription.IndexOf("http") == i)
                                             {                                                  
                                                 // find the next space after the link if it exists 
                                                 int linkEnd = eventDescription.IndexOf(" ", i);                                                   
@@ -158,8 +157,7 @@
                                         @for (int i = 0; i < eventDescription.Length; i++)  
                                         {
                                             // look for the first instance of "http"
-                                            if (eventDescription[i] == 'h' && eventDescription[i + 1] == 't'
-                                                && eventDescription[i + 2] == 't' && eventDescription[i + 3] == 'p')
+                                            if (eventDescription.IndexOf("http") == i)
                                             {                                                  
                                                 // find the next space after the link if it exists 
                                                 int linkEnd = eventDescription.IndexOf(" ", i);                                                   
