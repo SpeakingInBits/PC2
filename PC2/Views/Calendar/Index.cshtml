@@ -98,7 +98,7 @@
                                     </td>
                                     <td class="agenda-events">
                                         <div class="agenda-event">                                                                                                                            
-                                            @*// use partial view, pass in eventdescription*@
+                                            @*// use partial view, pass in eventdescription as ViewData*@
                                             @(await Html.PartialAsync("_IndexPartial", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }))                                                 
                                        </div>
                                     </td>

@@ -14,10 +14,16 @@
             {
                 // if not the link is the last word in the string
                 linkEnd = eventDescription.Length;
-            }                                                
+            }
             // create a substring of the link
             string link = eventDescription.Substring(i, linkEnd - i);
-            <a href="@link" target="_blank"> @link</a>
+            //remove commas or periods from the end of the link
+            if (link.EndsWith(",") || link.EndsWith("."))
+            {
+                link = link.Substring(0, link.Length - 1);
+                linkEnd -= 2;
+            }
+            <a href="@link" target="_blank">@link</a>
             // skip to the end of the link
             i += linkEnd - i;
         }
