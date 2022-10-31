@@ -97,15 +97,10 @@
                                         @eventDateGroups[currentDate][currentEvent].StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].EndingTime
                                     </td>
                                     <td class="agenda-events">
-                                        <div class="agenda-event">                                                                                  
-                                            @*loop through EventDescription string to search for links*@
-                                            @for (int i = 0; i < eventDescription.Length; i++)  
-                                            {
-                                                // pass in the _IndexPartial partial view
-                                                @(await Html.PartialAsync("_IndexPartial", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }));
-
-                                            }                                          
-                                        </div>
+                                        <div class="agenda-event">                                                                                                                            
+                                            @*// use partial view, pass in eventdescription*@
+                                            @(await Html.PartialAsync("_IndexPartial", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }))                                                 
+                                       </div>
                                     </td>
                                     <td>
                                         @if (@eventDateGroups[currentDate][currentEvent].PC2Event)
@@ -136,13 +131,8 @@
                                 </td>
                                 <td class="agenda-events">
                                     <div class="agenda-event">                                     
-                                        @*loop through EventDescription string to search for links*@
-                                        @for (int i = 0; i < eventDescription.Length; i++)  
-                                        {
-                                            // pass in the _IndexPartial partial view
-                                            @(await Html.PartialAsync("_IndexPartial", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }));
-
-                                        }                                                                                
+                                        @*// use partial view, pass in eventdescription as ViewData*@
+                                        @(await Html.PartialAsync("_IndexPartial", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }))                                                                                
                                     </div>
                                 </td>
                                 <td>
