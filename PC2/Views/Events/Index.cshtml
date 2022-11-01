@@ -85,7 +85,6 @@ else
                     </tr>
                 </thead>
                 <tbody>
-
                     @for (int currentDate = 0; currentDate < eventDateGroups.Count; currentDate++)
                     {
                         <tr>
@@ -94,18 +93,20 @@ else
                                 <div class="dayofweek">@eventDateGroups[currentDate][0].DateOfEvent.DayOfWeek</div>
                                 <div class="shortdate text-muted">@eventDateGroups[currentDate][0].DateOfEvent.ToString("MMMM"),&nbsp;@eventDateGroups[currentDate][0].DateOfEvent.Year</div>
                             </td>
-
-                            @for (int currentEvent = 0; currentEvent < eventDateGroups[currentDate].Count; currentEvent++)
+                            @*loop through all events on this date*@
+                            @for (int currentEvent = 0; currentEvent < eventDateGroups[currentDate].Count; currentEvent++) 
                             {
-                                @if (currentEvent > 0) // Create a whole row after the first event of each day
+                                string eventDescription = eventDateGroups[currentDate][currentEvent].EventDescription;                         
+                                @if (currentEvent > 0) // if this is not the first event on this date, then start a new row
                                 {
                                     <tr>
                                         <td class="agenda-time">
                                             @eventDateGroups[currentDate][currentEvent].StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].EndingTime
                                         </td>
                                         <td class="agenda-events">
-                                            <div class="agenda-event">
-                                                @eventDateGroups[currentDate][currentEvent].EventDescription
+                                            <div class="agenda-event">                                        
+                                                @*// use partial view, pass in eventdescription as ViewData*@
+                                            @(await Html.PartialAsync("~/Views/Calendar/_IndexPartial.cshtml", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }))                      
                                             </div>
                                         </td>
                                     </tr>
@@ -113,12 +114,13 @@ else
                                 else
                                 {
                                     <td class="agenda-time">
-                                        @eventDateGroups[currentDate][currentEvent].StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].EndingTime
+                                    @eventDateGroups[currentDate][currentEvent].StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].EndingTime
                                     </td>
                                     <td class="agenda-events">
                                         <div class="agenda-event">
-                                            @eventDateGroups[currentDate][currentEvent].EventDescription
-                                        </div>
+                                            @*// use partial view, pass in eventdescription as ViewData*@
+                                            @(await Html.PartialAsync("~/Views/Calendar/_IndexPartial.cshtml", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }))
+                                </div>
                                     </td>
                                 }
                             }
