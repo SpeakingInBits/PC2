@@ -40,31 +40,55 @@ namespace PC2.Controllers
                 return View(model);
             }
 
-            CalendarEvent newEvent = new()
-            {
-                DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent),
-                StartingTime = TimeOnly.Parse(model.StartingTime),
-                EndingTime = TimeOnly.Parse(model.EndingTime),
-                EventDescription = model.Description
-            };
+            bool errorExists = false;
 
-            if (model.IsPc2Event)
+            // if neither check boxes are checked
+            if (!model.IsCountyEvent && !model.IsPc2Event)
             {
-                newEvent.PC2Event = true;
-            }
-            else if (model.IsCountyEvent)
-            {
-                newEvent.CountyEvent = true;
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "You must check a box for type of event");
-                return View(model);
+                ModelState.AddModelError("IsCountyEvent", "Please check the PC2 or County Event checkbox");
+                errorExists = true;
+                
             }
 
-            await CalendarEventDB.AddEvent(_context, newEvent);
+            // if both are checked
+            if (model.IsCountyEvent && model.IsPc2Event)
+            {
+                ModelState.AddModelError("IsCountyEvent", "Please select only one checkbox");
+                errorExists = true;
+            }
 
-            return RedirectToAction("Index");
+            // if the start date is before current date
+            if (model.DateOfEvent < DateTime.Now.Date)
+            {
+                ModelState.AddModelError("DateOfEvent", "Starting day must be at a current or future date");
+                errorExists = true;
+            }
+            
+            if (!errorExists)
+            {
+                CalendarEvent newEvent = new()
+                {
+                    DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent),
+                    StartingTime = TimeOnly.Parse(model.StartingTime),
+                    EndingTime = TimeOnly.Parse(model.EndingTime),
+                    EventDescription = model.Description
+                };
+
+                if (model.IsPc2Event)
+                {
+                    newEvent.PC2Event = true;
+                }
+                else if (model.IsCountyEvent)
+                {
+                    newEvent.CountyEvent = true;
+                }
+
+                await CalendarEventDB.AddEvent(_context, newEvent);
+
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
         }
 
         /// <summary>
