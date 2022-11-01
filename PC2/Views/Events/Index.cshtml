@@ -105,31 +105,8 @@ else
                                         </td>
                                         <td class="agenda-events">
                                             <div class="agenda-event">                                        
-                                                @*loop through EventDescription string to search for links*@
-                                                @for (int i = 0; i < eventDescription.Length; i++)  
-                                                {
-                                                    // look for the first instance of "http"
-                                                    if (eventDescription[i] == 'h' && eventDescription[i + 1] == 't'
-                                                        && eventDescription[i + 2] == 't' && eventDescription[i + 3] == 'p')
-                                                    {                                                  
-                                                        // find the next space after the link if it exists 
-                                                        int linkEnd = eventDescription.IndexOf(" ", i);                                                   
-                                                        if (linkEnd == -1)
-                                                        {
-                                                            // if not the link is the last word in the string
-                                                            linkEnd = eventDescription.Length;
-                                                        }                                            
-                                                        // create a substring of the link
-                                                        string link = eventDescription.Substring(i, linkEnd - i);
-                                                        <a href="@link" target="_blank"> @link</a>
-                                                        // skip to the end of the link
-                                                        i += linkEnd - i;
-                                                    }
-                                                    else
-                                                    {
-                                                        @eventDescription[i]
-                                                    }
-                                                }                                         
+                                                @*// use partial view, pass in eventdescription as ViewData*@
+                                            @(await Html.PartialAsync("~/Views/Calendar/_IndexPartial.cshtml", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }))                      
                                             </div>
                                         </td>
                                     </tr>
@@ -141,33 +118,9 @@ else
                                     </td>
                                     <td class="agenda-events">
                                         <div class="agenda-event">
-                                            @*loop through EventDescription string to search for links*@
-                                            @for (int i = 0; i < eventDescription.Length; i++)  
-                                            {
-                                                // look for the first instance of "http"
-                                                if (eventDescription[i] == 'h' && eventDescription[i + 1] == 't'
-                                                    && eventDescription[i + 2] == 't' && eventDescription[i + 3] == 'p')
-                                                {                                                  
-                                                    // find the next space after the link if it exists 
-                                                    int linkEnd = eventDescription.IndexOf(" ", i);                                                   
-                                                    if (linkEnd == -1)
-                                                    {
-                                                        // if not the link is the last word in the string
-                                                        linkEnd = eventDescription.Length;
-                                                    }
-                                                    
-                                                    // create a substring of the link
-                                                    string link = eventDescription.Substring(i, linkEnd - i);
-                                                    <a href="@link" target="_blank"> @link</a>
-                                                    // skip to the end of the link
-                                                    i += linkEnd - i;
-                                                }
-                                                else
-                                                {
-                                                    @eventDescription[i]
-                                                }
-                                            }                                        
-                                        </div>
+                                            @*// use partial view, pass in eventdescription as ViewData*@
+                                            @(await Html.PartialAsync("~/Views/Calendar/_IndexPartial.cshtml", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }))
+                                </div>
                                     </td>
                                 }
                             }
