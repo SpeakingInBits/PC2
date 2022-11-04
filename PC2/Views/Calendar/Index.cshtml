@@ -78,7 +78,9 @@
                 </tr>
             </thead>
             <tbody>
-                @for (int currentDate = 0; currentDate < eventDateGroups.Count; currentDate++)
+                
+                @*events loop in backwards for chronological order*@
+                @for (int currentDate = eventDateGroups.Count - 1; currentDate >= 0; currentDate--)
                 {
                     <tr>
                         <td class="agenda-date" class="active" rowspan="@eventDateGroups[currentDate].Count">
