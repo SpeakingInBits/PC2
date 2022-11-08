@@ -25,7 +25,6 @@ namespace PC2.Controllers
                 if (calendarEvent.DateOfEvent < today)
                 {
                     await CalendarEventDB.DeleteEvent(_context, calendarEvent.CalendarEventID);
-                    calendarEvents = await CalendarEventDB.GetAllEvents(_context);
                 }
             }
 
