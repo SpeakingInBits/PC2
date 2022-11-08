@@ -17,12 +17,11 @@ namespace PC2.Controllers
         {
             List<CalendarEvent> calendarEvents = await CalendarEventDB.GetAllEvents(_context);
 
-            // delete all events that are before the current date
             foreach (CalendarEvent calendarEvent in calendarEvents)
             {
                 // convert today to a DateOnly object
                 DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-                
+                // delete all events that are before the current date
                 if (calendarEvent.DateOfEvent < today)
                 {
                     await CalendarEventDB.DeleteEvent(_context, calendarEvent.CalendarEventID);
