@@ -15,19 +15,6 @@ namespace PC2.Controllers
 
         public async Task<IActionResult> Index(string? eventType)
         {
-            List<CalendarEvent> calendarEvents = await CalendarEventDB.GetAllEvents(_context);
-
-            foreach (CalendarEvent calendarEvent in calendarEvents)
-            {
-                // convert today to a DateOnly object
-                DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-                // delete all events that are before the current date
-                if (calendarEvent.DateOfEvent < today)
-                {
-                    await CalendarEventDB.DeleteEvent(_context, calendarEvent.CalendarEventID);
-                }
-            }
-
             bool getPc2Events = eventType == null;
             EventsModel eventsModel = new()
             {

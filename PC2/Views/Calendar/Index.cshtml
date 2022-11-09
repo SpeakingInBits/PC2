@@ -5,7 +5,7 @@
     List<List<CalendarEvent>> eventDateGroups =
             Model
             .GroupBy(calEvent => calEvent.DateOfEvent)
-            .Select(group => group.OrderByDescending(x => x.StartingTime).ToList())
+            .Select(group => group.ToList())
             .ToList();
 }
 
