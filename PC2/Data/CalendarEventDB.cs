@@ -6,14 +6,14 @@ namespace PC2.Data
 {
     public static class CalendarEventDB
     {
+        private static DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+
         /// <summary>
         /// Get all upcoming events for the calendar
         /// </summary>
         /// <param name="pc2Events">If true, pull PC2 events, otherwise pull county events</param>
         public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context, bool pc2Events)
         {
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-
             return await (from calEvents in context.CalendarEvents
                           where calEvents.PC2Event == pc2Events && calEvents.DateOfEvent >= today
                           orderby calEvents.DateOfEvent ascending, calEvents.StartingTime ascending
@@ -26,25 +26,24 @@ namespace PC2.Data
         /// <param name="context"></param>
         /// <returns></returns>
         public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context)
-        {
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-            
+        {        
             return await (from calEvents in context.CalendarEvents
                           where calEvents.DateOfEvent >= today
                           orderby calEvents.DateOfEvent ascending, calEvents.StartingTime ascending
                           select calEvents).ToListAsync();
         }
 
+        /// <summary>
+        /// Gets all past events.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns>A list of all past events</returns>
         public static async Task<List<CalendarEvent>> GetAllPastEvents(ApplicationDbContext context)
         {
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-
             return await (from calEvents in context.CalendarEvents
                           where calEvents.DateOfEvent < today
                           select calEvents).ToListAsync();
         }
-
-
 
         /// <summary>
         /// Adds an event to the database
@@ -71,6 +70,12 @@ namespace PC2.Data
                           select c).FirstOrDefaultAsync();
         }
 
+        /// <summary>
+        /// Update a CalendarEvent entry
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="calendarEvent"></param>
+        /// <returns>True if calendar was updated, false if not</returns>
         public static async Task<bool> UpdateEvent(ApplicationDbContext context, CalendarEvent calendarEvent)
         {
             try
@@ -102,7 +107,11 @@ namespace PC2.Data
             await context.SaveChangesAsync();
         }
 
-        // create method to delete events in the past only
+        /// <summary>
+        /// Delete all past events from the database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static async Task DeletePastEvents(ApplicationDbContext context)
         {
             List<CalendarEvent> pastEvents = await GetAllPastEvents(context);

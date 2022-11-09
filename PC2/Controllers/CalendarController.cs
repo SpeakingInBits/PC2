@@ -20,17 +20,7 @@ namespace PC2.Controllers
         {
             List<CalendarEvent> calendarEvents = await CalendarEventDB.GetAllEvents(_context);
 
-            //foreach (CalendarEvent calendarEvent in calendarEvents)
-            //{
-            //    // convert today to a DateOnly object
-            //    DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-            //    // delete all events that are before the current date
-            //    if (calendarEvent.DateOfEvent < today)
-            //    {
-            //        await CalendarEventDB.DeleteEvent(_context, calendarEvent.CalendarEventID);
-            //        calendarEvents = await CalendarEventDB.GetAllEvents(_context);
-            //    }
-            //}
+            await CalendarEventDB.DeletePastEvents(_context);
 
             return View(calendarEvents);
         }
@@ -70,13 +60,13 @@ namespace PC2.Controllers
                 errorExists = true;
             }
 
-            // if the start date is before current date
-            //if (model.DateOfEvent < DateTime.Now.Date)
-            //{
-            //    ModelState.AddModelError("DateOfEvent", "Starting day must be at a current or future date");
-            //    errorExists = true;
-            //}
-            
+            //if the start date is before current date
+            if (model.DateOfEvent < DateTime.Now.Date)
+            {
+                ModelState.AddModelError("DateOfEvent", "Starting day must be at a current or future date");
+                errorExists = true;
+            }
+
             if (!errorExists)
             {
                 CalendarEvent newEvent = new()
