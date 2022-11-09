@@ -28,14 +28,11 @@ namespace PC2.Data
         public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context)
         {
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-
-            List<CalendarEvent> events = await (from calEvents in context.CalendarEvents
-                                                
-            where calEvents.DateOfEvent >= today
-            orderby calEvents.DateOfEvent ascending, calEvents.StartingTime ascending
-            select calEvents).ToListAsync();
-
-            return events;
+            
+            return await (from calEvents in context.CalendarEvents
+                          where calEvents.DateOfEvent >= today
+                          orderby calEvents.DateOfEvent ascending, calEvents.StartingTime ascending
+                          select calEvents).ToListAsync();
         }
 
         public static async Task<List<CalendarEvent>> GetAllPastEvents(ApplicationDbContext context)
