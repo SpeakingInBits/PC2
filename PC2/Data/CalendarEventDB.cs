@@ -14,7 +14,7 @@ namespace PC2.Data
         {
             return await (from calEvents in context.CalendarEvents
                           where calEvents.PC2Event == pc2Events
-                          orderby calEvents.DateOfEvent descending
+                          orderby calEvents.DateOfEvent ascending
                           orderby calEvents.StartingTime ascending
                          select calEvents).ToListAsync();
         }
