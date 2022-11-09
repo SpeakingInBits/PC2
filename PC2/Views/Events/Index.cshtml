@@ -13,7 +13,6 @@
             Model.CalendarEvents
             .GroupBy(calEvent => calEvent.DateOfEvent)
             .Select(group => group.OrderByDescending(x => x.StartingTime).ToList())
-            .OrderByDescending(group => group.First())
             .ToList();
 }
 

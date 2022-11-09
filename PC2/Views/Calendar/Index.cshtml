@@ -6,7 +6,6 @@
             Model
             .GroupBy(calEvent => calEvent.DateOfEvent)
             .Select(group => group.OrderByDescending(x => x.StartingTime).ToList())
-            .OrderByDescending(group => group.First())
             .ToList();
 }
 
@@ -78,9 +77,7 @@
                 </tr>
             </thead>
             <tbody>
-                
-                @*events loop in backwards for chronological order*@
-                @for (int currentDate = eventDateGroups.Count - 1; currentDate >= 0; currentDate--)
+                @for (int currentDate = 0; currentDate < eventDateGroups.Count; currentDate++)
                 {
                     <tr>
                         <td class="agenda-date" class="active" rowspan="@eventDateGroups[currentDate].Count">

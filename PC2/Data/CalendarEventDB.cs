@@ -27,7 +27,7 @@ namespace PC2.Data
         public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context)
         {
             return await (from calEvents in context.CalendarEvents
-                          orderby calEvents.DateOfEvent descending
+                          orderby calEvents.DateOfEvent ascending
                           orderby calEvents.StartingTime ascending
                           select calEvents).ToListAsync();
         }
