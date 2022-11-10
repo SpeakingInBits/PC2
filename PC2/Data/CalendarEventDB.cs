@@ -6,6 +6,8 @@ namespace PC2.Data
 {
     public static class CalendarEventDB
     {
+        private static DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+
         /// <summary>
         /// Get all upcoming events for the calendar
         /// </summary>
@@ -13,10 +15,9 @@ namespace PC2.Data
         public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context, bool pc2Events)
         {
             return await (from calEvents in context.CalendarEvents
-                          where calEvents.PC2Event == pc2Events
-                          orderby calEvents.DateOfEvent descending
-                          orderby calEvents.StartingTime ascending
-                         select calEvents).ToListAsync();
+                          where calEvents.PC2Event == pc2Events && calEvents.DateOfEvent >= today
+                          orderby calEvents.DateOfEvent ascending, calEvents.StartingTime ascending
+                          select calEvents).ToListAsync();
         }
 
         /// <summary>
@@ -25,14 +26,24 @@ namespace PC2.Data
         /// <param name="context"></param>
         /// <returns></returns>
         public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context)
-        {
+        {        
             return await (from calEvents in context.CalendarEvents
-                          orderby calEvents.DateOfEvent descending
-                          orderby calEvents.StartingTime ascending
+                          where calEvents.DateOfEvent >= today
+                          orderby calEvents.DateOfEvent ascending, calEvents.StartingTime ascending
                           select calEvents).ToListAsync();
         }
 
-
+        /// <summary>
+        /// Gets all past events.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns>A list of all past events</returns>
+        public static async Task<List<CalendarEvent>> GetAllPastEvents(ApplicationDbContext context)
+        {
+            return await (from calEvents in context.CalendarEvents
+                          where calEvents.DateOfEvent < today
+                          select calEvents).ToListAsync();
+        }
 
         /// <summary>
         /// Adds an event to the database
@@ -59,6 +70,12 @@ namespace PC2.Data
                           select c).FirstOrDefaultAsync();
         }
 
+        /// <summary>
+        /// Update a CalendarEvent entry
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="calendarEvent"></param>
+        /// <returns>True if calendar was updated, false if not</returns>
         public static async Task<bool> UpdateEvent(ApplicationDbContext context, CalendarEvent calendarEvent)
         {
             try
@@ -88,6 +105,21 @@ namespace PC2.Data
 
             context.Entry(targetEvent).State = EntityState.Deleted;
             await context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Delete all past events from the database
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static async Task DeletePastEvents(ApplicationDbContext context)
+        {
+            List<CalendarEvent> pastEvents = await GetAllPastEvents(context);
+
+            foreach (CalendarEvent calendarEvent in pastEvents)
+            {
+                await DeleteEvent(context, calendarEvent.CalendarEventID);
+            }
         }
     }
 }

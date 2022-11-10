@@ -19,6 +19,9 @@ namespace PC2.Controllers
         public async Task<IActionResult> Index()
         {
             List<CalendarEvent> calendarEvents = await CalendarEventDB.GetAllEvents(_context);
+
+            await CalendarEventDB.DeletePastEvents(_context);
+
             return View(calendarEvents);
         }
 
@@ -57,13 +60,13 @@ namespace PC2.Controllers
                 errorExists = true;
             }
 
-            // if the start date is before current date
+            //if the start date is before current date
             if (model.DateOfEvent < DateTime.Now.Date)
             {
                 ModelState.AddModelError("DateOfEvent", "Starting day must be at a current or future date");
                 errorExists = true;
             }
-            
+
             if (!errorExists)
             {
                 CalendarEvent newEvent = new()
