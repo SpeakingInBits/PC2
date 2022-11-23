@@ -3,7 +3,7 @@
 (function () {
     const links = document.querySelectorAll("a[href^='https://'], a[href^='http://']");
     const host = window.location.hostname;
-    
+
     const internalLink = link => new URL(link).hostname === host
 
     links.forEach(link => {
