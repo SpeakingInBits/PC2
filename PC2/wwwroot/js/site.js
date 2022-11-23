@@ -8,11 +8,11 @@
 
     links.forEach(link => {
         if (internalLink(link)) return;
-        if (link.getAttribute("target", "blank")) {
+        if (link.getAttribute("target", "_blank")) {
             return link;
         }
         else {
-            link.setAttribute("target", "blank");
+            link.setAttribute("target", "_blank");
             link.setAttribute("rel", "noopener");
         }
     });
