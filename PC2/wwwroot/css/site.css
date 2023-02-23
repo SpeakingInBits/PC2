@@ -232,7 +232,7 @@ nav .container {
 
 #bootstrap-override .navbar-toggler, #bootstrap-override .menu-item a, #menu-title {
     font-weight: 700;
-    color: rgb(248, 249, 250);
+    color: hotpink;
 }
 
 #hamburger {
@@ -273,7 +273,7 @@ nav .container {
         -webkit-transition: background-color .4s ease 0s;
         -moz-transition: background-color .4s ease 0s;
     }
-
+    /*changes text color to provide contrast*/
     .nav-link:hover {
         color: black !important;
         transition: background-color .4s ease 0s;
