@@ -8,7 +8,7 @@ a.navbar-brand {
 }
 
 .name {
-    color: rgb(91,118,35) !important;
+    color: rgba(18, 66, 35, 1) !important;
     text-decoration: none;
 }
 
@@ -178,7 +178,7 @@ main {
     }
 
 #bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .submenu, .divider, .dropdown-menu {
-    background-color: rgb(136, 178, 53);
+    background-color: rgba(18, 66, 35, 1);
 }
 
 #bootstrap-override nav {
@@ -269,6 +269,13 @@ nav .container {
     /*background color transition when hovered*/
     .menu-item:hover, .submenu-item:hover {
         background-color: rgba(180, 204, 132, 1);
+        transition: background-color .4s ease 0s;
+        -webkit-transition: background-color .4s ease 0s;
+        -moz-transition: background-color .4s ease 0s;
+    }
+
+    .nav-link:hover {
+        color: black !important;
         transition: background-color .4s ease 0s;
         -webkit-transition: background-color .4s ease 0s;
         -moz-transition: background-color .4s ease 0s;
