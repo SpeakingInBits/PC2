@@ -232,7 +232,7 @@ nav .container {
 
 #bootstrap-override .navbar-toggler, #bootstrap-override .menu-item a, #menu-title {
     font-weight: 700;
-    color: hotpink;
+    color: rgb(248, 249, 250);
 }
 
 #hamburger {
