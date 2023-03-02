@@ -17,6 +17,9 @@ namespace PC2.Data
             await context.SaveChangesAsync();
         }
         
+        /// <summary>
+        /// Gets all agencies in alphabetical order by agency name
+        /// </summary>
         public async static Task<List<AgencyDisplayViewModel>> GetAgencySearchList(ApplicationDbContext context)
         {
             return await (from agency in context.Agency
@@ -26,7 +29,9 @@ namespace PC2.Data
                               AgencyName = agency.AgencyName,
                               AgencyName2 = agency.AgencyName2,
                               City = agency.City
-                          }).ToListAsync();
+                          })
+                          .OrderBy(agency  => agency.AgencyName)
+                          .ToListAsync();
         }
 
         /// <summary>
