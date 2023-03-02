@@ -97,11 +97,20 @@ namespace PC2.Data
             return result;
         }
 
+        /// <summary>
+        /// Returns a list of Agencies in a specific city in alphabetical order
+        /// by AgencyName
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="city">City the user is searching by</param>
+        /// <returns></returns>
         public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, string city)
         {
             return await (from a in context.Agency
-                          where a.City !=  null && a.City == city
-                          select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
+                          where a.City != null && a.City == city
+                          select a).Include(nameof(Agency.AgencyCategories))
+                          .OrderBy(agency => agency.AgencyName)
+                          .ToListAsync();
         }
 
         /// <summary>
