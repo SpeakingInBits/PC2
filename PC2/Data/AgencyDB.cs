@@ -130,6 +130,7 @@ namespace PC2.Data
                 .Where(agency => agency.AgencyCategories
                 .Where(cat => cat.AgencyCategoryName == categoryName)
                 .Any())
+                .OrderBy(agency => agency.AgencyName)
                 .ToListAsync();
         }
 
