@@ -41,12 +41,14 @@ namespace PC2.Data
         }
 
         /// <summary>
-        /// Gets all agencies from the database
+        /// Gets all agencies from the database in alphabetical order by Agency Name
         /// </summary>
         public static async Task<List<Agency>> GetAllAgenciesAsync(ApplicationDbContext context)
         {
             return await (from a in context.Agency
-                          select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
+                          select a).Include(nameof(Agency.AgencyCategories))
+                          .OrderBy(agency => agency.AgencyName)
+                          .ToListAsync();
         }
 
         public static async Task<int> GetAgencyCountAsync(ApplicationDbContext context)
