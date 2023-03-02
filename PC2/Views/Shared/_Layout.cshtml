@@ -28,14 +28,14 @@ cfg: { // Application Insights Configuration
             string currAction = ViewContext.RouteData.Values["action"]?.ToString();
         }
 
-        @* Sets menu item text for the current page to black*@
+        @* Sets menu item text for the current page to white*@
         #@currController-@currAction > a {
-            color:black !important;
+            color:white !important;
         }
 
         @* Prevents menu item background from being highlighted for the current page*@
         #@currController-@currAction {
-            background-color: rgb(136, 178, 53) !important;
+            background-color: rgba(91, 118, 35, 1) !important;
         }
 
         /*Prevents floated elements from overflowing ---------------------------------------------*/
