@@ -161,8 +161,21 @@ cfg: { // Application Insights Configuration
                                 </ul>
                             </div>
                         </li>
-                        <li id="Home-HousingProgram" class="nav-item menu-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="HousingProgram">PC2's HOUSING PROGRAM</a>
+                        <li class="nav-item menu-item dropdown" >
+                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown2" aria-controls="navbarNavDarkDropdownHousing" aria-expanded="false" aria-label="Toggle Housing Program navigation">
+                                <span class="navbar-toggler-icon d-none"></span>
+                            </button>
+                            <div class="" id="navbarNavDarkDropdownHousing">
+                                <ul class="navbar-nav priority">                                    
+                                    <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLinkHousing" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    HOUSING PROGRAM
+                                    </p>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLinkHousing">
+                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="HousingProgram">PC2's Housing Program</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="PartnersForHousing">Partners 4 Housing</a></li>
+                                    </ul>                                
+                                </ul>
+                            </div>
                         </li>
                         <li id="about-menu" class="nav-item menu-item dropdown">
                             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown4" aria-controls="navbarNavDarkDropdown4" aria-expanded="false" aria-label="Toggle about and contact navigation">
