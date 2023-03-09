@@ -11,3 +11,6 @@ database driven, searchable resource guide to replace/complement the physical bo
 - Run ```update-database``` in the ```PC2``` project. 
 - Open the ```PC2-TestData.sql``` script in the ```Solution Items``` folder. Execute it against localdb
 - Run the website to create the default roles and admin login
+
+## Admin Credentials
+- To log in as admin, the username/email is `admin@pc2online.org` and the password is Password01#
