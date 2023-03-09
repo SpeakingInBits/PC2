@@ -13,4 +13,4 @@ database driven, searchable resource guide to replace/complement the physical bo
 - Run the website to create the default roles and admin login
 
 ## Admin Credentials
-- To log in as admin, the username/email is admin@pc2online.org and the password is Password01#
+- To log in as admin, the username/email is `admin@pc2online.org` and the password is Password01#
