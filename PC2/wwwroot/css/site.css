@@ -359,7 +359,8 @@ nav a {
     display: block;
 }*/
 
-@media only screen and (min-width: 768px) {
+/*min-width should match the breakpoint for <nav>*/
+@media only screen and (min-width: 992px) {
     html {
         font-size: 16px;
     }
@@ -382,7 +383,8 @@ nav a {
     }
 }
 
-@media only screen and (max-width: 768px) {
+/*max-width should be 1px less than the breakpoint for <nav>*/
+@media only screen and (max-width: 991px) {
     /*Centers menu items when navbar collapses*/
     #bootstrap-override .menu-item a {
         height: inherit;
