@@ -298,7 +298,136 @@ else
                     {
                         <td></td>
                     }
-                    <td><a type="button" asp-controller="Resources" asp-action="Details" asp-route-id="@Model.Agencies[i].AgencyId" value="Details">Details</a></td>
+                    <td>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailsModal-@i">
+                            Details
+                        </button>
+
+                        <div class="modal fade" id="detailsModal-@i" data-bs-keyboard="false" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true" style="color: black">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="detailsModalLabel">@Model.Agencies[i].AgencyName</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <dl class="row">
+                                            @*For each property in class agency*@
+                                            @foreach (var prop in typeof(Agency).GetProperties())
+                                            {
+                                                
+                                                if (prop.GetValue(Model.Agencies[i]) != null)
+                                                {
+                                                    // handles email links
+                                                    if (prop.Name == "Email")
+                                                    {
+                                                        <dt>@prop.Name</dt>
+                                                        string email = prop.GetValue(Model.Agencies[i]).ToString();
+                                                        int emailStart = 0;
+                                                        @*separate multiple emails*@
+                                                        <dd>
+                                                        @for (int j = 0; j < email.Length; j++)
+                                                        {
+                                                            // if the email contains a space
+                                                            if (email[j] == ' ')
+                                                            {
+                                                                // display all characters from emailStart to current index as link
+                                                                string singleEmail = email.Substring(emailStart, j - emailStart);
+                                                                <a href="mailto:@singleEmail">@singleEmail</a>
+                                                                <br>
+                                                                emailStart = j;
+                                                            }
+                                                        }
+                                                        
+                                                        @{
+                                                            // display link as final email
+                                                            string finalEmail = email.Substring(emailStart, email.Length - emailStart);
+                                                        }
+                                                        <a href="mailto:@finalEmail.Trim()">@finalEmail</a>
+                                                        </dd>
+                                                    }
+                                                    // handles phone links
+                                                    else if (prop.Name == "Phone")
+                                                    {
+                                                        <dt>@prop.Name</dt>
+                                                        string phone = prop.GetValue(Model.Agencies[i]).ToString();
+                                                        
+                                                        if (phone.Length > 15)
+                                                        {
+                                                            @*handle inconsistencies in phone number data*@ // borrowed from code above
+                                                            <dd>
+                                                            @for (int j = 0; j < phone.Length; j++)
+                                                            {
+                                                                // if the string contains "(xxx)"
+                                                                if (phone[j] == '(' && phone[j + 4] == ')')
+                                                                {
+                                                                    @if (j > 0)
+                                                                    {
+                                                                        <br>
+                                                                    }
+                                                                    // display phone number as clickable number and move to the end of it
+                                                                    <a href="tel:@phone.Substring(j, 14)">@phone.Substring(j, 14)</a>
+                                                                    <br>
+                                                                    j += 14;
+                                                                }
+                                                                else // display the character
+                                                                {
+                                                                    @phone[j];
+                                                                }
+                                                            }
+                                                            </dd>
+                                                        }
+                                                        
+                                                        else
+                                                        {
+                                                            <dd><a href="tel:@prop.GetValue(Model.Agencies[i])">@prop.GetValue(Model.Agencies[i])</a></dd>
+                                                        }
+                                                    }
+                                                    // handles website links
+                                                    else if (prop.Name == "Website")
+                                                    {
+                                                        <dt>@prop.Name</dt>
+                                                        string websiteString = prop.GetValue(Model.Agencies[i]).ToString();
+                                                        int start = 0;
+
+                                                        @for (int j = 0; j < websiteString.Length; j++)
+                                                        {
+                                                            if (websiteString[j].Equals(' ') || j == websiteString.Length - 1)
+                                                            {
+                                                                string url = websiteString.Substring(start, j - start);
+                                                                if (!url.StartsWith("https://") && !url.StartsWith("http://"))
+                                                                {
+                                                                    url = "https://" + url;
+                                                                }
+                                                                <dd><a href="@url">@url</a></dd>
+                                                                start = j + 1;
+                                                            }
+                                                        }
+                                                    }
+                                                    // excludes certain columns and displays the rest
+                                                    else if (prop.Name != "AgencyCategories" && prop.Name != "AgencyId" && prop.Name != "AgencyName")
+                                                    {
+                                                        if (prop.Name == "Address1" && Model.Agencies[i].Address2 == null)
+                                                        {
+                                                            <dt>Address</dt>
+                                                        }
+                                                        else
+                                                        {
+                                                            <dt>@prop.Name</dt>
+                                                        }
+                                                        <dd>@prop.GetValue(Model.Agencies[i])</dd>
+                                                    }
+                                                }
+                                            }
+                                        </dl>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
                 </tr>
             }
         </table>
