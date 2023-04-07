@@ -5468,23 +5468,13 @@ INSERT [dbo].[AgencyAgencyCategory] ([AgenciesAgencyId], [AgencyCategoriesAgency
 GO
 INSERT [dbo].[AgencyAgencyCategory] ([AgenciesAgencyId], [AgencyCategoriesAgencyCategoryId]) VALUES (900, 8)
 GO
-SET IDENTITY_INSERT [dbo].[CalendarDates] ON 
-GO
-INSERT [dbo].[CalendarDates] ([CalendarDateID], [Date]) VALUES (1, CAST(N'2021-12-23T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[CalendarDates] ([CalendarDateID], [Date]) VALUES (2, CAST(N'2022-03-04T00:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[CalendarDates] ([CalendarDateID], [Date]) VALUES (3, CAST(N'2022-03-03T00:00:00.0000000' AS DateTime2))
-GO
-SET IDENTITY_INSERT [dbo].[CalendarDates] OFF
-GO
 SET IDENTITY_INSERT [dbo].[CalendarEvents] ON 
 GO
-INSERT [dbo].[CalendarEvents] ([CalendarEventID], [StartingTime], [EndingTime], [EventDescription], [PC2Event], [CountyEvent], [CalendarDateID]) VALUES (1, N'3:00 PM', N'6:15 PM', N'This is a pre-christmas event', 0, 1, 1)
+INSERT [dbo].[CalendarEvents] ([CalendarEventID], [StartingTime], [EndingTime], [EventDescription], [PC2Event], [CountyEvent]) VALUES (1, N'3:00 PM', N'6:15 PM', N'This is a pre-christmas event', 0, 1)
 GO
-INSERT [dbo].[CalendarEvents] ([CalendarEventID], [StartingTime], [EndingTime], [EventDescription], [PC2Event], [CountyEvent], [CalendarDateID]) VALUES (2, N'2:00 PM', N'4:00 PM', N'Some event', 0, 1, 2)
+INSERT [dbo].[CalendarEvents] ([CalendarEventID], [StartingTime], [EndingTime], [EventDescription], [PC2Event], [CountyEvent]) VALUES (2, N'2:00 PM', N'4:00 PM', N'Some event', 0, 1)
 GO
-INSERT [dbo].[CalendarEvents] ([CalendarEventID], [StartingTime], [EndingTime], [EventDescription], [PC2Event], [CountyEvent], [CalendarDateID]) VALUES (3, N'4:46 PM', N'7:46 PM', N'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 0, 1, 3)
+INSERT [dbo].[CalendarEvents] ([CalendarEventID], [StartingTime], [EndingTime], [EventDescription], [PC2Event], [CountyEvent]) VALUES (3, N'4:46 PM', N'7:46 PM', N'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 0, 1)
 GO
 SET IDENTITY_INSERT [dbo].[CalendarEvents] OFF
 
