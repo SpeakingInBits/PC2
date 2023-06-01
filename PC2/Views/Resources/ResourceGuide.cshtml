@@ -322,28 +322,22 @@ else
                                                     if (prop.Name == "Email")
                                                     {
                                                         <dt>@prop.Name</dt>
-                                                        string email = prop.GetValue(Model.Agencies[i]).ToString();
-                                                        int emailStart = 0;
+                                                        string emailData = prop.GetValue(Model.Agencies[i]).ToString();
                                                         @*separate multiple emails*@
                                                         <dd>
-                                                        @for (int j = 0; j < email.Length; j++)
-                                                        {
-                                                            // if the email contains a space
-                                                            if (email[j] == ' ')
-                                                            {
-                                                                // display all characters from emailStart to current index as link
-                                                                string singleEmail = email.Substring(emailStart, j - emailStart);
-                                                                <a href="mailto:@singleEmail">@singleEmail</a>
-                                                                <br>
-                                                                emailStart = j;
+                                                            @{
+                                                                if (emailData != null)
+                                                                {
+                                                                    string[] emails = emailData.Split(' ');
+                                                                    foreach(string email in emails)
+                                                                    {
+                                                                        <a href="mailto:@email.Trim()">
+                                                                            @email
+                                                                        </a>
+                                                                        <br>
+                                                                    }
+                                                                }
                                                             }
-                                                        }
-                                                        
-                                                        @{
-                                                            // display link as final email
-                                                            string finalEmail = email.Substring(emailStart, email.Length - emailStart);
-                                                        }
-                                                        <a href="mailto:@finalEmail.Trim()">@finalEmail</a>
                                                         </dd>
                                                     }
                                                     // handles phone links
@@ -390,17 +384,22 @@ else
                                                         string websiteString = prop.GetValue(Model.Agencies[i]).ToString();
                                                         int start = 0;
 
-                                                        @for (int j = 0; j < websiteString.Length; j++)
+                                                        if (websiteString != null)
                                                         {
-                                                            if (websiteString[j].Equals(' ') || j == websiteString.Length - 1)
+                                                            string[] websites = websiteString.Split(' ');
+                                                            foreach(string website in websites)
                                                             {
-                                                                string url = websiteString.Substring(start, j - start);
+                                                                string url = website.Trim();
+                                                                // if the url is empty, skip it. This is to handle extra spaces in the data
+                                                                if (url == string.Empty)
+                                                                {
+                                                                    continue;
+                                                                }
                                                                 if (!url.StartsWith("https://") && !url.StartsWith("http://"))
                                                                 {
                                                                     url = "https://" + url;
                                                                 }
                                                                 <dd><a href="@url">@url</a></dd>
-                                                                start = j + 1;
                                                             }
                                                         }
                                                     }
