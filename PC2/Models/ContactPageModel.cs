@@ -1,7 +1,7 @@
 ﻿namespace PC2.Models
 {
     /// <summary>
-    /// Represents a contacts information
+    /// Represents the contact request from a website visitor
     /// </summary>
     public class ContactPageModel
     {
