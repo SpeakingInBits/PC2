@@ -22,7 +22,7 @@
         /// </summary>
         public string Subject { get; set; }
         /// <summary>
-        /// The message for the contact
+        /// The message written for the contact by a website visitor
         /// </summary>
         public string Message { get; set; }
     }
