@@ -32,6 +32,11 @@
 
 @section Head{
     <style>
+        .img-flyer {
+            max-width: 625px;
+            max-height: 875px;
+        }
+
         .agenda .agenda-date {
             width: 170px;
         }
@@ -134,4 +139,9 @@ else
 {
     <h2>There are no upcoming @ViewData["Title"] on the Calendar</h2>
     <br />
+}
+
+@if (Model.IsPC2EventCalendar)
+{
+    <img class="d-block mx-auto img-fluid img-flyer" src="~/images/events/ActivitiesFlyer2023.jpg" alt="PC2 Activities and Social Gatherings - Events Flyer">
 }
