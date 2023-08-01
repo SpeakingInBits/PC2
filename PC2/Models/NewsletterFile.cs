@@ -20,7 +20,7 @@ namespace PC2.Models
         public string Name { get; set; } = null!;
 
         /// <summary>
-        /// The location of the NewsLetterFile in the disk
+        /// The location of the NewsLetterFile in the storage device
         /// </summary>
         [Required] // used to create dynamic links
         public string Location { get; set; } = null!;
