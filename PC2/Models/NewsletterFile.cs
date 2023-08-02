@@ -10,19 +10,19 @@ namespace PC2.Models
         /// <summary>
         /// The unique identifier for the NewsLetter
         /// </summary>
-        [Key] // for naming the newsletter  
+        [Key]  
         public int NewsletterId { get; set; }
 
         /// <summary>
         /// The name of the NewsLetterFile
         /// </summary>
-        [Required] // must be the filename
+        [Required] 
         public string Name { get; set; } = null!;
 
         /// <summary>
         /// The location of the NewsLetterFile in the storage device
         /// </summary>
-        [Required] // used to create dynamic links
+        [Required] 
         public string Location { get; set; } = null!;
 
     }
