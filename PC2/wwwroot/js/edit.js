@@ -5,9 +5,12 @@ window.onload = function () {
     let removeServices = document.getElementById("remove-category-submit");
     let addServices = document.getElementById("category-submit");
     let submit = document.getElementById("submit");
-    removeServices.onclick = removeService;
-    addServices.onclick = addService;
-    submit.onclick = submitForm;
+    if (removeServices != null)
+        removeServices.onclick = removeService;
+    if (addServices != null)
+        addServices.onclick = addService;
+    if (submit != null)
+        submit.onclick = submitForm;
 }
 
 function removeService() {
