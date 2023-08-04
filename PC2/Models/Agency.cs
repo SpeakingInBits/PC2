@@ -121,15 +121,26 @@ namespace PC2.Models
             }
         }
     }
-
+    /// <summary>
+    /// Represents the information to be displayed by a view for the agency class
+    /// </summary>
     public class AgencyDisplayViewModel
     {
+        /// <summary>
+        /// The Agency's unique identifier
+        /// </summary>
         public int AgencyId { get; set; }
-
+        /// <summary>
+        /// The agency's name
+        /// </summary>
         public string AgencyName { get; set; } = null!;
-
+        /// <summary>
+        /// The agency's contact information
+        /// </summary>
         public string? AgencyName2 { get; set; }
-
+        /// <summary>
+        /// The city the agency's is located
+        /// </summary>
         public string? City { get; set; }
     }
 }
