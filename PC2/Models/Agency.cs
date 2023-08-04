@@ -60,7 +60,9 @@ namespace PC2.Models
         /// The agency's teletypewriter number
         /// </summary>
         public string? TTY {  get; set;}
-
+        /// <summary>
+        /// The agency's telecommunications device for the deaf's number
+        /// </summary>
         public string? TDD {  get; set;}
         /// <summary>
         /// The crisis help line phone number
