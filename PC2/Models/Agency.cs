@@ -22,7 +22,9 @@ namespace PC2.Models
         /// The agency's second name
         /// </summary>
         public string? AgencyName2 {  get; set;}
-
+        /// <summary>
+        /// The agency's contact information
+        /// </summary>
         public string? Contact {  get; set;}
         /// <summary>
         /// The agency's first address
