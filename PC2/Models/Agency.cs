@@ -13,75 +13,93 @@ namespace PC2.Models
         /// </summary>
         [Key]
         public int AgencyId { get; set; }
+
         /// <summary>
         /// The agency's name
         /// </summary>
         [Required]
         public string AgencyName {  get; set;}
+
         /// <summary>
         /// The agency's second name
         /// </summary>
         public string? AgencyName2 {  get; set;}
+
         /// <summary>
         /// The agency's contact information
         /// </summary>
         public string? Contact {  get; set;}
+
         /// <summary>
         /// The agency's first address
         /// </summary>
         public string? Address1 {  get; set;}
+
         /// <summary>
         /// The agency's second address
         /// </summary>
         public string? Address2 {  get; set;}
+
         /// <summary>
         /// The city the agency's is located
         /// </summary>
         public string? City {  get; set;}
+
         /// <summary>
         /// The state the agency is located
         /// </summary>
         public string? State {  get; set;}
+
         /// <summary>
         /// The agency's zip code
         /// </summary>
         public string? Zip {  get; set;}
+
         /// <summary>
         /// The agency's mailing address
         /// </summary>
         public string? MailingAddress {  get; set;}
+
         /// <summary>
         /// The agency's phone number
         /// </summary>
         public string? Phone {  get; set;}
+
         /// <summary>
         /// The agency's toll free phone number
         /// </summary>
         public string? TollFree {  get; set;}
+
         /// <summary>
         /// The agency's teletypewriter number
         /// </summary>
         public string? TTY {  get; set;}
+
         /// <summary>
         /// The agency's telecommunications device for the deaf's number
         /// </summary>
         public string? TDD {  get; set;}
+
         /// <summary>
         /// The crisis help line phone number
         /// </summary>
         public string? CrisisHelpHotline {  get; set;}
+
         /// <summary>
         /// The agency's fax number
         /// </summary>
         public string? Fax { get; set;}
+
         /// <summary>
         /// The agency's email address
         /// </summary>
         public string? Email {  get; set;}
+
         /// <summary>
         /// The agency's personal website
         /// </summary>
         public string? Website { get; set;}
+
         /// <summary>
         /// The agency's general description
         /// </summary>
@@ -130,14 +148,17 @@ namespace PC2.Models
         /// The Agency's unique identifier
         /// </summary>
         public int AgencyId { get; set; }
+
         /// <summary>
         /// The agency's name
         /// </summary>
         public string AgencyName { get; set; } = null!;
+
         /// <summary>
         /// The agency's contact information
         /// </summary>
         public string? AgencyName2 { get; set; }
+
         /// <summary>
         /// The city the agency's is located
         /// </summary>
