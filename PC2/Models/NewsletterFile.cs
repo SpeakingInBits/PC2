@@ -2,15 +2,27 @@
 
 namespace PC2.Models
 {
+    /// <summary>
+    /// Represents the NewsLetterFile
+    /// </summary>
     public class NewsletterFile
     {
-        [Key] // for naming the newsletter  
+        /// <summary>
+        /// The unique identifier for the NewsLetter
+        /// </summary>
+        [Key]  
         public int NewsletterId { get; set; }
 
-        [Required] // must be the filename
+        /// <summary>
+        /// The name of the NewsLetterFile
+        /// </summary>
+        [Required] 
         public string Name { get; set; } = null!;
 
-        [Required] // used to create dynamic links
+        /// <summary>
+        /// The location of the NewsLetterFile in the storage device
+        /// </summary>
+        [Required] 
         public string Location { get; set; } = null!;
 
     }

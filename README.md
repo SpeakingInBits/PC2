@@ -14,3 +14,13 @@ database driven, searchable resource guide to replace/complement the physical bo
 
 ## Admin Credentials
 - To log in as admin, the username/email is `admin@pc2online.org` and the password is Password01#
+
+## Contributors
+
+Made possible with help by [contributors](https://github.com/SpeakingInBits/PC2/graphs/contributors) and collaboration with students at CPTC:
+
+<a href="https://github.com/speakinginbits/pc2/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=speakinginbits/pc2" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
