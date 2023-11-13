@@ -22,8 +22,8 @@
         /// The Category that the user is searching by
         /// </summary>
         public AgencyCategory? Category {  get; set; }
-        public string? AgencyCategoryName {  get; set; }
-        public int YPos { get; set; } = 0;
+        /*public string? AgencyCategoryName {  get; set; }*/
+        /*public int YPos { get; set; } = 0;*/
         /// <summary>
         /// The city that the user is searching by
         /// </summary>
