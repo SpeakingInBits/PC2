@@ -22,8 +22,6 @@
         /// The Category that the user is searching by
         /// </summary>
         public AgencyCategory? Category {  get; set; }
-        /*public string? AgencyCategoryName {  get; set; }*/
-        /*public int YPos { get; set; } = 0;*/
         /// <summary>
         /// The city that the user is searching by
         /// </summary>
@@ -40,13 +38,11 @@
         /// The city the user searched for
         /// </summary>
         public string? SearchedCity { get; set; }
-
         /// <summary>
         /// A string that tells us if the user searched by agency.
         /// If this value is null, the user searched by city or service.
         /// </summary>
         public string? UserSearchedByAgency { get; set; }
-
         /// <summary>
         /// A string that tells us if the user searched by city or service.
         /// If this value is null, the user searched by agency.
