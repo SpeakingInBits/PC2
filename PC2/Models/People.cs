@@ -23,4 +23,12 @@ namespace PC2.Models
         /// </summary>
         public byte PriorityOrder { get; set; }
     }
+
+    /// <summary>
+    /// Represents a member of the steering committee
+    /// </summary>
+    public class SteeringCommittee : People
+    {
+
+    }
 }
