@@ -27,6 +27,7 @@ namespace PC2.Models
         public byte PriorityOrder { get; set; }
     }
 
+    /// <summary>
     /// Represents a staff member, inheriting basic information from <see cref="People"/>.
     /// </summary>
     public class Staff : People
