@@ -246,7 +246,7 @@ nav .container {
 
 #bootstrap-override .menu-item a {
     padding: 8px 0 8px 0;
-    font-size: 15px;
+    font-size: 17px;
 }
 
 /*text color transition when hovered*/
@@ -343,7 +343,7 @@ nav a {
 
 .dropdown-toggle {
     padding: 8px 0 8px 0;
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 700;
     margin: 0;
 }
