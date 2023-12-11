@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace PC2.Models
 {
@@ -68,5 +68,13 @@ namespace PC2.Models
                 }
             }
         }
+    }
+    
+    /// <summary>
+    /// Represents a member of the steering committee
+    /// </summary>
+    public class SteeringCommittee : People
+    {
+    
     }
 }
