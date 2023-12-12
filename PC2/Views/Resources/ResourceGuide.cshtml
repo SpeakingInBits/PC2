@@ -154,7 +154,7 @@
                 {
                     <tr>
                         <td>
-                            <a class="left-agency" asp-action="ResourceGuide" asp-route-categoryID="@Model.AgencyCategoriesForDataList[i].AgencyCategoryId" asp-route-yPosition="tempY">
+                            <a class="left-agency" asp-action="ResourceGuide" asp-route-categoryID="@Model.AgencyCategoriesForDataList[i].AgencyCategoryId">
                                 @Html.DisplayFor(modelItem => Model.AgencyCategoriesForDataList.ElementAt(i).AgencyCategoryName)
                             </a>
                         </td>
@@ -172,7 +172,7 @@
                 {
                     <tr>
                         <td>
-                            <a class="right-agency" asp-action="ResourceGuide" asp-route-categoryID="@Model.AgencyCategoriesForDataList[i].AgencyCategoryId" asp-route-yPosition="tempY">
+                            <a class="right-agency" asp-action="ResourceGuide" asp-route-categoryID="@Model.AgencyCategoriesForDataList[i].AgencyCategoryId">
                                 @Html.DisplayFor(modelItem => Model.AgencyCategoriesForDataList.ElementAt(i).AgencyCategoryName)
                             </a>
                         </td>
