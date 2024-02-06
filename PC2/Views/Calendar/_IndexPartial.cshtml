@@ -1,35 +1,24 @@
-﻿@{
+﻿@using System.Text.RegularExpressions
+
+@{
     // recieve the event description
     string eventDescription = ViewData["eventDescription"].ToString();
 
-    @*loop through EventDescription string to search for links*@
-    @for (int i = 0; i < eventDescription.Length; i++)  
-    {
-        // look for the first instance of "http"
-        if (eventDescription.IndexOf("http") == i)
-        {                                                  
-            // find the next space after the link if it exists 
-            int linkEnd = eventDescription.IndexOf(" ", i);                                                   
-            if (linkEnd == -1)
-            {
-                // if not the link is the last word in the string
-                linkEnd = eventDescription.Length;
-            }
-            // create a substring of the link
-            string link = eventDescription.Substring(i, linkEnd - i);
-            //remove commas or periods from the end of the link
-            if (link.EndsWith(",") || link.EndsWith("."))
-            {
-                link = link.Substring(0, link.Length - 1);
-                linkEnd -= 2;
-            }
-            <a href="@link" target="_blank">@link</a>
-            // skip to the end of the link
-            i += linkEnd - i;
-        }
-        else
-        {
-            @eventDescription[i]
-        }
-    }
+    // Use a regular expression to find any email addresses in the event description and replace them with a mailto link
+    string emailPattern = @"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b";
+    string emailReplacement = "<a href=\"mailto:$0\">$0</a>";
+    string eventDescriptionResult = Regex.Replace(eventDescription, emailPattern, emailReplacement);
+
+    // Use a regular expression to find any web addresses that being with https or http in the event description and replace them with a hyperlink
+    string webPattern = @"\bhttps?://\S+";
+    string webReplacement = "<a href=\"$0\">$0</a>";
+    eventDescriptionResult = Regex.Replace(eventDescriptionResult, webPattern, webReplacement);
+
+    // Use a regular expression to find any phone numbers and replace them with a tel link
+    string phonePattern = @"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b";
+    string phoneReplacement = "<a href=\"tel:$0\">$0</a>";
+    eventDescriptionResult = Regex.Replace(eventDescriptionResult, phonePattern, phoneReplacement);
+
+    // Display the event description with mailto links
+    @Html.Raw(eventDescriptionResult)
 }
