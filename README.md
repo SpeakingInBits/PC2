@@ -5,7 +5,7 @@ database driven, searchable resource guide to replace/complement the physical bo
 ## Getting started
 - [VS2022](https://visualstudio.microsoft.com/)
 - ASP.NET and web development workload
-- .NET 6 (Included in VS2022)
+- .NET 8 (Included in VS2022)
 
 ## Create the database and insert test data
 - Run ```update-database``` in the ```PC2``` project. 
