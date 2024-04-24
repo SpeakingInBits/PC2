@@ -39,12 +39,6 @@ html {
     font-size: 14px;
 }
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-}
-
 .border-top {
     border-top: 1px solid #e5e5e5;
 }
@@ -295,7 +289,7 @@ nav a {
 
 .ribbon {
     position: absolute;
-    bottom: -50px;
+    bottom: -51px;
     height: 0;
     width: 0;
     border: 25px solid transparent;
@@ -367,27 +361,13 @@ nav a {
     display: block;
 }*/
 
-/*min-width should match the breakpoint for <nav>*/
-@media only screen and (min-width: 992px) {
+@media (min-width: 768px) {
     html {
         font-size: 16px;
     }
 
-    #pc2Logo {
-        padding-bottom: 1em;
-    }
-
-    #menu-bar * {
-        width: 0;
-    }
-
-    #menu-bar *, .submenu-container * {
-        display: none;
-    }
-
-    /*top border shows even when display is set to none*/
-    .submenu {
-        border: none;
+    .ribbon {
+        bottom: -52px;
     }
 }
 
@@ -459,6 +439,34 @@ nav a {
         .left-column ul {
             margin-bottom: 0;
         }
+}
+
+/*min-width should match the breakpoint for <nav>*/
+@media only screen and (min-width: 992px) {
+    html {
+        font-size: 16px;
+    }
+
+    #pc2Logo {
+        padding-bottom: 1em;
+    }
+
+    #menu-bar * {
+        width: 0;
+    }
+
+    #menu-bar *, .submenu-container * {
+        display: none;
+    }
+
+    /*top border shows even when display is set to none*/
+    .submenu {
+        border: none;
+    }
+
+    .ribbon {
+        bottom: -50px;
+    }
 }
 
 main {
