@@ -12,9 +12,9 @@ a.navbar-brand {
     text-decoration: none;
 }
 
-.name:hover {
-    text-decoration: none;
-}
+    .name:hover {
+        text-decoration: none;
+    }
 
 /*Overriding the color settings for login/logout*/
 .nav-link {
@@ -254,7 +254,6 @@ nav .container {
 }
 
 #bootstrap-override .menu-item a {
-    padding: 8px 0 8px 0;
     font-size: 17px;
 }
 
@@ -282,13 +281,13 @@ nav .container {
         -webkit-transition: background-color .4s ease 0s;
         -moz-transition: background-color .4s ease 0s;
     }
-    /*changes text color to provide contrast*/
-    .nav-link:hover {
-        color: black !important;
-        transition: background-color .4s ease 0s;
-        -webkit-transition: background-color .4s ease 0s;
-        -moz-transition: background-color .4s ease 0s;
-    }
+/*changes text color to provide contrast*/
+.nav-link:hover {
+    color: black !important;
+    transition: background-color .4s ease 0s;
+    -webkit-transition: background-color .4s ease 0s;
+    -moz-transition: background-color .4s ease 0s;
+}
 
 nav a {
     padding: 10px;
@@ -457,9 +456,9 @@ nav a {
         margin-bottom: 0;
     }
 
-    .left-column ul {
-        margin-bottom: 0;
-    }
+        .left-column ul {
+            margin-bottom: 0;
+        }
 }
 
 main {
@@ -554,10 +553,11 @@ main p {
     float: left;
 }
 
-.left-column ul, .right-column ul {
-    padding: 0;
-}
+    .left-column ul, .right-column ul {
+        padding: 0;
+    }
 
 li {
-    padding-bottom: 1em;
+    padding-bottom: .5em;
+    padding-top: .5em;
 }
