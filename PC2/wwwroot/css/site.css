@@ -244,6 +244,10 @@ nav .container {
     padding: 17px;
 }
 
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
 #bootstrap-override .menu-item a {
     padding: 8px 0 8px 0;
     font-size: 17px;
