@@ -206,6 +206,11 @@ ul.navbar-nav, .dropdown-item {
     margin: 0 auto;
 }
 
+.navbar-nav .dropdown-menu {
+    position: absolute;
+    border: 2px solid black;
+}
+
 nav .container {
     padding: 0;
 }
