@@ -220,7 +220,7 @@ nav .container {
     border: none;
     border-radius: 0;
     outline: none;
-    padding: 0;
+    padding-inline: 0;
 }
 
 #menu-bar {
