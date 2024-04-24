@@ -263,7 +263,6 @@ nav .container {
 .menu-item {
     height: 60px;
     display: inline-flex;
-    padding: 12px 10px 12px 10px;
     position: relative;
     align-items: center;
 }
@@ -439,6 +438,10 @@ nav a {
         .left-column ul {
             margin-bottom: 0;
         }
+
+    #Resources-Index, #housing-program, #about-menu {
+        padding-left: 12px;
+    }
 }
 
 /*min-width should match the breakpoint for <nav>*/
