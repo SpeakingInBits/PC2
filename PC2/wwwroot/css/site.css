@@ -12,9 +12,9 @@ a.navbar-brand {
     text-decoration: none;
 }
 
-    .name:hover {
-        text-decoration: none;
-    }
+.name:hover {
+    text-decoration: none;
+}
 
 /*Overriding the color settings for login/logout*/
 .nav-link {
@@ -68,7 +68,6 @@ body {
     margin-bottom: 60px;
 }
 
-
 .footer {
     position: absolute;
     display: flex;
@@ -93,7 +92,6 @@ main {
     margin-bottom: 155px;
     overflow: hidden;
 }
-
 
 .footer-item {
     display: flex;
@@ -120,9 +118,9 @@ main {
     flex-direction: row;
 }
 
-    #footer-social-media a {
-        margin: 5px;
-    }
+#footer-social-media a {
+    margin: 5px;
+}
 
 #heading {
     width: 75%;
@@ -131,14 +129,14 @@ main {
     padding-left: 10px;
 }
 
-    /*Adds an invisible element that makes navbar top margin work against heading floated elements*/
-    #heading::after {
-        display: block;
-        height: 0;
-        width: 100%;
-        content: "";
-        clear: both;
-    }
+/*Adds an invisible element that makes navbar top margin work against heading floated elements*/
+#heading::after {
+    display: block;
+    height: 0;
+    width: 100%;
+    content: "";
+    clear: both;
+}
 
 #mainTitle {
     float: left;
@@ -147,29 +145,29 @@ main {
     margin: auto;
 }
 
-    #mainTitle h1 {
-        margin-bottom: 0;
-        font-size: 2.5rem;
-    }
+#mainTitle h1 {
+    margin-bottom: 0;
+    font-size: 2.5rem;
+}
 
-    #mainTitle a {
-        font-weight: bold;
-        color: rgb(41, 41, 41);
-    }
+#mainTitle a {
+    font-weight: bold;
+    color: rgb(41, 41, 41);
+}
 
-        #mainTitle a:hover {
-            text-decoration: none;
-        }
+#mainTitle a:hover {
+    text-decoration: none;
+}
 
 #pc2Logo {
     float: right;
     width: 20%;
 }
 
-    #pc2Logo img {
-        width: 200px;
-        height: 130px;
-    }
+#pc2Logo img {
+    width: 200px;
+    height: 130px;
+}
 
 #bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .submenu, .divider, .dropdown-menu {
     background-color: rgba(18, 66, 35, 1);
@@ -267,13 +265,14 @@ nav .container {
     align-items: center;
 }
 
-    /*background color transition when hovered*/
-    .menu-item:hover, .submenu-item:hover {
-        background-color: rgba(180, 204, 132, 1);
-        transition: background-color .4s ease 0s;
-        -webkit-transition: background-color .4s ease 0s;
-        -moz-transition: background-color .4s ease 0s;
-    }
+/*background color transition when hovered*/
+.menu-item:hover, .submenu-item:hover {
+    background-color: rgba(180, 204, 132, 1);
+    transition: background-color .4s ease 0s;
+    -webkit-transition: background-color .4s ease 0s;
+    -moz-transition: background-color .4s ease 0s;
+}
+
 /*changes text color to provide contrast*/
 .nav-link:hover {
     color: black !important;
@@ -400,10 +399,10 @@ nav a {
         padding-bottom: .5em;
     }
 
-        #pc2Logo img {
-            width: 160px;
-            height: 104px;
-        }
+    #pc2Logo img {
+        width: 160px;
+        height: 104px;
+    }
 
     #mainTitle {
         width: 100%;
@@ -435,9 +434,9 @@ nav a {
         margin-bottom: 0;
     }
 
-        .left-column ul {
-            margin-bottom: 0;
-        }
+    .left-column ul {
+        margin-bottom: 0;
+    }
 
     #Resources-Index, #housing-program, #about-menu {
         padding-left: 12px;
@@ -512,19 +511,19 @@ main p {
     max-width: 100%;
 }
 
-    #photo-header::after {
-        display: block;
-        height: 0;
-        width: 100%;
-        content: "";
-        clear: both;
-    }
+#photo-header::after {
+    display: block;
+    height: 0;
+    width: 100%;
+    content: "";
+    clear: both;
+}
 
-    #photo-header img {
-        float: left;
-        padding: 10px 0;
-        max-width: 100%;
-    }
+#photo-header img {
+    float: left;
+    padding: 10px 0;
+    max-width: 100%;
+}
 
 .divider {
     height: 25px;
@@ -536,19 +535,18 @@ main p {
     margin: 0 auto 50px auto;
 }
 
-    #content ul {
-        margin-bottom: 0;
-    }
+#content ul {
+    margin-bottom: 0;
+}
 
-    #content img {
-        max-width: 100%;
-    }
+#content img {
+    max-width: 100%;
+}
 
 #page-title {
     text-align: center;
     margin-top: 1.5em;
 }
-
 
 .left-column {
     padding-left: 25px;
@@ -564,9 +562,9 @@ main p {
     float: left;
 }
 
-    .left-column ul, .right-column ul {
-        padding: 0;
-    }
+.left-column ul, .right-column ul {
+    padding: 0;
+}
 
 li {
     padding-bottom: .5em;
