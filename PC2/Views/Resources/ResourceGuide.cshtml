@@ -214,15 +214,13 @@ else
             @for (int i = 0; i < Model.Agencies.Count; i++)
             {
                 <tr>
-                    <td>@Model.Agencies[i].AgencyName</td>
-                    @if (Model.Agencies[i].AgencyName2 != null)
-                    {
-                        <td>@Model.Agencies[i].AgencyName2</td>
-                    }
-                    else
-                    {
-                        <td></td>
-                    }
+                    <td>
+                        @Model.Agencies[i].AgencyName
+                        @if (Model.Agencies[i].AgencyName2 != null)
+                        {
+                            <p id="agencyName2"> @Model.Agencies[i].AgencyName2 </p>
+                        }
+                    </td>
                     @if (Model.Agencies[i].Phone != null)
                     {
                         string phoneNumber = Model.Agencies[i].Phone;
