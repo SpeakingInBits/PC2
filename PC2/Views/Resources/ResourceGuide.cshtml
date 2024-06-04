@@ -190,11 +190,7 @@ else
             {
                 <thead>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td><h1>@Model.Category.AgencyCategoryName</h1></td>
-                        <td></td>
-                        <td></td>
+                        <h1>@Model.Category.AgencyCategoryName</h1>
                     </tr>
                 </thead>
             }
@@ -202,11 +198,7 @@ else
             {
                 <thead>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td><h1>@Model.CurrentCity</h1></td>
-                        <td></td>
-                        <td></td>
+                        <h1>@Model.CurrentCity</h1>
                     </tr>
                 </thead>
             }
@@ -221,49 +213,44 @@ else
                             <p id="agencyName2"> @Model.Agencies[i].AgencyName2 </p>
                         }
                     </td>
-                    @if (Model.Agencies[i].Phone != null)
-                    {
-                        string phoneNumber = Model.Agencies[i].Phone;
-                        
-                        <td>
-                        @if (phoneNumber.Substring(0, 3) == "tel")
+                    <td>
+                        @if (Model.Agencies[i].Phone != null)
                         {
-                            <a href="@phoneNumber)">phoneNumber</a>
-                        }
-                        @*handle inconsistencies in phone number data*@
-                        else
-                        {
-                            @for (int j = 0; j < phoneNumber.Length; j++)
+                            string phoneNumber = Model.Agencies[i].Phone;
+
+                            @if (phoneNumber.Substring(0, 3) == "tel")
                             {
-                                // if the string contains "(xxx)"
-                                if (phoneNumber[j] == '(' && phoneNumber[j + 4] == ')')
-                                {
-                                    @if (j > 0) {
-                                        <br>
-                                    }
-                                    // display phone number as clickable number and move to the end of it
-                                    <a href="tel:@phoneNumber.Substring(j, 14)">@phoneNumber.Substring(j, 14)</a>
-                                    <br>                               
-                                    j += 14;
-                                }
-                                else // display the character
-                                {
-                                    @phoneNumber[j];
-                                }                          
+                            <a href="@phoneNumber">@phoneNumber</a>
                             }
+                            @*handle inconsistencies in phone number data*@
+                            else
+                            {
+                                @for (int j = 0; j < phoneNumber.Length; j++)
+                                {
+                                    // if the string contains "(xxx)"
+                                    if (phoneNumber[j] == '(' && phoneNumber[j + 4] == ')')
+                                    {
+                                        @if (j > 0) {
+                                            <br>
+                                        }
+                                        // display phone number as clickable number and move to the end of it
+                                        <a href="tel:@phoneNumber.Substring(j, 14)">@phoneNumber.Substring(j, 14)</a>
+                                        j += 14;
+                                    }
+                                    else // display the character
+                                    {
+                                        @phoneNumber[j];
+                                    }                          
+                                }
+                            }
+                            <br />
                         }
-                        </td>
-                    }
-                    else
-                    {
-                        <td></td>
-                    }
-                    @if (Model.Agencies[i].Email != null)
-                    {
-                        string email = Model.Agencies[i].Email;
-                        int emailStart = 0;
-                        
-                        <td>
+
+                        @if (Model.Agencies[i].Email != null)
+                        {
+                            string email = Model.Agencies[i].Email;
+                            int emailStart = 0;
+
                             @*separate multiple emails*@
                             @for (int j = 0; j < email.Length; j++)
                             {
@@ -277,17 +264,13 @@ else
                                     emailStart = j;
                                 }
                             }
-                            @{ // display link as final email
-                                string finalEmail = email.Substring(emailStart, email.Length - emailStart);
-                            }
+                             // display link as final email
+                             string finalEmail = email.Substring(emailStart, email.Length - emailStart);
+                            
                             <a href="mailto:@finalEmail.Trim()">@finalEmail</a>
+                        }
+                    </td>
 
-                        </td>
-                    }
-                    else
-                    {
-                        <td></td>
-                    }
                     @if (Model.Agencies[i].City != null)
                     {
                         <td>@Model.Agencies[i].City : @Model.Agencies[i].Zip</td>
