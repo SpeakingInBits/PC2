@@ -184,102 +184,103 @@
 }
 else
 {
-    <div id="results" class="table-responsive">
-        <table class="table table-striped table-hover">
-            @if (Model.Category != null)
-            {
-                <thead>
-                    <tr>
-                        <h1>@Model.Category.AgencyCategoryName</h1>
-                    </tr>
-                </thead>
-            }
-            else if (Model.CurrentCity != null)
-            {
-                <thead>
-                    <tr>
-                        <h1>@Model.CurrentCity</h1>
-                    </tr>
-                </thead>
-            }
+    <div id="results" class="container">
+        @if (Model.Category != null)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <h1>@Model.Category.AgencyCategoryName</h1>
+                </div>
+            </div>
+        }
+        else if (Model.CurrentCity != null)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <h1>@Model.CurrentCity</h1>
+                </div>
+            </div>
+        }
 
-            @for (int i = 0; i < Model.Agencies.Count; i++)
-            {
-                <tr>
-                    <td>
-                        @Model.Agencies[i].AgencyName
-                        @if (Model.Agencies[i].AgencyName2 != null)
-                        {
-                            <p id="agencyName2"> @Model.Agencies[i].AgencyName2 </p>
-                        }
-                    </td>
-                    <td>
-                        @if (Model.Agencies[i].Phone != null)
-                        {
-                            string phoneNumber = Model.Agencies[i].Phone;
+        @for (int i = 0; i < Model.Agencies.Count; i++)
+        {
+            <div class="row py-1 results @(i % 2 != 0 ? "" : "odd-row")">
+                    <div class="col-md-5">
+                    @Model.Agencies[i].AgencyName
+                    @if (Model.Agencies[i].AgencyName2 != null)
+                    {
+                        <p id="agencyName2"> @Model.Agencies[i].AgencyName2 </p>
+                    }
+                    </div>
+                <div class="col-md-5">
+                    @if (Model.Agencies[i].Phone != null)
+                    {
+                        string phoneNumber = Model.Agencies[i].Phone;
 
-                            @if (phoneNumber.Substring(0, 3) == "tel")
-                            {
+                        @if (phoneNumber.Substring(0, 3) == "tel")
+                        {
                             <a href="@phoneNumber">@phoneNumber</a>
-                            }
-                            @*handle inconsistencies in phone number data*@
-                            else
-                            {
-                                @for (int j = 0; j < phoneNumber.Length; j++)
-                                {
-                                    // if the string contains "(xxx)"
-                                    if (phoneNumber[j] == '(' && phoneNumber[j + 4] == ')')
-                                    {
-                                        @if (j > 0) {
-                                            <br>
-                                        }
-                                        // display phone number as clickable number and move to the end of it
-                                        <a href="tel:@phoneNumber.Substring(j, 14)">@phoneNumber.Substring(j, 14)</a>
-                                        j += 14;
-                                    }
-                                    else // display the character
-                                    {
-                                        @phoneNumber[j];
-                                    }                          
-                                }
-                            }
-                            <br />
                         }
-
-                        @if (Model.Agencies[i].Email != null)
+                        @*handle inconsistencies in phone number data*@
+                        else
                         {
-                            string email = Model.Agencies[i].Email;
-                            int emailStart = 0;
-
-                            @*separate multiple emails*@
-                            @for (int j = 0; j < email.Length; j++)
+                            @for (int j = 0; j < phoneNumber.Length; j++)
                             {
-                                // if the email contains a space
-                                if (email[j] == ' ')
+                                // if the string contains "(xxx)"
+                                if (phoneNumber[j] == '(' && phoneNumber[j + 4] == ')')
                                 {
-                                    // display all characters from emailStart to current index as link
-                                    string singleEmail = email.Substring(emailStart, j - emailStart);
-                                    <a href="mailto:@singleEmail">@singleEmail</a>
-                                    <br>
-                                    emailStart = j;
+                                    @if (j > 0)
+                                    {
+                                        <br>
+                                    }
+                                    // display phone number as clickable number and move to the end of it
+                                    <a href="tel:@phoneNumber.Substring(j, 14)">@phoneNumber.Substring(j, 14)</a>
+                                    j += 14;
+                                }
+                                else // display the character
+                                {
+                                    @phoneNumber[j]
+                                    ;
                                 }
                             }
-                             // display link as final email
-                             string finalEmail = email.Substring(emailStart, email.Length - emailStart);
-                            
-                            <a href="mailto:@finalEmail.Trim()">@finalEmail</a>
                         }
-                    </td>
+                        <br />
+                    }
+
+                    @if (Model.Agencies[i].Email != null)
+                    {
+                        string email = Model.Agencies[i].Email;
+                        int emailStart = 0;
+
+                        @*separate multiple emails*@
+                        @for (int j = 0; j < email.Length; j++)
+                        {
+                            // if the email contains a space
+                            if (email[j] == ' ')
+                            {
+                                // display all characters from emailStart to current index as link
+                                string singleEmail = email.Substring(emailStart, j - emailStart);
+                                <a href="mailto:@singleEmail">@singleEmail</a>
+                                <br>
+                                emailStart = j;
+                            }
+                        }
+                        // display link as final email
+                        string finalEmail = email.Substring(emailStart, email.Length - emailStart);
+
+                        <a href="mailto:@finalEmail.Trim()">@finalEmail</a>
+                    }
+                    </div>
 
                     @if (Model.Agencies[i].City != null)
                     {
-                        <td>@Model.Agencies[i].City : @Model.Agencies[i].Zip</td>
+                        <div class="col-md-1">@Model.Agencies[i].City : @Model.Agencies[i].Zip</div>
                     }
                     else
                     {
-                        <td></td>
+                        <div></div>
                     }
-                    <td>
+                    <div class="col-md-1">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailsModal-@i">
                             Details
                         </button>
@@ -294,9 +295,9 @@ else
                                     <div class="modal-body">
                                         <dl class="row">
                                             @*For each property in class agency*@
-                                            @foreach (var prop in typeof(Agency).GetProperties())
+                                            @foreach(var prop in typeof(Agency).GetProperties())
                                             {
-                                                
+
                                                 if (prop.GetValue(Model.Agencies[i]) != null)
                                                 {
                                                     // handles email links
@@ -326,33 +327,33 @@ else
                                                     {
                                                         <dt>@prop.Name</dt>
                                                         string phone = prop.GetValue(Model.Agencies[i]).ToString();
-                                                        
+
                                                         if (phone.Length > 15)
                                                         {
                                                             @*handle inconsistencies in phone number data*@ // borrowed from code above
                                                             <dd>
-                                                            @for (int j = 0; j < phone.Length; j++)
-                                                            {
-                                                                // if the string contains "(xxx)"
-                                                                if (phone[j] == '(' && phone[j + 4] == ')')
+                                                                @for (int j = 0; j < phone.Length; j++)
                                                                 {
-                                                                    @if (j > 0)
+                                                                    // if the string contains "(xxx)"
+                                                                    if (phone[j] == '(' && phone[j + 4] == ')')
                                                                     {
+                                                                        @if (j > 0)
+                                                                        {
+                                                                            <br>
+                                                                        }
+                                                                        // display phone number as clickable number and move to the end of it
+                                                                        <a href="tel:@phone.Substring(j, 14)">@phone.Substring(j, 14)</a>
                                                                         <br>
+                                                                        j += 14;
                                                                     }
-                                                                    // display phone number as clickable number and move to the end of it
-                                                                    <a href="tel:@phone.Substring(j, 14)">@phone.Substring(j, 14)</a>
-                                                                    <br>
-                                                                    j += 14;
+                                                                    else // display the character
+                                                                    {
+                                                                        @phone[j];
+                                                                    }
                                                                 }
-                                                                else // display the character
-                                                                {
-                                                                    @phone[j];
-                                                                }
-                                                            }
                                                             </dd>
                                                         }
-                                                        
+
                                                         else
                                                         {
                                                             <dd><a href="tel:@prop.GetValue(Model.Agencies[i])">@prop.GetValue(Model.Agencies[i])</a></dd>
@@ -407,10 +408,9 @@ else
                                 </div>
                             </div>
                         </div>
-                    </td>
-                </tr>
-            }
-        </table>
+                    </div>                
+            </div>
+        }
     </div>
 }
 
