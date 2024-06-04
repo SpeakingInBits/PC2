@@ -557,3 +557,14 @@ main p {
 li {
     padding-bottom: 1em;
 }
+
+/* Emulate alternating background colors of table-striped for
+   the <div> rows of the Resource guide table
+*/
+.odd-row {
+    background-color: #f2f2f2; /* Change this to the color you want for odd rows */
+}
+div.results:hover, div.results:hover #agencyName2 {
+    color: white;
+    background-color: #88b235;
+}
