@@ -568,3 +568,8 @@ div.results:hover, div.results:hover #agencyName2 {
     color: white;
     background-color: #88b235;
 }
+
+#scrollResults {
+    height: 650px; /* Set to the height you want */
+    overflow-y: auto; /* Makes the container scrollable */
+}
