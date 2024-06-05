@@ -185,22 +185,23 @@
 else
 {
     <div id="results" class="container">
-        @if (Model.Category != null)
-        {
+
             <div class="row">
-                <div class="col-12">
-                    <h1>@Model.Category.AgencyCategoryName</h1>
-                </div>
-            </div>
+            <h1>
+                @if (Model.Category != null && Model.CurrentCity != null)
+                {
+                    @:@Model.Category.AgencyCategoryName - @Model.CurrentCity
         }
+                else if (Model.Category != null)
+                {
+                    @: @Model.Category.AgencyCategoryName
+                }
         else if (Model.CurrentCity != null)
         {
-            <div class="row">
-                <div class="col-12">
-                    <h1>@Model.CurrentCity</h1>
+                    @: @Model.CurrentCity
+                }
+            </h1>
                 </div>
-            </div>
-        }
         <div id="scrollResults" class="container">
             @for (int i = 0; i < Model.Agencies.Count; i++)
             {
