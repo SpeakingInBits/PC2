@@ -27,44 +27,21 @@
 }
 
 <div>
-    <div class="row justify-content-center">
-        <div class="col-4">
+    <div class="row align-items-center justify-content-center">
+        <div class="col-auto col-md-5">
             <h6>PC2</h6>
             <p>3716 Pacific Avenue</p>
             <p>Suite A</p>
             <p>Tacoma, WA  98418</p>
-            <br />
-            <a href = "mailto:info@pc2online.org"><p>info@pc2online.org</p></a>
+        </div>
+        <div class="col-auto col-md-5">
+            <a href="mailto:info@pc2online.org"><p>info@pc2online.org</p></a>
             <a href="tel: +2535640707"><p>253.564.0707</p></a>
             <a href="tel: +8773354657"><p>877-DD-LINKS</p></a>
             <p>253.564.0702 (fax)</p>
         </div>
 
-        <div class="col-7">
-            <form action="mailto:@Configuration["PC2Email"]">
-            <div class="row">
-                <div class="col">
-                    <div class="form-group">
-                        <input type="email" required name="email" class="form-control" placeholder="Your Email"/>
-                    </div>
-                    <br />
-                    <div class="mb-3">
-                        <input name="subject" type="text" required class="form-control" placeholder="Subject"/>
-                    </div>
-                    <br />
-                </div>
-                <div class="col">
-                    <div class="mb-3">
-                        <textarea name="body" required class="form-control" rows="6" cols="30" placeholder="Enter your name, any additional contact info, and message here"></textarea>
-                    </div>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <input type="submit" class="btn btn-primary me-md-2" value="Send" />
-                    </div>
-                </div>
-            </div> 
-        </form>
-        </div>
         <div class="divider"></div>
-        <iframe width="768" height="500" id="gmap_canvas" src="https://maps.google.com/maps?q=3716%20Pacific%20Avenue%20%20Suite%20A%20%20Tacoma,%20WA%20%2098418&t=&z=15&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+        <iframe title="Map to PC2 Office" aria-label="Map to PC2 Office" width="768" height="500" id="gmap_canvas" src="https://maps.google.com/maps?q=3716%20Pacific%20Avenue%20%20Suite%20A%20%20Tacoma,%20WA%20%2098418&t=&z=15&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
     </div>
 </div>

@@ -39,12 +39,6 @@ html {
     font-size: 14px;
 }
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-}
-
 .border-top {
     border-top: 1px solid #e5e5e5;
 }
@@ -74,7 +68,6 @@ body {
     margin-bottom: 60px;
 }
 
-
 .footer {
     position: absolute;
     display: flex;
@@ -99,7 +92,6 @@ main {
     margin-bottom: 155px;
     overflow: hidden;
 }
-
 
 .footer-item {
     display: flex;
@@ -126,9 +118,9 @@ main {
     flex-direction: row;
 }
 
-    #footer-social-media a {
-        margin: 5px;
-    }
+#footer-social-media a {
+    margin: 5px;
+}
 
 #heading {
     width: 75%;
@@ -137,14 +129,14 @@ main {
     padding-left: 10px;
 }
 
-    /*Adds an invisible element that makes navbar top margin work against heading floated elements*/
-    #heading::after {
-        display: block;
-        height: 0;
-        width: 100%;
-        content: "";
-        clear: both;
-    }
+/*Adds an invisible element that makes navbar top margin work against heading floated elements*/
+#heading::after {
+    display: block;
+    height: 0;
+    width: 100%;
+    content: "";
+    clear: both;
+}
 
 #mainTitle {
     float: left;
@@ -153,29 +145,29 @@ main {
     margin: auto;
 }
 
-    #mainTitle h1 {
-        margin-bottom: 0;
-        font-size: 2.5rem;
-    }
+#mainTitle h1 {
+    margin-bottom: 0;
+    font-size: 2.5rem;
+}
 
-    #mainTitle a {
-        font-weight: bold;
-        color: rgb(41, 41, 41);
-    }
+#mainTitle a {
+    font-weight: bold;
+    color: rgb(41, 41, 41);
+}
 
-        #mainTitle a:hover {
-            text-decoration: none;
-        }
+#mainTitle a:hover {
+    text-decoration: none;
+}
 
 #pc2Logo {
     float: right;
     width: 20%;
 }
 
-    #pc2Logo img {
-        width: 200px;
-        height: 130px;
-    }
+#pc2Logo img {
+    width: 200px;
+    height: 130px;
+}
 
 #bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .submenu, .divider, .dropdown-menu {
     background-color: rgba(18, 66, 35, 1);
@@ -206,6 +198,11 @@ ul.navbar-nav, .dropdown-item {
     margin: 0 auto;
 }
 
+.navbar-nav .dropdown-menu {
+    position: absolute;
+    border: 2px solid black;
+}
+
 nav .container {
     padding: 0;
 }
@@ -215,7 +212,7 @@ nav .container {
     border: none;
     border-radius: 0;
     outline: none;
-    padding: 0;
+    padding-inline: 0;
 }
 
 #menu-bar {
@@ -244,8 +241,11 @@ nav .container {
     padding: 17px;
 }
 
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
 #bootstrap-override .menu-item a {
-    padding: 8px 0 8px 0;
     font-size: 17px;
 }
 
@@ -261,25 +261,25 @@ nav .container {
 .menu-item {
     height: 60px;
     display: inline-flex;
-    padding: 12px 10px 12px 10px;
     position: relative;
     align-items: center;
 }
 
-    /*background color transition when hovered*/
-    .menu-item:hover, .submenu-item:hover {
-        background-color: rgba(180, 204, 132, 1);
-        transition: background-color .4s ease 0s;
-        -webkit-transition: background-color .4s ease 0s;
-        -moz-transition: background-color .4s ease 0s;
-    }
-    /*changes text color to provide contrast*/
-    .nav-link:hover {
-        color: black !important;
-        transition: background-color .4s ease 0s;
-        -webkit-transition: background-color .4s ease 0s;
-        -moz-transition: background-color .4s ease 0s;
-    }
+/*background color transition when hovered*/
+.menu-item:hover, .submenu-item:hover {
+    background-color: rgba(180, 204, 132, 1);
+    transition: background-color .4s ease 0s;
+    -webkit-transition: background-color .4s ease 0s;
+    -moz-transition: background-color .4s ease 0s;
+}
+
+/*changes text color to provide contrast*/
+.nav-link:hover {
+    color: black !important;
+    transition: background-color .4s ease 0s;
+    -webkit-transition: background-color .4s ease 0s;
+    -moz-transition: background-color .4s ease 0s;
+}
 
 nav a {
     padding: 10px;
@@ -287,7 +287,7 @@ nav a {
 
 .ribbon {
     position: absolute;
-    bottom: -50px;
+    bottom: -51px;
     height: 0;
     width: 0;
     border: 25px solid transparent;
@@ -359,27 +359,13 @@ nav a {
     display: block;
 }*/
 
-/*min-width should match the breakpoint for <nav>*/
-@media only screen and (min-width: 992px) {
+@media (min-width: 768px) {
     html {
         font-size: 16px;
     }
 
-    #pc2Logo {
-        padding-bottom: 1em;
-    }
-
-    #menu-bar * {
-        width: 0;
-    }
-
-    #menu-bar *, .submenu-container * {
-        display: none;
-    }
-
-    /*top border shows even when display is set to none*/
-    .submenu {
-        border: none;
+    .ribbon {
+        bottom: -52px;
     }
 }
 
@@ -413,10 +399,10 @@ nav a {
         padding-bottom: .5em;
     }
 
-        #pc2Logo img {
-            width: 160px;
-            height: 104px;
-        }
+    #pc2Logo img {
+        width: 160px;
+        height: 104px;
+    }
 
     #mainTitle {
         width: 100%;
@@ -450,6 +436,38 @@ nav a {
 
     .left-column ul {
         margin-bottom: 0;
+    }
+
+    #Resources-Index, #housing-program, #about-menu {
+        padding-left: 12px;
+    }
+}
+
+/*min-width should match the breakpoint for <nav>*/
+@media only screen and (min-width: 992px) {
+    html {
+        font-size: 16px;
+    }
+
+    #pc2Logo {
+        padding-bottom: 1em;
+    }
+
+    #menu-bar * {
+        width: 0;
+    }
+
+    #menu-bar *, .submenu-container * {
+        display: none;
+    }
+
+    /*top border shows even when display is set to none*/
+    .submenu {
+        border: none;
+    }
+
+    .ribbon {
+        bottom: -50px;
     }
 }
 
@@ -498,19 +516,19 @@ main p {
     max-width: 100%;
 }
 
-    #photo-header::after {
-        display: block;
-        height: 0;
-        width: 100%;
-        content: "";
-        clear: both;
-    }
+#photo-header::after {
+    display: block;
+    height: 0;
+    width: 100%;
+    content: "";
+    clear: both;
+}
 
-    #photo-header img {
-        float: left;
-        padding: 10px 0;
-        max-width: 100%;
-    }
+#photo-header img {
+    float: left;
+    padding: 10px 0;
+    max-width: 100%;
+}
 
 .divider {
     height: 25px;
@@ -522,19 +540,18 @@ main p {
     margin: 0 auto 50px auto;
 }
 
-    #content ul {
-        margin-bottom: 0;
-    }
+#content ul {
+    margin-bottom: 0;
+}
 
-    #content img {
-        max-width: 100%;
-    }
+#content img {
+    max-width: 100%;
+}
 
 #page-title {
     text-align: center;
     margin-top: 1.5em;
 }
-
 
 .left-column {
     padding-left: 25px;
@@ -555,14 +572,15 @@ main p {
 }
 
 li {
-    padding-bottom: 1em;
+    padding-bottom: .5em;
+    padding-top: .5em;
 }
 
 /* Emulate alternating background colors of table-striped for
    the <div> rows of the Resource guide table
 */
 .evenIndex-row {
-    background-color: #f2f2f2; /* Change this to the color you want for odd rows */
+    background-color: #f2f2f2;
 }
 div.results:hover, div.results:hover #agencyName2 {
     color: white;
@@ -570,6 +588,9 @@ div.results:hover, div.results:hover #agencyName2 {
 }
 
 #scrollResults {
-    max-height : 550px; /* Set to the height you want */
-    overflow-y: auto; /* Makes the container scrollable */
+    max-height : 550px;
+    overflow-y: auto;
+}
+    padding-bottom: .5em;
+    padding-top: .5em;
 }
