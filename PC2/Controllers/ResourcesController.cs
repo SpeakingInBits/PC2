@@ -85,6 +85,8 @@ namespace PC2.Controllers
                     TrackResourceGuideTelemetry("CityAndCategory", $"{searchModel.SearchedCity} - {searchModel.SearchedCategory}");
                     resourceGuide.Agencies = await AgencyDB.GetAgenciesByCategoryAndCity(_context,
                         searchModel.SearchedCategory, searchModel.SearchedCity);
+                    resourceGuide.CurrentCity = searchModel.SearchedCity;
+                    resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
                 }
                 else if (searchModel.SearchedCategory != null)
                 {
