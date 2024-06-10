@@ -579,7 +579,7 @@ li {
 /* Emulate alternating background colors of table-striped for
    the <div> rows of the Resource guide table
 */
-.evenIndex-row {
+div.results:nth-child(even) {
     background-color: #f2f2f2;
 }
 div.results:hover, div.results:hover #agencyName2 {

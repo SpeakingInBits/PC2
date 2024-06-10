@@ -205,7 +205,7 @@ else
         <div id="scrollResults" class="container">
             @for (int i = 0; i < Model.Agencies.Count; i++)
             {
-                <div class="row py-1 results @(i % 2 == 0 ? "evenIndex-row" : "")"> <!--css for evenIndex-row to emulate striped table-->
+                <div class="row py-1 results"> <!--css for evenIndex-row to emulate striped table-->
                     <div class="col-md-5 col-9">
                         @Model.Agencies[i].AgencyName 
                         @if (Model.CurrentCity == null && Model.Agencies[i].City != null)
