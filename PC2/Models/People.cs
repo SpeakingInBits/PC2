@@ -45,7 +45,7 @@ namespace PC2.Models
         /// <summary>
         /// The staff/person's email address.
         /// </summary>
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         /// <summary>
         /// Gets a formatted display of the phone number and extension.
