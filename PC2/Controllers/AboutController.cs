@@ -75,7 +75,14 @@ namespace PC2.Controllers
         [ActionName("DeleteStaff")]
         public async Task<IActionResult> ConfirmDeleteStaff(int id)
         {
-            Staff staff = await StaffDB.GetStaffMember(_context, id);
+            Staff? staff = await StaffDB.GetStaffMember(_context, id);
+
+            if (staff == null)
+            {
+                // If staff member is not found
+                return NotFound(); // Return a NotFound result
+            }
+
             await StaffDB.Delete(_context, staff);
             return RedirectToAction("IndexStaff");
         }
@@ -135,7 +142,14 @@ namespace PC2.Controllers
         [ActionName("DeleteBoard")]
         public async Task<IActionResult> ConfirmDeleteBoard(int id)
         {
-            Board board = await BoardDB.GetBoardMember(_context, id);
+            Board? board = await BoardDB.GetBoardMember(_context, id);
+
+            if (board == null)
+            {
+                // If board member is not found
+                return NotFound(); // Return a NotFound result
+            }
+
             await BoardDB.Delete(_context, board);
             return RedirectToAction("IndexBoard");
         }
@@ -195,7 +209,14 @@ namespace PC2.Controllers
         [ActionName("DeleteSteeringCommittee")]
         public async Task<IActionResult> ConfirmDeleteSteeringCommittee(int id)
         {
-            SteeringCommittee steeringCommittee = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id);
+            SteeringCommittee? steeringCommittee = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id);
+
+            if (steeringCommittee == null)
+            {
+                // If the steering committee member is not found
+                return NotFound(); // Return a NotFound result
+            }
+
             await SteeringCommitteeDB.Delete(_context, steeringCommittee);
             return RedirectToAction("IndexSteeringCommittee");
         }
