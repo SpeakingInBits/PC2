@@ -46,6 +46,8 @@ namespace PC2.Models
         /// <summary>
         /// The staff/person's email address.
         /// </summary>
+        [DataType(DataType.EmailAddress)]
+        [EmailAddress]
         public required string Email { get; set; }
 
         /// <summary>
