@@ -38,8 +38,12 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateStaff(Staff staff)
         {
-            await StaffDB.AddStaff(_context, staff);
-            return RedirectToAction("IndexStaff");
+            if (ModelState.IsValid)
+            {
+                await StaffDB.AddStaff(_context, staff);
+                return RedirectToAction("IndexStaff");
+            }
+            return View(staff);
         }
 
         /// <summary>
