@@ -34,6 +34,7 @@ namespace PC2.Models
     {
         /// <summary>
         /// The staff/person's phone number.
+        /// Note: Not every staff member has a phone number.
         /// </summary>
         public string? Phone { get; set; }
 
@@ -45,6 +46,8 @@ namespace PC2.Models
         /// <summary>
         /// The staff/person's email address.
         /// </summary>
+        [DataType(DataType.EmailAddress)]
+        [EmailAddress]
         public required string Email { get; set; }
 
         /// <summary>

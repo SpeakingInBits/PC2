@@ -38,8 +38,12 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateStaff(Staff staff)
         {
-            await StaffDB.AddStaff(_context, staff);
-            return RedirectToAction("IndexStaff");
+            if (ModelState.IsValid)
+            {
+                await StaffDB.AddStaff(_context, staff);
+                return RedirectToAction("IndexStaff");
+            }
+            return View(staff);
         }
 
         /// <summary>
@@ -56,8 +60,13 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> EditStaff(Staff staff)
         {
-            await StaffDB.SaveChanges(_context, staff);
-            return RedirectToAction("IndexStaff");
+            if (ModelState.IsValid)
+            {
+                await StaffDB.SaveChanges(_context, staff);
+                return RedirectToAction("IndexStaff");
+            }
+            
+            return View(staff);
         }
 
         /// <summary>
@@ -105,8 +114,13 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBoard(Board board)
         {
-            await BoardDB.CreateBoardMember(_context, board);
-            return RedirectToAction("IndexBoard");
+            if (ModelState.IsValid)
+            {
+                await BoardDB.CreateBoardMember(_context, board);
+                return RedirectToAction("IndexBoard");
+            }
+            
+            return View(board);
         }
 
         /// <summary>
@@ -123,8 +137,13 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> EditBoard(Board board)
         {
-            await BoardDB.EditBoardMember(_context, board);
-            return RedirectToAction("IndexBoard");
+            if (ModelState.IsValid)
+            {
+                await BoardDB.EditBoardMember(_context, board);
+                return RedirectToAction("IndexBoard");
+            }
+            
+            return View(board);
         }
 
         /// <summary>
@@ -172,8 +191,13 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSteeringCommittee(SteeringCommittee steeringCommittee)
         {
-            await SteeringCommitteeDB.Create(_context, steeringCommittee);
-            return RedirectToAction("IndexSteeringCommittee");
+            if (ModelState.IsValid)
+            {
+                await SteeringCommitteeDB.Create(_context, steeringCommittee);
+                return RedirectToAction("IndexSteeringCommittee");
+            }
+
+            return View(steeringCommittee);
         }
 
         /// <summary>
@@ -190,8 +214,13 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> EditSteeringCommittee(SteeringCommittee steeringCommittee)
         {
-            await SteeringCommitteeDB.EditSteeringCommittee(_context, steeringCommittee);
-            return RedirectToAction("IndexSteeringCommittee");
+            if (ModelState.IsValid)
+            {
+                await SteeringCommitteeDB.EditSteeringCommittee(_context, steeringCommittee);
+                return RedirectToAction("IndexSteeringCommittee");
+            }
+            
+            return View(steeringCommittee);
         }
 
         /// <summary>
