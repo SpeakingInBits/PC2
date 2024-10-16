@@ -149,8 +149,6 @@ cfg: { // Application Insights Configuration
                                     </p>
                                     <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink3">
                                         <li><a class="dropdown-item" asp-controller="Resources" asp-action="Index">Resources</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="FocusNewsletters">Focus Newsletters</a></li>
                                         <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a></li>
                                         <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceLinks">Resource Links</a></li>
                                         <li><a class="dropdown-item" asp-controller="Resources" asp-action="AgeSpecificIssues">Age-Specific Issues</a></li>
@@ -161,6 +159,14 @@ cfg: { // Application Insights Configuration
                                 </ul>
                             </div>
                         </li>
+                        /*Nguyen, Thien refactor the navigation - move these tab from the dropdown menu - Resources*/
+                        <li id="Resource-Guide-Index" class="nav-item menu-item dropdown">
+                            <a class="nav-link" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a>
+                        </li>
+                        <li id="Newsletters-Index" class="nav-item menu-item dropdown">
+                            <a class="nav-link" asp-controller="Resources" asp-action="FocusNewsletters">Focus Newsletters</a>
+                        </li>
+                       
                         <li id="housing-program" class="nav-item menu-item dropdown" >
                             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown2" aria-controls="navbarNavDarkDropdownHousing" aria-expanded="false" aria-label="Toggle Housing Program navigation">
                                 <span class="navbar-toggler-icon d-none"></span>
