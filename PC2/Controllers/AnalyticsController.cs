@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ApplicationInsights.DataContracts;
 using System.Threading.Tasks;
+using PC2.Data;
 
 namespace PC2.Controllers
 {
