@@ -29,7 +29,7 @@
         var pageViewsChart = new Chart(ctxPageViews, {
             type: 'line',
             data: {
-                labels: pageViewsData.labels,
+                labels: pageViewsData.times,
                 datasets: [{
                     label: 'Page Views',
                     data: pageViewsData.values,
@@ -50,7 +50,7 @@
         var uniqueVisitorsChart = new Chart(ctxUniqueVisitors, {
             type: 'line',
             data: {
-                labels: uniqueVisitorsData.labels,
+                labels: uniqueVisitorsData.times,
                 datasets: [{
                     label: 'Unique Visitors',
                     data: uniqueVisitorsData.values,
@@ -71,7 +71,7 @@
         var sessionDurationChart = new Chart(ctxSessionDuration, {
             type: 'line',
             data: {
-                labels: sessionDurationData.labels,
+                labels: sessionDurationData.times,
                 datasets: [{
                     label: 'Session Duration',
                     data: sessionDurationData.values,
@@ -92,7 +92,7 @@
         var bounceRateChart = new Chart(ctxBounceRate, {
             type: 'line',
             data: {
-                labels: bounceRateData.labels,
+                labels: bounceRateData.times,
                 datasets: [{
                     label: 'Bounce Rate',
                     data: bounceRateData.values,
