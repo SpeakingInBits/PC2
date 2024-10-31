@@ -1,0 +1,112 @@
+@{
+    ViewData["Title"] = "Analytics";
+}
+
+<h2>Analytics</h2>
+
+<div>
+    <canvas id="pageViewsChart"></canvas>
+</div>
+<div>
+    <canvas id="uniqueVisitorsChart"></canvas>
+</div>
+<div>
+    <canvas id="sessionDurationChart"></canvas>
+</div>
+<div>
+    <canvas id="bounceRateChart"></canvas>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var pageViewsData = @Html.Raw(Json.Serialize(ViewData["PageViews"]));
+        var uniqueVisitorsData = @Html.Raw(Json.Serialize(ViewData["UniqueVisitors"]));
+        var sessionDurationData = @Html.Raw(Json.Serialize(ViewData["SessionDuration"]));
+        var bounceRateData = @Html.Raw(Json.Serialize(ViewData["BounceRate"]));
+
+        var ctxPageViews = document.getElementById('pageViewsChart').getContext('2d');
+        var pageViewsChart = new Chart(ctxPageViews, {
+            type: 'line',
+            data: {
+                labels: pageViewsData.labels,
+                datasets: [{
+                    label: 'Page Views',
+                    data: pageViewsData.values,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        var ctxUniqueVisitors = document.getElementById('uniqueVisitorsChart').getContext('2d');
+        var uniqueVisitorsChart = new Chart(ctxUniqueVisitors, {
+            type: 'line',
+            data: {
+                labels: uniqueVisitorsData.labels,
+                datasets: [{
+                    label: 'Unique Visitors',
+                    data: uniqueVisitorsData.values,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        var ctxSessionDuration = document.getElementById('sessionDurationChart').getContext('2d');
+        var sessionDurationChart = new Chart(ctxSessionDuration, {
+            type: 'line',
+            data: {
+                labels: sessionDurationData.labels,
+                datasets: [{
+                    label: 'Session Duration',
+                    data: sessionDurationData.values,
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        var ctxBounceRate = document.getElementById('bounceRateChart').getContext('2d');
+        var bounceRateChart = new Chart(ctxBounceRate, {
+            type: 'line',
+            data: {
+                labels: bounceRateData.labels,
+                datasets: [{
+                    label: 'Bounce Rate',
+                    data: bounceRateData.values,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}
