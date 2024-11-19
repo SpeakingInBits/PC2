@@ -1,5 +1,17 @@
 ﻿@model PC2.Models.EventsModel
+
 @{
+    // Allows calendar to switch between PC2 and County events by grabbing the eventType
+    var eventType = Context.Request.Query["eventType"].ToString();
+    if (string.IsNullOrEmpty(eventType) || eventType == "PC2")
+    {
+        Model.IsPC2EventCalendar = true;
+    }
+    else
+    {
+        Model.IsPC2EventCalendar = false;
+    }
+
     if (Model.IsPC2EventCalendar)
     {
         ViewData["Title"] = "PC2 Events and Activities";
@@ -8,12 +20,6 @@
     {
         ViewData["Title"] = "County-wide Events and Activities";
     }
-
-    List<List<CalendarEvent>> eventDateGroups = 
-            Model.CalendarEvents
-            .GroupBy(calEvent => calEvent.DateOfEvent)
-            .Select(group => group.ToList())
-            .ToList();
 }
 
 <div class="d-flex justify-content-center">
@@ -22,46 +28,22 @@
     <img src=~/images/events/events3.jpg />
     <img src=~/images/events/events4.jpg />
 </div>
+
 <br />
 <h1>@ViewData["Title"]</h1>
-
 <div class="divider"></div>
-
 <br />
 
-
-@section Head{
+@section Head {
     <style>
         .img-flyer {
             max-width: 625px;
             max-height: 875px;
         }
-
-        .agenda .agenda-date {
-            width: 170px;
-        }
-
-        .agenda .agenda-date .dayofmonth {
-            width: 40px !important;
-            font-size: 36px !important;
-            line-height: 36px !important;
-            float: left;
-            text-align: right;
-            margin-right: 10px;
-        }
-
-        .agenda .agenda-date .shortdate {
-            font-size: 0.75em;
-        }
-
-
-        /* Times */
-        .agenda .agenda-time {
-            width: 140px;
-        }
     </style>
 }
 
+<!-- Links to toggle between PC2 and County events -->
 @if (Model.IsPC2EventCalendar)
 {
     <p>
@@ -71,21 +53,13 @@
 else
 {
     <p>
-        <a asp-action="Index">View PC2 Events</a>
+        <a asp-action="Index" asp-route-eventType="PC2">View PC2 Events</a>
     </p>
 }
+
 <br />
 
-<!-- FullCalendar Code Goes Here -->
-
-<div id="calendar"></div>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@3.2.0/dist/fullcalendar.min.css" />
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-
-<script src="~/js/Calendar.js"></script>
-
-<!-- Modal Structure -->
+<!-- Modal popup -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -94,9 +68,9 @@ else
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h5 id="modalEventTitle"></h5>
-                <p id="modalEventDescription"></p>
-                <p><strong>Date:</strong> <span id="modalEventDate"></span></p>
+                <h5 id="modalEventTitle" style="font-weight: normal;"></h5>
+                <p><strong>Start Time:</strong> <span id="modalEventDate"></span></p>
+                <p><strong>End Time:</strong> <span id="modalEventEndTime"></span></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -104,6 +78,61 @@ else
         </div>
     </div>
 </div>
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            eventColor: '#ff9f89',
+            events: function(info, successCallback, failureCallback) {
+                // Get the eventType from the query string
+                var urlParams = new URLSearchParams(window.location.search);
+                var eventType = urlParams.get('eventType') || 'PC2';
+
+                // Fetch events from the controller based on eventType
+                fetch('@Url.Action("GetEvents", "Events")?eventType=' + eventType)
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(events) {
+                        successCallback(events);
+                    })
+                    .catch(function(error) {
+                        console.error('Error fetching events:', error);
+                        failureCallback(error);
+                    });
+            },
+
+            eventClick: function(info) {
+                var startTime = info.event.start.toLocaleString();
+                var endTime;
+
+                if (info.event.end) {
+                    endTime = info.event.end.toLocaleString();
+                } else {
+                    endTime = 'N/A';
+                }
+
+                document.getElementById('modalEventTitle').innerText = info.event.title;
+                document.getElementById('modalEventDate').innerText = startTime;
+                document.getElementById('modalEventEndTime').innerText = endTime;
+
+                var myModal = new bootstrap.Modal(document.getElementById('eventModal'));
+                myModal.show();
+            }
+        });
+
+        // Render the calendar (refreshes on every page load)
+        calendar.render();
+    });
+</script>
+
+<div id="calendar"></div>
 
 @if (Model.IsPC2EventCalendar)
 {

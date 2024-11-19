@@ -20,7 +20,7 @@ namespace PC2.Controllers
             bool getPc2Events = eventType == null;
             EventsModel eventsModel = new()
             {
-                IsPC2EventCalendar = getPc2Events,
+                IsPC2EventCalendar = getPc2Events, 
                 CalendarEvents = await CalendarEventDB.GetAllEvents(_context, getPc2Events)
             };
 
@@ -30,29 +30,26 @@ namespace PC2.Controllers
         // Returns events in JSON format for FullCalendar
         public async Task<IActionResult> GetEvents(string? eventType)
         {
-            bool getPc2Events = eventType == null;
+            bool getPc2Events = string.IsNullOrEmpty(eventType) || eventType == "PC2";
 
             // Get events from the database
             List<CalendarEvent> events = await CalendarEventDB.GetAllEvents(_context, getPc2Events);
 
-            // Holds simplified calendar events for FullCalendar
-            List<CalendarEvent> fullCalendarEvents = new List<CalendarEvent>();
+            // Create a list to hold FullCalendar-compatible events
+            List<object> fullCalendarEvents = new List<object>();
 
             // Loop through the events and add them to the list
-            foreach (CalendarEvent e in events)
+            foreach (var e in events)
             {
-                var calendarEvent = new CalendarEvent
+                var calendarEvent = new
                 {
-                    EventDescription = e.EventDescription,
-                    DateOfEvent = e.DateOfEvent,
-                    StartingTime = e.StartingTime,
-                    EndingTime = e.EndingTime
+                    title = e.EventDescription,
+                    start = e.StartingDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),  // FullCalendar format
+                    end = e.EndingDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),      // FullCalendar format
                 };
-
                 fullCalendarEvents.Add(calendarEvent);
             }
 
-            // Return events as JSON
             return Json(fullCalendarEvents);
         }
     }
