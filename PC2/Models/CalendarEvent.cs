@@ -40,6 +40,23 @@ namespace PC2.Models
         /// </summary>
         public bool CountyEvent {  get; set; }
 
+        // Convert DateOnly and TimeOnly to DateTime
+        public DateTime StartingDateTime
+        {
+            get
+            {
+                return DateOfEvent.ToDateTime(StartingTime);
+            }
+        }
+
+        public DateTime EndingDateTime
+        {
+            get
+            {
+                return DateOfEvent.ToDateTime(EndingTime);
+            }
+        }
+
         public int CompareTo(CalendarEvent? other)
         {
             return this.DateOfEvent.CompareTo(other.DateOfEvent);
