@@ -76,6 +76,36 @@ else
 }
 <br />
 
+<!-- FullCalendar Code Goes Here -->
+
+<div id="calendar"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@3.2.0/dist/fullcalendar.min.css" />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+
+<script src="~/js/Calendar.js"></script>
+
+<!-- Modal Structure -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5 id="modalEventTitle"></h5>
+                <p id="modalEventDescription"></p>
+                <p><strong>Date:</strong> <span id="modalEventDate"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
 @if (Model.CalendarEvents.Count > 0)
 {
     <div class="agenda">
@@ -140,6 +170,7 @@ else
     <h2>There are no upcoming @ViewData["Title"] on the Calendar</h2>
     <br />
 }
+-->
 
 @if (Model.IsPC2EventCalendar)
 {

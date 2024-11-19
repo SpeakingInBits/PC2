@@ -591,3 +591,10 @@ div.results:hover, div.results:hover #agencyName2 {
     max-height : 550px;
     overflow-y: auto;
 }
+
+/* Smaller modal for mobile screens */
+@media (max-width: 767px) {
+    .modal-dialog {
+        max-width: 75%; /* 90% of screen width */
+    }
+}
