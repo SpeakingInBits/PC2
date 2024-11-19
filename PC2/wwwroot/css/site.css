@@ -623,5 +623,9 @@ div.results:hover, div.results:hover #agencyName2 {
     font-weight: bold;
 }
 
+.fc-event {
+    background-color: cornflowerblue !important;
+}
+
 
 
