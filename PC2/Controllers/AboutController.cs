@@ -276,10 +276,10 @@ namespace PC2.Controllers
                 return RedirectToAction("HousingProgramData");
             }
             // If model state is not valid, return the view with the model to show validation errors
-            var data = await _context.HousingProgram.OrderBy(hp => hp.HouseHoldSize).ToListAsync();
+            List<HousingProgram> data = await _context.HousingProgram.OrderBy(hp => hp.HouseHoldSize).ToListAsync();
             // keep the data from user's input
             data[data.FindIndex(hp => hp.HouseHoldSize == model.HouseHoldSize)].MaximumIncome = model.MaximumIncome;
-            TempData["Message"] = $"Maximum income must be a non - negative number at index {model.HouseHoldSize}.";
+            TempData["Message"] = $"Maximum income must be a non - negative number at HouseHold size {model.HouseHoldSize}.";
             return View(data);
         }
 
