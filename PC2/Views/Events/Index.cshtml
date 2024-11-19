@@ -84,9 +84,9 @@ else
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        var calendarEl = document.getElementById('calendar');
+        var calendarContainer = document.getElementById('calendar');
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+        var calendar = new FullCalendar.Calendar(calendarContainer, {
             initialView: 'dayGridMonth',
             eventColor: '#ff9f89',
             events: function(info, successCallback, failureCallback) {
@@ -127,7 +127,6 @@ else
             }
         });
 
-        // Render the calendar (refreshes on every page load)
         calendar.render();
     });
 </script>
