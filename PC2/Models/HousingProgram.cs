@@ -10,6 +10,7 @@ namespace PC2.Models
         public int HouseHoldSize { get; set; }
 
         [Display(Name="Maximum Income")]
+        [Range(0, double.MaxValue)]
         [DataType(DataType.Currency)]
         public double MaximumIncome { get; set; }
 
