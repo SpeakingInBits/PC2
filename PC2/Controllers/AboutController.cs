@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Project;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PC2.Controllers
 {
@@ -257,18 +260,27 @@ namespace PC2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> HousingProgramData(IFormCollection form)
+        public async Task<IActionResult> HousingProgramData(HousingProgram model)
         {
-            HousingProgram entry = new()
-            {
-                HouseHoldSize = int.Parse(form["HouseHoldSize"]),
-                MaximumIncome = double.Parse(form["MaximumIncome"]),
-                LastUpdated = DateTime.Today
-            };
-            _context.Entry(entry).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            TempData["Message"] = $"Entry for Household size {entry.HouseHoldSize} updated Successfully";
-            return RedirectToAction("HousingProgramData");
+            if (ModelState.IsValid)
+            { // if all the data is valid, update the database
+                HousingProgram entry = new()
+                {
+                    HouseHoldSize = model.HouseHoldSize,
+                    MaximumIncome = model.MaximumIncome,
+                    LastUpdated = DateTime.Today
+                };
+                _context.Entry(entry).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                TempData["Message"] = $"Entry for Household size {entry.HouseHoldSize} updated Successfully";
+                return RedirectToAction("HousingProgramData");
+            }
+            // If model state is not valid, return the view with the model to show validation errors
+            List<HousingProgram> data = await _context.HousingProgram.OrderBy(hp => hp.HouseHoldSize).ToListAsync();
+            // keep the data from user's input
+            data[data.FindIndex(hp => hp.HouseHoldSize == model.HouseHoldSize)].MaximumIncome = model.MaximumIncome;
+            TempData["Message"] = $"Maximum income must be a non - negative number at HouseHold size {model.HouseHoldSize}.";
+            return View(data);
         }
 
         [HttpGet]
