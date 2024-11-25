@@ -1,11 +1,8 @@
-﻿using Humanizer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.DotNet.Scaffolding.Shared.Project;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PC2.Controllers
 {

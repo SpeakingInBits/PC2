@@ -591,3 +591,41 @@ div.results:hover, div.results:hover #agencyName2 {
     max-height : 550px;
     overflow-y: auto;
 }
+
+/* Event Calendar CSS*/
+
+/* Calendar styles for small screen sizes */
+@media (max-width: 768px) {
+    #calendar {
+        font-size: 13px;
+    }
+
+    .fc-header-toolbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .fc-button {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+}
+
+/* Modal styles for small screen sizes */
+@media (max-width: 767px) {
+    .modal-dialog {
+        max-width: 75%;
+    }
+}
+
+/* Make current day more obvious */
+.fc-day-today {
+    font-weight: bold;
+}
+
+.fc-event {
+    background-color: cornflowerblue !important;
+}
+
+
+
