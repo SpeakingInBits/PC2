@@ -1,6 +1,4 @@
-﻿using Humanizer;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+﻿using Microsoft.AspNetCore.Mvc;
 using PC2.Data;
 using PC2.Models;
 
