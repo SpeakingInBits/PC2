@@ -65,7 +65,7 @@ namespace PC2.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
-            public string? Email { get; set; }
+            public string? Email { get; set; } = null;
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -73,7 +73,7 @@ namespace PC2.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
-            public string? Password { get; set; }
+            public string? Password { get; set; } = null;
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
