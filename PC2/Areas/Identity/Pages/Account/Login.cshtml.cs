@@ -65,7 +65,7 @@ namespace PC2.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
-            public string? Email { get; set; } = null;
+            public string Email { get; set; } = null!;
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -73,7 +73,7 @@ namespace PC2.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
-            public string? Password { get; set; } = null;
+            public string Password { get; set; } = null!;
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -106,7 +106,7 @@ namespace PC2.Areas.Identity.Pages.Account
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            if (ModelState.IsValid && Input.Email != null && Input.Password != null)
+            if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
