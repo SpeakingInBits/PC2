@@ -13,7 +13,7 @@ namespace PC2.Models
         /// <summary>
         /// The persons full name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Position title
