@@ -80,4 +80,15 @@ namespace PC2.Models
     {
     
     }
+
+    /// <summary>
+    /// Represents a board member, inheriting basic information from <see cref="People"/>.
+    /// </summary>
+    public class Board : People
+    {
+        /// <summary>
+        /// The start date of the board membership.
+        /// </summary>
+        public string MembershipStart { get; set; }
+    }
 }
