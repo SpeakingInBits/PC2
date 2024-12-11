@@ -313,6 +313,11 @@ namespace PC2.Controllers
                 // add newsletterFile to the DB
                 await NewsletterFileDB.AddAsync(_context, newsLetterFile);
             }
+            else
+            {
+                TempData["Message"] = $"Choose file without exceeding 128 MB";
+                return RedirectToAction("UploadNewsletter");
+            }
 
             return RedirectToAction("UploadNewsletter");
         }

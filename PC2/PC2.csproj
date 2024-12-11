@@ -37,6 +37,7 @@
     <Folder Include="wwwroot\images\resource\" />
     <Folder Include="wwwroot\PDF\DisabilityAwareness\" />
     <Folder Include="wwwroot\PDF\focus-newsletters\" />
+    <Folder Include="wwwroot\PDF\focus-newsletters\" />
   </ItemGroup>
 
   <ItemGroup>
