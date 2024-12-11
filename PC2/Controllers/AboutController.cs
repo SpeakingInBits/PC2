@@ -8,7 +8,6 @@ using PC2.Models;
 
 namespace PC2.Controllers
 {
-    [Authorize(Roles = IdentityHelper.Admin)]
     public class AboutController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -25,6 +24,7 @@ namespace PC2.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Roles = "Admin,AdminLite")]
         public async Task<IActionResult> IndexStaff()
         {
             return View(await StaffDB.GetAllStaffForEditing(_context));
@@ -35,12 +35,14 @@ namespace PC2.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = "Admin,AdminLite")]
         public IActionResult CreateStaff()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,AdminLite")]
         public async Task<IActionResult> CreateStaff(Staff staff, string Role)
         {
             if (ModelState.IsValid)
@@ -83,12 +85,14 @@ namespace PC2.Controllers
         /// <param name="id">The id for the staff member</param>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = "Admin,AdminLite")]
         public async Task<IActionResult> EditStaff(int id)
         {
             return View(await StaffDB.GetStaffMember(_context, id));
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,AdminLite")]
         public async Task<IActionResult> EditStaff(Staff staff)
         {
             if (ModelState.IsValid)
@@ -106,13 +110,14 @@ namespace PC2.Controllers
         /// <param name="id">The id of the staff member</param>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteStaff(int id)
         {
             return View(await StaffDB.GetStaffMember(_context, id));
         }
 
         [HttpPost]
-        [ActionName("DeleteStaff")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ConfirmDeleteStaff(int id)
         {
             Staff? staff = await StaffDB.GetStaffMember(_context, id);
