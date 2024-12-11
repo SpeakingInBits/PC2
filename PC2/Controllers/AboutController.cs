@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Drawing.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
@@ -13,11 +15,14 @@ namespace PC2.Controllers
 
         private readonly IWebHostEnvironment _hostingEnvironment;
 
+        private readonly UserManager<IdentityUser> _userManager;
+
         // Iwebhost environment is used to get the path to the wwwroot folder
-        public AboutController(ApplicationDbContext context, IWebHostEnvironment hostingEnvironment)
+        public AboutController(ApplicationDbContext context, IWebHostEnvironment hostingEnvironment, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> IndexStaff()
@@ -36,13 +41,39 @@ namespace PC2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStaff(Staff staff)
+        public async Task<IActionResult> CreateStaff(Staff staff, string Role)
         {
             if (ModelState.IsValid)
             {
+                // Create the Staff member in your custom database table
                 await StaffDB.AddStaff(_context, staff);
-                return RedirectToAction("IndexStaff");
+
+                // Create the user in Identity
+                var user = new IdentityUser
+                {
+                    UserName = staff.Email,
+                    Email = staff.Email
+                };
+
+                var result = await _userManager.CreateAsync(user, "DefaultPassword01#"); // Set a default password
+                if (result.Succeeded)
+                {
+                    // Assign the selected role
+                    if (!string.IsNullOrEmpty(Role))
+                    {
+                        await _userManager.AddToRoleAsync(user, Role);
+                    }
+
+                    return RedirectToAction("IndexStaff");
+                }
+
+                // Handle errors if the user creation fails
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
+
             return View(staff);
         }
 

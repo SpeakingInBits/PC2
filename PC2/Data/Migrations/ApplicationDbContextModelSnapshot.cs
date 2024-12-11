@@ -20,7 +20,7 @@ namespace PC2.Data.Migrations
                 .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("AgencyAgencyCategory", b =>
                 {
@@ -34,7 +34,7 @@ namespace PC2.Data.Migrations
 
                     b.HasIndex("AgencyCategoriesAgencyCategoryId");
 
-                    b.ToTable("AgencyAgencyCategory");
+                    b.ToTable("AgencyAgencyCategory", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -70,7 +70,7 @@ namespace PC2.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -160,7 +160,7 @@ namespace PC2.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -245,7 +245,7 @@ namespace PC2.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AgencyId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AgencyId"));
 
                     b.Property<string>("Address1")
                         .HasColumnType("nvarchar(max)");
@@ -304,7 +304,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("AgencyId");
 
-                    b.ToTable("Agency");
+                    b.ToTable("Agency", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.AgencyCategory", b =>
@@ -313,7 +313,7 @@ namespace PC2.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AgencyCategoryId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AgencyCategoryId"));
 
                     b.Property<string>("AgencyCategoryName")
                         .IsRequired()
@@ -321,7 +321,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("AgencyCategoryId");
 
-                    b.ToTable("AgencyCategory");
+                    b.ToTable("AgencyCategory", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.CalendarEvent", b =>
@@ -330,7 +330,7 @@ namespace PC2.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CalendarEventID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CalendarEventID"));
 
                     b.Property<bool>("CountyEvent")
                         .HasColumnType("bit");
@@ -353,7 +353,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("CalendarEventID");
 
-                    b.ToTable("CalendarEvents");
+                    b.ToTable("CalendarEvents", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.HousingProgram", b =>
@@ -369,7 +369,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("HouseHoldSize");
 
-                    b.ToTable("HousingProgram");
+                    b.ToTable("HousingProgram", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.NewsletterFile", b =>
@@ -378,7 +378,7 @@ namespace PC2.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NewsletterId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NewsletterId"));
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -390,7 +390,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("NewsletterId");
 
-                    b.ToTable("NewsletterFile");
+                    b.ToTable("NewsletterFile", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.People", b =>
@@ -399,7 +399,7 @@ namespace PC2.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
@@ -417,9 +417,9 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("People");
+                    b.ToTable("People", (string)null);
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("People");
+                    b.HasDiscriminator().HasValue("People");
                 });
 
             modelBuilder.Entity("PC2.Models.Board", b =>

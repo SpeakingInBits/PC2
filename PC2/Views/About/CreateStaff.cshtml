@@ -43,6 +43,14 @@
                 </select>
                 <span asp-validation-for="PriorityOrder" class="text-danger"></span>
             </div>
+            <!-- Add Role Selection -->
+            <div class="form-group">
+                <label for="Role" class="control-label">Role</label>
+                <select name="Role" class="form-control">
+                    <option value="Staff">Staff</option>
+                    <option value="AdminLite">AdminLite</option>
+                </select>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -53,4 +61,3 @@
 <div>
     <a asp-action="IndexStaff">Back to List</a>
 </div>
-

@@ -25,9 +25,15 @@ builder.Services.AddWebOptimizer(pipeline =>
     pipeline.AddJavaScriptBundle("/js/site.js", "/js/**/*.js");
 });
 
-builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOptions)
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    // Configure password requirements
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = true;
+})
+.AddRoles<IdentityRole>() // Add roles support
+.AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<ApplicationInsightsPageViewTracker>();
@@ -76,7 +82,7 @@ app.MapRazorPages();
 
 #if DEBUG
 var serviceProvider = app.Services.GetRequiredService<IServiceProvider>().CreateScope();
-IdentityHelper.CreateRoles(serviceProvider.ServiceProvider, IdentityHelper.Admin)
+IdentityHelper.CreateRoles(serviceProvider.ServiceProvider, IdentityHelper.Admin, IdentityHelper.AdminLite)
               .Wait();
 IdentityHelper.CreateDefaultAdmin(serviceProvider.ServiceProvider, IdentityHelper.Admin)
               .Wait();

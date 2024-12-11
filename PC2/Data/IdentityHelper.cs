@@ -5,6 +5,7 @@ namespace PC2.Data
     public static class IdentityHelper
     {
         public const string Admin = "Admin";
+        public const string AdminLite = "AdminLite"; // Lesser admin
 
         internal static async Task CreateRoles(IServiceProvider provider, params string[] roles)
         {
