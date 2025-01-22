@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Models;
@@ -292,31 +293,50 @@ namespace PC2.Controllers
         {
             if (userFile != null)
             {
-                // set path to wwwroot/PDF/focus-newsletter/file.pdf
-                string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
-                string fileName = Path.GetFileName(userFile.FileName);
-                string filePath = Path.Combine(directory, fileName);
-
-                // copy physical file to path
-                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                try
                 {
-                    userFile.CopyTo(fileStream);
+                    // Check if the file size is over 10MB (10 * 1024 * 1024 bytes)
+                    if (userFile.Length > 10 * 1024 * 1024)
+                    {
+                        List<NewsletterFile> newsletterFiles = await NewsletterFileDB.GetAllAsync(_context);
+                        TempData["Message"] = "Choose a file without exceeding 10 MB.";
+                        return View(newsletterFiles);
+                    }
+
+                    // set path to wwwroot/PDF/focus-newsletter/file.pdf
+                    string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
+
+                    // Ensure the directory exists
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
+                    string fileName = Path.GetFileName(userFile.FileName);
+                    string filePath = Path.Combine(directory, fileName);
+
+                    // copy physical file to path
+                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                    {
+                        await userFile.CopyToAsync(fileStream);
+                    }
+                    TempData["Message"] = $"{fileName} uploaded successfully";
+
+                    NewsletterFile newsLetterFile = new()
+                    {
+                        Name = fileName,
+                        Location = $"/PDF/focus-newsletters/{fileName}",
+                    };
+
+                    // add newsletterFile to the DB
+                    await NewsletterFileDB.AddAsync(_context, newsLetterFile);
                 }
-                TempData["Message"] = $"{fileName} uploaded successfully";
-
-                NewsletterFile newsLetterFile = new()
+                catch (Exception ex)
                 {
-                    Name = fileName,
-                    Location = $"/PDF/focus-newsletters/{fileName}",
-                };
-
-                // add newsletterFile to the DB
-                await NewsletterFileDB.AddAsync(_context, newsLetterFile);
-            }
-            else
-            {
-                TempData["Message"] = $"Choose file without exceeding 128 MB";
-                return RedirectToAction("UploadNewsletter");
+                    TempData["Message"] = $"Error uploading file: {ex.Message}";
+                    List<NewsletterFile> newsletterFiles = await NewsletterFileDB.GetAllAsync(_context);
+                    return View(newsletterFiles);
+                }
             }
 
             return RedirectToAction("UploadNewsletter");
@@ -332,21 +352,28 @@ namespace PC2.Controllers
         [ActionName("DeleteNewsletter")]
         public async Task<IActionResult> ConfirmDeleteNewsletter(int id)
         {
-            NewsletterFile? newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
-            // delete actual file from wwwroot/PDF/focus-newsletters
-            if (newsletter != null)
+            try
             {
-                // actual file name is never changed and object location is never changed when renaming
-                string? originalFile = Path.GetFileName(newsletter.Location);
-                if (originalFile != null)
+                NewsletterFile? newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
+                // delete actual file from wwwroot/PDF/focus-newsletters
+                if (newsletter != null)
                 {
-                    string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters", originalFile);
-                    System.IO.File.Delete(filePath);
+                    // actual file name is never changed and object location is never changed when renaming
+                    string? originalFile = Path.GetFileName(newsletter.Location);
+                    if (originalFile != null)
+                    {
+                        string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters", originalFile);
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    // remove from DB
+                    await NewsletterFileDB.DeleteAsync(_context, newsletter.NewsletterId);
+                    TempData["Message"] = $"{newsletter.Name} deleted successfully";
                 }
-                
-                // remove from DB
-                await NewsletterFileDB.DeleteAsync(_context, newsletter.NewsletterId);
-                TempData["Message"] = $"{newsletter.Name} deleted successfully";
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = $"Error deleting file: {ex.Message}";
             }
 
             return RedirectToAction("UploadNewsletter");
