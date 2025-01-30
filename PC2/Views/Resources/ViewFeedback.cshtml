@@ -1,0 +1,19 @@
+﻿@model List<PC2.Models.FeedbackViewModel>
+
+<h2>User Feedback</h2>
+
+<table border="1" style="width:100%; border-collapse: collapse;">
+    <tr>
+        <th>Found Resource</th>
+        <th>Comments</th>
+        <th>Submitted At</th>
+    </tr>
+    @foreach (var feedback in Model)
+    {
+        <tr>
+            <td>@feedback.FoundResource</td>
+            <td>@feedback.Comments</td>
+            <td>@feedback.FormattedSubmittedAt</td>
+        </tr>
+    }
+</table>
