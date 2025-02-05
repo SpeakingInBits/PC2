@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using PC2.Data;
 using PC2.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 namespace PC2.Controllers
 {
@@ -37,6 +40,9 @@ namespace PC2.Controllers
             }
 
             await AgencyDB.GetDataForDataLists(_context, resourceGuide);
+
+            // **Show the feedback form only after a search**
+            ViewBag.ShowFeedbackForm = true;
 
             return View(resourceGuide);
         }
@@ -103,6 +109,10 @@ namespace PC2.Controllers
             }
             
             await AgencyDB.GetDataForDataLists(_context, resourceGuide);
+
+            // **Show the feedback form only after a search**
+            ViewBag.ShowFeedbackForm = true;
+
             return View(resourceGuide);
         }
 
@@ -147,6 +157,42 @@ namespace PC2.Controllers
             List<NewsletterFile> newsletterFiles = await NewsletterFileDB.GetAllAsync(_context);
 
             return View(newsletterFiles);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitFeedback(Feedback model) // Use the Feedback model directly
+        {
+            if (ModelState.IsValid)
+            {
+                model.SubmittedAt = DateTime.UtcNow; // Set the timestamp (use UTC)
+
+                _context.Feedback.Add(model); // Add the Feedback model directly
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Thank you for your feedback!";
+                return RedirectToAction("ResourceGuide");
+            }
+
+            // If ModelState is not valid, return to the ResourceGuide view with errors
+            return RedirectToAction("ResourceGuide"); // Or handle it differently if needed.
+        }
+
+        [Authorize(Roles = "Admin")] // Restrict access to Admin role
+        [HttpGet]
+        public async Task<IActionResult> ViewFeedback()
+        {
+            var feedbackList = await _context.Feedback
+                .OrderByDescending(f => f.SubmittedAt)
+                .Select(f => new FeedbackViewModel
+                {
+                    Id = f.Id,
+                    FoundResource = f.FoundResource ? "Yes" : "No",
+                    Comments = f.Comments,
+                    FormattedSubmittedAt = f.SubmittedAt.ToString("yyyy-MM-dd HH:mm")
+                })
+                .ToListAsync();
+
+            return View(feedbackList);
         }
     }
 }
