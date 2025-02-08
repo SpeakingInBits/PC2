@@ -40,6 +40,11 @@ namespace PC2.Models
         /// </summary>
         public bool CountyEvent {  get; set; }
 
+        /// <summary>
+        /// True if the event is standing meeting event
+        /// </summary>
+        public bool StandingMeeting { get; set; }
+
         // Convert DateOnly and TimeOnly to DateTime
         public DateTime StartingDateTime
         {
