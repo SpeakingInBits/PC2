@@ -307,10 +307,8 @@ namespace PC2.Controllers
                     string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
 
                     // Ensure the directory exists
-                    if (!Directory.Exists(directory))
-                    {
-                        Directory.CreateDirectory(directory);
-                    }
+                    Directory.CreateDirectory(directory);
+
 
                     string fileName = Path.GetFileName(userFile.FileName);
                     string filePath = Path.Combine(directory, fileName);
