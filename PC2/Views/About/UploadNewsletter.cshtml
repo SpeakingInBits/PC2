@@ -21,12 +21,13 @@
     <div class="col-md-4">
         <form asp-action="UploadNewsletter" enctype="multipart/form-data" method="post">
             <div class="form-group">
-                <input type="file" name="userFile"/>
+                <input type="file" name="userFile" id="userFile" onchange="checkFileSize()" />
+                <span id="fileSizeError" class="text-danger"></span>
                 <span class="text-danger"></span>               
             </div>
             <br />
             <div class="form-group">
-                 <input type="submit" value="Upload" class="btn btn-primary" /> 
+                <input id="uploadButton" type="submit" value="Upload" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -56,3 +57,28 @@
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        function checkFileSize() {
+            var fileInput = document.getElementById('userFile');
+            var fileSizeError = document.getElementById('fileSizeError');
+            var uploadButton = document.getElementById('uploadButton');
+            var maxSize = 10 * 1024 * 1024; // 10MB
+
+            if (fileInput.files.length > 0) {
+                var file = fileInput.files[0];
+                if (file.size > maxSize) {
+                    fileSizeError.textContent = "The file size exceeds the 10MB limit.";
+                    uploadButton.disabled = true;
+                } else {
+                    fileSizeError.textContent = "";
+                    uploadButton.disabled = false;
+                }
+            } else {
+                fileSizeError.textContent = "";
+                uploadButton.disabled = false;
+            }
+        }
+    </script>
+}
