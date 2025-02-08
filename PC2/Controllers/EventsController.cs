@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Models;
 
@@ -22,7 +23,22 @@ namespace PC2.Controllers
                 CalendarEvents = await CalendarEventDB.GetAllEvents(_context, getPc2Events)
             };
 
+            // Load events based on the eventType
+            if (eventType == "Meeting")
+            {
+                return RedirectToAction("StandingMeeting");
+            }
+
             return View(eventsModel);
+        }
+
+        public async Task<IActionResult> StandingMeeting()
+        {
+            var meetings = await _context.CalendarEvents
+                             .Where(e => e.StandingMeeting)
+                             .ToListAsync();
+
+            return View(meetings);
         }
 
         // Returns events in JSON format for FullCalendar
