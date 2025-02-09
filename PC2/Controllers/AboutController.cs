@@ -295,14 +295,6 @@ namespace PC2.Controllers
             {
                 try
                 {
-                    // Check if the file size is over 10MB (10 * 1024 * 1024 bytes)
-                    if (userFile.Length > 10 * 1024 * 1024)
-                    {
-                        List<NewsletterFile> newsletterFiles = await NewsletterFileDB.GetAllAsync(_context);
-                        TempData["Message"] = "Choose a file without exceeding 10 MB.";
-                        return View(newsletterFiles);
-                    }
-
                     // set path to wwwroot/PDF/focus-newsletter/file.pdf
                     string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
 
