@@ -2,18 +2,22 @@
 
 <h2>User Feedback</h2>
 
-<table border="1" style="width:100%; border-collapse: collapse;">
-    <tr>
-        <th>Found Resource</th>
-        <th>Comments</th>
-        <th>Submitted At</th>
-    </tr>
-    @foreach (var feedback in Model)
-    {
+<table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+    <thead style="background-color: #f2f2f2;">
         <tr>
-            <td>@feedback.FoundResource</td>
-            <td>@feedback.Comments</td>
-            <td>@feedback.FormattedSubmittedAt</td>
+            <th style="padding: 8px;">Found Resource</th>
+            <th style="padding: 8px;">Comments</th>
+            <th style="padding: 8px;">Submitted At</th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @foreach (var feedback in Model)
+        {
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">@feedback.FoundResource</td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">@feedback.Comments</td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">@feedback.FormattedSubmittedAt</td>
+            </tr>
+        }
+    </tbody>
 </table>
