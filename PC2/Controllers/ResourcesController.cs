@@ -32,17 +32,21 @@ namespace PC2.Controllers
         public async Task<IActionResult> ResourceGuide(int categoryID)
         {
             ResourceGuideModel resourceGuide = new ResourceGuideModel();
+
+            ViewBag.ShowFeedbackForm = false;
+
             if (categoryID != 0)
             {
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, categoryID);
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
                 TrackResourceGuideTelemetry("Manual/Category", resourceGuide.Category.AgencyCategoryName);
+
+                // **Show the feedback form only after a search**
+                ViewBag.ShowFeedbackForm = true;
             }
 
             await AgencyDB.GetDataForDataLists(_context, resourceGuide);
 
-            // **Show the feedback form only after a search**
-            ViewBag.ShowFeedbackForm = true;
 
             return View(resourceGuide);
         }
@@ -75,12 +79,15 @@ namespace PC2.Controllers
                 UserSearchedByAgency = searchModel.UserSearchedByAgency
             };
 
+            ViewBag.ShowFeedbackForm = false; // Default to hidden
+
             if (!string.IsNullOrEmpty(searchModel.UserSearchedByAgency))
             {
                 if (searchModel.SearchedAgency != null)
                 {
                     TrackResourceGuideTelemetry("Agency", searchModel.SearchedAgency);
                     resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, searchModel.SearchedAgency);
+                    ViewBag.ShowFeedbackForm = true;
                 }
             }
             else if (!string.IsNullOrEmpty(searchModel.UserSearchedByCityOrService))
@@ -93,26 +100,25 @@ namespace PC2.Controllers
                         searchModel.SearchedCategory, searchModel.SearchedCity);
                     resourceGuide.CurrentCity = searchModel.SearchedCity;
                     resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
+                    ViewBag.ShowFeedbackForm = true;
                 }
                 else if (searchModel.SearchedCategory != null)
                 {
                     TrackResourceGuideTelemetry("Service", $"{searchModel.SearchedCategory}");
                     resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
                     resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
+                    ViewBag.ShowFeedbackForm = true;
                 }
                 else if (searchModel.SearchedCity != null)
                 {
                     TrackResourceGuideTelemetry("City", searchModel.SearchedCity);
                     resourceGuide.CurrentCity = searchModel.SearchedCity;
                     resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
+                    ViewBag.ShowFeedbackForm = true;
                 }
             }
             
             await AgencyDB.GetDataForDataLists(_context, resourceGuide);
-
-            // **Show the feedback form only after a search**
-            ViewBag.ShowFeedbackForm = true;
-
             return View(resourceGuide);
         }
 
@@ -164,6 +170,10 @@ namespace PC2.Controllers
         {
             if (ModelState.IsValid)
             {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
                 model.SubmittedAt = DateTime.UtcNow; // Set the timestamp (use UTC)
 
                 _context.Feedback.Add(model); // Add the Feedback model directly
