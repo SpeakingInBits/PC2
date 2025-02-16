@@ -16,7 +16,7 @@ namespace PC2.Models
         /// Gets or sets a value indicating whether the user found the resource they were looking for.
         /// True represents "Yes", and False represents "No".
         /// </summary>
-        public bool FoundResource { get; set; }
+        public bool IsResourceFound { get; set; }
 
         /// <summary>
         /// Gets or sets the optional comments provided by the user.

@@ -196,7 +196,7 @@ namespace PC2.Controllers
                 .Select(f => new FeedbackViewModel
                 {
                     Id = f.Id,
-                    FoundResource = f.FoundResource ? "Yes" : "No",
+                    IsResourceFound = f.IsResourceFound ? "Yes" : "No",
                     Comments = f.Comments,
                     FormattedSubmittedAt = f.SubmittedAt.ToString("yyyy-MM-dd HH:mm")
                 })

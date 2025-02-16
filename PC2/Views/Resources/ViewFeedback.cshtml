@@ -14,7 +14,7 @@
         @foreach (var feedback in Model)
         {
             <tr>
-                <td style="padding: 8px; border-bottom: 1px solid #ddd;">@feedback.FoundResource</td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">@feedback.IsResourceFound</td>
                 <td style="padding: 8px; border-bottom: 1px solid #ddd;">@feedback.Comments</td>
                 <td style="padding: 8px; border-bottom: 1px solid #ddd;">@feedback.FormattedSubmittedAt</td>
             </tr>
