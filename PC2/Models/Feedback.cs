@@ -28,5 +28,10 @@ namespace PC2.Models
         /// Gets or sets the timestamp when the feedback was submitted.
         /// </summary>
         public DateTime SubmittedAt { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the feedback has been reviewed by an administrator.
+        /// </summary>
+        public bool IsReviewed { get; set; } = false;
     }
 }

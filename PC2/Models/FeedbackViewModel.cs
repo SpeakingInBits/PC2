@@ -28,5 +28,10 @@
         /// This value is required for tracking and sorting purposes.
         /// </summary>
         public required string FormattedSubmittedAt { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the feedback has been reviewed by an administrator.
+        /// </summary>
+        public bool IsReviewed { get; set; }
     }
 }
