@@ -1,0 +1,42 @@
+﻿@model PC2.Models.FeedbackViewModel
+
+@{
+    ViewData["Title"] = "Edit Feedback";
+}
+
+<h1>Edit Feedback</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditFeedback" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <label asp-for="IsResourceFound" class="control-label">Resource Found?</label>
+                <input asp-for="IsResourceFound" class="form-control" readonly />
+
+            <div class="form-group">
+                <label asp-for="Comments" class="control-label">Comments</label>
+                <textarea asp-for="Comments" class="form-control"></textarea>
+                <span asp-validation-for="Comments" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="FormattedSubmittedAt" class="control-label">Submitted At</label>
+                <input asp-for="FormattedSubmittedAt" class="form-control" readonly />
+
+            <div class="form-check">
+                <input asp-for="IsReviewed" class="form-check-input" type="checkbox" />
+                <label asp-for="IsReviewed" class="form-check-label">Reviewed</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-action="ViewFeedback" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="ViewFeedback">Back to List</a>
+</div>
