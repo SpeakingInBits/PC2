@@ -33,7 +33,7 @@ namespace PC2.Controllers
         {
             ResourceGuideModel resourceGuide = new ResourceGuideModel();
 
-            ViewBag.ShowFeedbackForm = false;
+            ViewData["ShowFeedbackForm"] = false;
 
             if (categoryID != 0)
             {
@@ -42,7 +42,7 @@ namespace PC2.Controllers
                 TrackResourceGuideTelemetry("Manual/Category", resourceGuide.Category.AgencyCategoryName);
 
                 // **Show the feedback form only after a search**
-                ViewBag.ShowFeedbackForm = true;
+                ViewData["ShowFeedbackForm"] = true;
             }
 
             await AgencyDB.GetDataForDataLists(_context, resourceGuide);
@@ -79,7 +79,7 @@ namespace PC2.Controllers
                 UserSearchedByAgency = searchModel.UserSearchedByAgency
             };
 
-            ViewBag.ShowFeedbackForm = false; // Default to hidden
+            ViewBag.ShowFeedbackForm = false;
 
             if (!string.IsNullOrEmpty(searchModel.UserSearchedByAgency))
             {
@@ -87,7 +87,7 @@ namespace PC2.Controllers
                 {
                     TrackResourceGuideTelemetry("Agency", searchModel.SearchedAgency);
                     resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, searchModel.SearchedAgency);
-                    ViewBag.ShowFeedbackForm = true;
+                    ViewData["ShowFeedbackForm"] = true;
                 }
             }
             else if (!string.IsNullOrEmpty(searchModel.UserSearchedByCityOrService))
@@ -100,21 +100,21 @@ namespace PC2.Controllers
                         searchModel.SearchedCategory, searchModel.SearchedCity);
                     resourceGuide.CurrentCity = searchModel.SearchedCity;
                     resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
-                    ViewBag.ShowFeedbackForm = true;
+                    ViewData["ShowFeedbackForm"] = true;
                 }
                 else if (searchModel.SearchedCategory != null)
                 {
                     TrackResourceGuideTelemetry("Service", $"{searchModel.SearchedCategory}");
                     resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
                     resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
-                    ViewBag.ShowFeedbackForm = true;
+                    ViewData["ShowFeedbackForm"] = true;
                 }
                 else if (searchModel.SearchedCity != null)
                 {
                     TrackResourceGuideTelemetry("City", searchModel.SearchedCity);
                     resourceGuide.CurrentCity = searchModel.SearchedCity;
                     resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
-                    ViewBag.ShowFeedbackForm = true;
+                    ViewData["ShowFeedbackForm"] = true;
                 }
             }
             
@@ -165,8 +165,14 @@ namespace PC2.Controllers
             return View(newsletterFiles);
         }
 
+        /// <summary>
+        /// Submits user feedback.
+        /// </summary>
+        /// <param name="model">The feedback model containing user input.</param>
+        /// <returns>A redirect to the ResourceGuide action on success, 
+        /// or the ResourceGuide view if the model is invalid.</returns>
         [HttpPost]
-        public async Task<IActionResult> SubmitFeedback(Feedback model) // Use the Feedback model directly
+        public async Task<IActionResult> SubmitFeedback(Feedback model)
         {
             if (ModelState.IsValid)
             {
@@ -174,20 +180,26 @@ namespace PC2.Controllers
                 {
                     Console.WriteLine(error.ErrorMessage);
                 }
-                model.SubmittedAt = DateTime.UtcNow; // Set the timestamp (use UTC)
+                model.SubmittedAt = DateTime.UtcNow;
 
-                _context.Feedback.Add(model); // Add the Feedback model directly
+                _context.Feedback.Add(model);
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Thank you for your feedback!";
                 return RedirectToAction("ResourceGuide");
             }
 
-            // If ModelState is not valid, return to the ResourceGuide view with errors
-            return RedirectToAction("ResourceGuide"); // Or handle it differently if needed.
+            return RedirectToAction("ResourceGuide");
         }
 
-        [Authorize(Roles = "Admin")] // Restrict access to Admin role
+        /// <summary>
+        /// Allows administrators to view feedback submitted by users.
+        /// This method retrieves and displays all feedback entries from the database, ordered by submission date.
+        /// </summary>
+        /// <returns>
+        /// A view displaying the list of feedback, including their comments and submission dates.
+        /// </returns>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> ViewFeedback()
         {
@@ -198,11 +210,164 @@ namespace PC2.Controllers
                     Id = f.Id,
                     IsResourceFound = f.IsResourceFound ? "Yes" : "No",
                     Comments = f.Comments,
-                    FormattedSubmittedAt = f.SubmittedAt.ToString("yyyy-MM-dd HH:mm")
+                    FormattedSubmittedAt = f.SubmittedAt.ToString("yyyy-MM-dd HH:mm"),
+                    IsReviewed = f.IsReviewed
                 })
                 .ToListAsync();
 
             return View(feedbackList);
         }
+
+        /// <summary>
+        /// Allows administrators to view and edit feedback submitted by users.
+        /// This method retrieves the feedback based on its ID and prepares it for editing.
+        /// </summary>
+        /// <param name="id">The ID of the feedback to edit.</param>
+        /// <returns>
+        /// A view displaying the feedback details, ready for editing, or a 404 error if the feedback does not exist.
+        /// </returns>
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> EditFeedback(int id)
+        {
+            var feedback = await _context.Feedback.FindAsync(id);
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new FeedbackViewModel
+            {
+                Id = feedback.Id,
+                IsResourceFound = feedback.IsResourceFound ? "Yes" : "No",
+                Comments = feedback.Comments,
+                FormattedSubmittedAt = feedback.SubmittedAt.ToString("yyyy-MM-dd HH:mm"),
+                IsReviewed = feedback.IsReviewed
+            };
+
+            return View(viewModel);
+        }
+
+        /// <summary>
+        /// Updates the feedback submitted by a user.
+        /// This method processes the edits made by the administrator and updates the feedback in the database.
+        /// </summary>
+        /// <param name="model">The feedback view model containing the updated data.</param>
+        /// <returns>
+        /// A redirect to the "ViewFeedback" action if the feedback is successfully updated.
+        /// A view with validation errors if the model is invalid.
+        /// </returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> EditFeedback(FeedbackViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var feedback = await _context.Feedback.FindAsync(model.Id);
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+
+            feedback.Comments = model.Comments;
+            feedback.IsReviewed = model.IsReviewed;
+
+            _context.Feedback.Update(feedback);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(ViewFeedback));
+        }
+
+        /// <summary>
+        /// Allows administrators to view the confirmation page for deleting feedback.
+        /// This method retrieves the feedback based on its ID and presents a confirmation page to the user.
+        /// </summary>
+        /// <param name="id">The ID of the feedback to delete.</param>
+        /// <returns>
+        /// A view displaying the feedback to confirm deletion, or a 404 error if the feedback does not exist.
+        /// </returns>
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> DeleteFeedback(int id)
+        {
+            var feedback = await _context.Feedback.FindAsync(id);
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+
+            return View(feedback);
+        }
+
+        /// <summary>
+        /// Deletes the specified feedback from the database.
+        /// This method removes the feedback entry from the database after confirmation.
+        /// </summary>
+        /// <param name="id">The ID of the feedback to delete.</param>
+        /// <returns>
+        /// A redirect to the "ViewFeedback" action after the feedback has been deleted.
+        /// </returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPost, ActionName("DeleteFeedback")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var feedback = await _context.Feedback.FindAsync(id);
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+
+            _context.Feedback.Remove(feedback);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(ViewFeedback));
+        }
+
+        /// <summary>
+        /// Displays a view for marking a feedback entry as reviewed.
+        /// </summary>
+        /// <param name="id">The ID of the feedback entry to mark as reviewed.</param>
+        /// <returns>The MarkAsReviewed view with the feedback data.</returns>
+        [HttpGet]
+        public async Task<IActionResult> MarkAsReviewed(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var feedback = await _context.Feedback.FindAsync(id);
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+
+            return View(feedback);
+        }
+
+        /// <summary>
+        /// Marks a feedback entry as reviewed.
+        /// </summary>
+        /// <param name="id">The ID of the feedback entry to mark as reviewed.</param>
+        /// <returns>A redirect to the ViewFeedback action.</returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> MarkAsReviewed(int id)
+        {
+            var feedback = await _context.Feedback.FindAsync(id);
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+
+            feedback.IsReviewed = true;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ViewFeedback");
+        }
+
     }
 }
