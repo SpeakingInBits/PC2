@@ -1,0 +1,47 @@
+﻿@model List<PC2.Models.FeedbackViewModel>
+
+@{
+    ViewData["Title"] = "Feedback List";
+}
+
+<h1>Feedback List</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Resource Found?</th>
+            <th>Comments</th>
+            <th>Submitted At</th>
+            <th>Actions</th>
+            <th>Reviewed</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var feedback in Model)
+        {
+            <tr>
+                <td>@feedback.IsResourceFound</td>
+                <td>@feedback.Comments</td>
+                <td>@feedback.FormattedSubmittedAt</td>
+                <td>
+                    <a asp-action="EditFeedback" asp-route-id="@feedback.Id">Edit</a>
+                    <a asp-action="DeleteFeedback" asp-route-id="@feedback.Id">Delete</a>
+                </td>
+                <td>
+                    <form asp-action="MarkAsReviewed" method="post">
+                        <input type="hidden" name="id" value="@feedback.Id" />
+                        <input type="hidden" name="isReviewed" value="false" />
+                        <input type="checkbox" name="isReviewed" value="true" @(feedback.IsReviewed ? "checked" : "") onchange="this.form.submit();" />
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index">Back to Home</a>
+</div>
+
+
