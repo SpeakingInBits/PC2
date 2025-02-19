@@ -1,0 +1,45 @@
+﻿@model IEnumerable<PC2.Models.CalendarEvent>
+
+@{
+    ViewData["Title"] = "Standing Meeting";
+}
+
+<h1>Standing Meeting</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CalendarEventID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EventDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartingDateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndingDateTime)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CalendarEventID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartingDateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndingDateTime)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
