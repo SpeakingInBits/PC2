@@ -4,7 +4,6 @@ using PC2.Data;
 using PC2.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Metrics;
 
 namespace PC2.Controllers
 {
@@ -41,7 +40,6 @@ namespace PC2.Controllers
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
                 TrackResourceGuideTelemetry("Manual/Category", resourceGuide.Category.AgencyCategoryName);
 
-                // **Show the feedback form only after a search**
                 ViewData["ShowFeedbackForm"] = true;
             }
 
@@ -176,12 +174,7 @@ namespace PC2.Controllers
         {
             if (ModelState.IsValid)
             {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    Console.WriteLine(error.ErrorMessage);
-                }
                 model.SubmittedAt = DateTime.UtcNow;
-
                 _context.Feedback.Add(model);
                 await _context.SaveChangesAsync();
 
@@ -199,11 +192,11 @@ namespace PC2.Controllers
         /// <returns>
         /// A view displaying the list of feedback, including their comments and submission dates.
         /// </returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpGet]
         public async Task<IActionResult> ViewFeedback()
         {
-            var feedbackList = await _context.Feedback
+            List<FeedbackViewModel> feedbackList = await _context.Feedback
                 .OrderByDescending(f => f.SubmittedAt)
                 .Select(f => new FeedbackViewModel
                 {
@@ -226,17 +219,17 @@ namespace PC2.Controllers
         /// <returns>
         /// A view displaying the feedback details, ready for editing, or a 404 error if the feedback does not exist.
         /// </returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpGet]
         public async Task<IActionResult> EditFeedback(int id)
         {
-            var feedback = await _context.Feedback.FindAsync(id);
+            Feedback? feedback = await _context.Feedback.FindAsync(id);
             if (feedback == null)
             {
                 return NotFound();
             }
 
-            var viewModel = new FeedbackViewModel
+            FeedbackViewModel viewModel = new()
             {
                 Id = feedback.Id,
                 IsResourceFound = feedback.IsResourceFound ? "Yes" : "No",
@@ -257,7 +250,7 @@ namespace PC2.Controllers
         /// A redirect to the "ViewFeedback" action if the feedback is successfully updated.
         /// A view with validation errors if the model is invalid.
         /// </returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpPost]
         public async Task<IActionResult> EditFeedback(FeedbackViewModel model)
         {
@@ -266,7 +259,7 @@ namespace PC2.Controllers
                 return View(model);
             }
 
-            var feedback = await _context.Feedback.FindAsync(model.Id);
+            Feedback? feedback = await _context.Feedback.FindAsync(model.Id);
             if (feedback == null)
             {
                 return NotFound();
@@ -289,11 +282,11 @@ namespace PC2.Controllers
         /// <returns>
         /// A view displaying the feedback to confirm deletion, or a 404 error if the feedback does not exist.
         /// </returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpGet]
         public async Task<IActionResult> DeleteFeedback(int id)
         {
-            var feedback = await _context.Feedback.FindAsync(id);
+            Feedback? feedback = await _context.Feedback.FindAsync(id);
             if (feedback == null)
             {
                 return NotFound();
@@ -310,11 +303,11 @@ namespace PC2.Controllers
         /// <returns>
         /// A redirect to the "ViewFeedback" action after the feedback has been deleted.
         /// </returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpPost, ActionName("DeleteFeedback")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var feedback = await _context.Feedback.FindAsync(id);
+            Feedback? feedback = await _context.Feedback.FindAsync(id);
             if (feedback == null)
             {
                 return NotFound();
@@ -339,7 +332,7 @@ namespace PC2.Controllers
                 return NotFound();
             }
 
-            var feedback = await _context.Feedback.FindAsync(id);
+            Feedback? feedback = await _context.Feedback.FindAsync(id);
             if (feedback == null)
             {
                 return NotFound();
@@ -353,11 +346,11 @@ namespace PC2.Controllers
         /// </summary>
         /// <param name="id">The ID of the feedback entry to mark as reviewed.</param>
         /// <returns>A redirect to the ViewFeedback action.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpPost]
         public async Task<IActionResult> MarkAsReviewed(int id)
         {
-            var feedback = await _context.Feedback.FindAsync(id);
+            Feedback? feedback = await _context.Feedback.FindAsync(id);
             if (feedback == null)
             {
                 return NotFound();
