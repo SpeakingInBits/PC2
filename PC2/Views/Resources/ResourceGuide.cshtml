@@ -1,5 +1,13 @@
 ﻿@model PC2.Models.ResourceGuideModel
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 @section Head {
 
 }
@@ -409,6 +417,26 @@ else
             }
         </div>
     </div>
+}
+
+@if (ViewBag.ShowFeedbackForm != null && ViewBag.ShowFeedbackForm == true)
+{
+    <form asp-action="SubmitFeedback" method="post">
+        <div class="mb-3">
+            <label for="comments" class="form-label">Your Feedback</label>
+            <textarea id="comments" name="Comments" class="form-control" rows="3" maxlength="500"></textarea>
+			<small class="form-text text-danger">Maximum 500 characters.</small>
+        </div>
+
+        <div class="mb-2">
+            <strong>Did you find what you were looking for?</strong>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" name="IsResourceFound" value="true" class="btn btn-primary">Yes</button>
+            <button type="submit" name="IsResourceFound" value="false" class="btn btn-secondary">No</button>
+        </div>
+    </form>
 }
 
 @section Scripts{
