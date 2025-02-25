@@ -20,14 +20,9 @@ namespace PC2.Controllers
             EventsModel eventsModel = new()
             {
                 IsPC2EventCalendar = getPc2Events, 
-                CalendarEvents = await CalendarEventDB.GetAllEvents(_context, getPc2Events)
+                CalendarEvents = await CalendarEventDB.GetAllEvents(_context, getPc2Events),
+                StandingMeetings = await GetStandingMeetings()
             };
-
-            // Load events based on the eventType
-            if (eventType == "Meeting")
-            {
-                return RedirectToAction("StandingMeeting");
-            }
 
             return View(eventsModel);
         }
@@ -44,10 +39,10 @@ namespace PC2.Controllers
         // Returns events in JSON format for FullCalendar
         public async Task<IActionResult> GetEvents(string? eventType)
         {
-            bool getPc2Events = string.IsNullOrEmpty(eventType) || eventType == "PC2";
-
-            // Get events from the database
-            List<CalendarEvent> events = await CalendarEventDB.GetAllEvents(_context, getPc2Events);
+            // Get all PC2 and County events from the database, excluding standing meetings
+            List<CalendarEvent> events = await _context.CalendarEvents
+                .Where(e => !e.StandingMeeting && (e.PC2Event || e.CountyEvent))
+                .ToListAsync();
 
             // Create a list to hold FullCalendar-compatible events
             List<object> fullCalendarEvents = new List<object>();
@@ -66,5 +61,17 @@ namespace PC2.Controllers
 
             return Json(fullCalendarEvents);
         }
+        /// <summary>
+        /// This method to get all the standing meeting events
+        /// </summary>
+        /// <returns></returns>
+        private async Task<List<string>> GetStandingMeetings()
+        {
+            return await _context.CalendarEvents
+                .Where(e => e.StandingMeeting)
+                .Select(e => e.EventDescription + " - " + e.StartingDateTime.ToString("dddd h:mm tt"))
+                .ToListAsync();
+        }
+
     }
 }

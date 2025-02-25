@@ -1,25 +1,7 @@
 ﻿@model PC2.Models.EventsModel
 
 @{
-    // Allows calendar to switch between PC2 and County events by grabbing the eventType
-    var eventType = Context.Request.Query["eventType"].ToString();
-    if (string.IsNullOrEmpty(eventType) || eventType == "PC2")
-    {
-        Model.IsPC2EventCalendar = true;
-    }
-    else
-    {
-        Model.IsPC2EventCalendar = false;
-    }
-
-    if (Model.IsPC2EventCalendar)
-    {
-        ViewData["Title"] = "PC2 Events and Activities";
-    }
-    else
-    {
-        ViewData["Title"] = "County-wide Events and Activities";
-    }
+    ViewData["Title"] = "Event Calendar";
 }
 
 <div class="d-flex justify-content-center">
@@ -40,27 +22,50 @@
             max-width: 625px;
             max-height: 875px;
         }
+
+        /* Event colors */
+        .pc2-event {
+            background-color: #d1e7dd !important; /* Light green */
+        }
+
+        .county-event {
+            background-color: #f8d7da !important; /* Light red */
+        }
+
+        .standing-meetings {
+            margin-top: 20px;
+        }
+
+        .standing-meetings h2 {
+            font-size: 1.5em;
+        }
+
+        .standing-meetings ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .standing-meetings li {
+            margin-bottom: 10px;
+        }
+
+        .legend {
+            margin-top: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
     </style>
 }
-
-<!-- Links to toggle between PC2 and County events -->
-@if (Model.IsPC2EventCalendar)
-{
-    <p>
-        <a asp-action="Index" asp-route-eventType="County">View County-Wide Events</a>
-    </p>
-}
-else
-{
-    <p>
-        <a asp-action="Index" asp-route-eventType="PC2">View PC2 Events</a>
-    </p>
-}
-<p>
-    <a asp-action="Index" asp-route-eventType="Meeting">View Standing Meeting</a>
-</p>
-
-<br />
 
 <!-- Modal popup -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
@@ -82,9 +87,9 @@ else
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js" 
-    integrity="sha384-B1OFx8Gy9GjPu8UbUyXbGQpzll9ubAUQ9agInFJ8NnD7nYG1u/CLR+Sqr5yifl4q" 
-    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"
+        integrity="sha384-B1OFx8Gy9GjPu8UbUyXbGQpzll9ubAUQ9agInFJ8NnD7nYG1u/CLR+Sqr5yifl4q"
+        crossorigin="anonymous"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -93,18 +98,21 @@ else
 
         var calendar = new FullCalendar.Calendar(calendarContainer, {
             initialView: 'dayGridMonth',
-            eventColor: '#ff9f89',
             events: function(info, successCallback, failureCallback) {
-                // Get the eventType from the query string
-                var urlParams = new URLSearchParams(window.location.search);
-                var eventType = urlParams.get('eventType') || 'PC2';
-
-                // Fetch events from the controller based on eventType
-                fetch('@Url.Action("GetEvents", "Events")?eventType=' + eventType)
+                // Fetch events from the controller
+                fetch('@Url.Action("GetEvents", "Events")')
                     .then(function(response) {
                         return response.json();
                     })
                     .then(function(events) {
+                        // Add color differentiation
+                        events.forEach(event => {
+                            if (event.isPC2Event) {
+                                event.classNames = ['pc2-event'];
+                            } else {
+                                event.classNames = ['county-event'];
+                            }
+                        });
                         successCallback(events);
                     })
                     .catch(function(error) {
@@ -136,4 +144,29 @@ else
     });
 </script>
 
-<div id="calendar"></div>
+<div class="row">
+    <div class="col-md-9">
+        <div id="calendar"></div>
+    </div>
+    <div class="col-md-3">
+        <div class="standing-meetings">
+            <h2>Standing Meetings</h2>
+            <ul>
+                @foreach (var meeting in Model.StandingMeetings)
+                {
+                    <li>@meeting</li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color pc2-event"></div>
+            <span>PC2 Event</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color county-event"></div>
+            <span>County Event</span>
+        </div>
+    </div>
+</div>
