@@ -55,6 +55,7 @@ namespace PC2.Controllers
                     title = e.EventDescription,
                     start = e.StartingDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),  // FullCalendar format
                     end = e.EndingDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),      // FullCalendar format
+                    isPC2Event = e.PC2Event // Include the isPC2Event property
                 };
                 fullCalendarEvents.Add(calendarEvent);
             }
