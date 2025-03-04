@@ -100,10 +100,15 @@
                                                 PC2 Event
                                             </p>
                                         }
-                                        else
+                                        else if (@eventDateGroups[currentDate][currentEvent].CountyEvent)
                                         {
                                             <p>
                                                 County Event
+                                            </p>
+                                        }
+                                        else {
+                                            <p>
+                                                Standing Meeting
                                             </p>
                                         }
                                     </td>
@@ -127,20 +132,23 @@
                                     </div>
                                 </td>
                                 <td>
-                                        @if (@eventDateGroups[currentDate][currentEvent].PC2Event)
-                                        {
-                                            <p>
-                                                PC2 Event
-                                            </p>
+                                    @if (@eventDateGroups[currentDate][currentEvent].PC2Event) {
+                                        <p>
+                                            PC2 Event
+                                        </p>
+                                    }
+                                    else if (@eventDateGroups[currentDate][currentEvent].CountyEvent) {
+                                        <p>
+                                            County Event
+                                        </p>
                                         }
-                                        else
-                                        {
-                                            <p>
-                                                County Event
-                                            </p>
-                                        }
-                                    </td>
-                                <td>
+                                    else {
+                                        <p>
+                                            Standing Meeting
+                                        </p>
+                                     }
+                                 </td>
+                                 <td>
                                     <p>
                                         <a asp-action="Edit" asp-route-id="@eventDateGroups[currentDate][currentEvent].CalendarEventID">Edit Event</a> |
                                         <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@eventDateGroups[currentDate][currentEvent].CalendarEventID">Delete Event</a>

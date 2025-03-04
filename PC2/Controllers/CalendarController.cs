@@ -46,15 +46,15 @@ namespace PC2.Controllers
             bool errorExists = false;
 
             // if neither check boxes are checked
-            if (!model.IsCountyEvent && !model.IsPc2Event)
+            if (!model.IsCountyEvent && !model.IsPc2Event && !model.IsStandingMeeting)
             {
-                ModelState.AddModelError("IsCountyEvent", "Please check the PC2 or County Event checkbox");
+                ModelState.AddModelError("IsCountyEvent", "Please check the PC2 or County Event or Standing Meeting checkbox");
                 errorExists = true;
                 
             }
 
-            // if both are checked
-            if (model.IsCountyEvent && model.IsPc2Event)
+            // if all are checked
+            if (model.IsCountyEvent && model.IsPc2Event && model.IsStandingMeeting)
             {
                 ModelState.AddModelError("IsCountyEvent", "Please select only one checkbox");
                 errorExists = true;
@@ -84,6 +84,9 @@ namespace PC2.Controllers
                 else if (model.IsCountyEvent)
                 {
                     newEvent.CountyEvent = true;
+                }
+                else if (model.IsStandingMeeting) { 
+                    newEvent.StandingMeeting = true;
                 }
 
                 await CalendarEventDB.AddEvent(_context, newEvent);
@@ -198,5 +201,10 @@ namespace PC2.Controllers
         /// Is the event a county sponsored event
         /// </summary>
         public bool IsCountyEvent { get; set; }
+
+        /// <summary>
+        /// Is the event a standing meeting event
+        /// </summary>
+        public bool IsStandingMeeting { get; set; }
     }
 }
