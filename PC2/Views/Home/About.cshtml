@@ -100,19 +100,22 @@
             </tbody>
         </table>
     </div>
-    <h2>Our Steering Committee</h2>
-    <div class="steering-column">
-        <table class="table">
-            <tbody>
-                @for (int i = 0; i < Model.SteeringCommittee.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            <p>@Model.SteeringCommittee[i].Name</p>
-                            <p>@Model.SteeringCommittee[i].Title</p>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    @if (Model.SteeringCommittee.Count > 0)
+    {
+        <h2>Our Steering Committee</h2>
+        <div class="steering-column">
+            <table class="table">
+                <tbody>
+                    @for (int i = 0; i < Model.SteeringCommittee.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <p>@Model.SteeringCommittee[i].Name</p>
+                                <p>@Model.SteeringCommittee[i].Title</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
