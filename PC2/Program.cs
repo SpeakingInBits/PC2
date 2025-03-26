@@ -62,7 +62,7 @@ else
 
 app.UseWebOptimizer();
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.MapStaticAssets();
 app.UseRequestLocalization();
 app.UseRouting();
 
