@@ -299,7 +299,7 @@ else
 
                                                         switch (prop.Name)
                                                         {
-                                                            case "Email":
+                                                            case nameof(Agency.Email):
                                                                 <dt>@prop.Name</dt>
                                                                 <dd>
                                                                     @foreach (var email in propValueString.Split(' ', StringSplitOptions.RemoveEmptyEntries))
@@ -309,7 +309,7 @@ else
                                                                 </dd>
                                                                 break;
 
-                                                            case "Phone":
+                                                            case nameof(Agency.Phone):
                                                                 <dt>@prop.Name</dt>
                                                                 <dd>
                                                                     @if (propValueString.Length > 15)
@@ -335,7 +335,7 @@ else
                                                                 </dd>
                                                                 break;
 
-                                                            case "Website":
+                                                            case nameof(Agency.Website):
                                                                 <dt>@prop.Name</dt>
                                                                 <dd>
                                                                     @foreach (var website in propValueString.Split(' ', StringSplitOptions.RemoveEmptyEntries))
@@ -351,7 +351,7 @@ else
                                                                 break;
 
                                                             default:
-                                                                if (prop.Name != "AgencyCategories" && prop.Name != "AgencyId" && prop.Name != "AgencyName")
+                                                                if (prop.Name != nameof(Agency.AgencyCategories) && prop.Name != nameof(Agency.AgencyId) && prop.Name != nameof(Agency.AgencyName))
                                                                 {
                                                                     <dt>@(prop.Name == "Address1" && agency.Address2 == null ? "Address" : prop.Name)</dt>
                                                                     <dd>@propValue</dd>
