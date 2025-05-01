@@ -290,109 +290,73 @@ else
                                         </div>
                                         <div class="modal-body">
                                             <dl class="row">
-                                                @*For each property in class agency*@
-                                                @foreach(var prop in typeof(Agency).GetProperties())
+                                                @foreach (var prop in typeof(Agency).GetProperties())
                                                 {
-
-                                                    if (prop.GetValue(agency) != null)
+                                                    var propValue = prop.GetValue(agency);
+                                                    if (propValue != null)
                                                     {
-                                                        // handles email links
-                                                        if (prop.Name == "Email")
-                                                        {
-                                                            <dt>@prop.Name</dt>
-                                                            string emailData = prop.GetValue(agency).ToString();
-                                                            @*separate multiple emails*@
-                                                            <dd>
-                                                                @{
-                                                                    if (emailData != null)
-                                                                    {
-                                                                        string[] emails = emailData.Split(' ');
-                                                                        foreach(string email in emails)
-                                                                        {
-                                                                            <a href="mailto:@email.Trim()">
-                                                                                @email
-                                                                            </a>
-                                                                            <br>
-                                                                        }
-                                                                    }
-                                                                }
-                                                            </dd>
-                                                        }
-                                                        // handles phone links
-                                                        else if (prop.Name == "Phone")
-                                                        {
-                                                            <dt>@prop.Name</dt>
-                                                            string phone = prop.GetValue(agency).ToString();
+                                                        string propValueString = propValue.ToString();
 
-                                                            if (phone.Length > 15)
-                                                            {
-                                                                @*handle inconsistencies in phone number data*@ // borrowed from code above
+                                                        switch (prop.Name)
+                                                        {
+                                                            case "Email":
+                                                                <dt>@prop.Name</dt>
                                                                 <dd>
-                                                                    @for (int j = 0; j < phone.Length; j++)
+                                                                    @foreach (var email in propValueString.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                                                                     {
-                                                                        // if the string contains "(xxx)"
-                                                                        if (phone[j] == '(' && phone[j + 4] == ')')
-                                                                        {
-                                                                            @if (j > 0)
-                                                                            {
-                                                                                <br>
-                                                                            }
-                                                                            // display phone number as clickable number and move to the end of it
-                                                                            <a href="tel:@phone.Substring(j, 14)">@phone.Substring(j, 14)</a>
-                                                                            <br>
-                                                                            j += 14;
-                                                                        }
-                                                                        else // display the character
-                                                                        {
-                                                                            @phone[j];
-                                                                        }
+                                                                        <a href="mailto:@email.Trim()">@email.Trim()</a><br />
                                                                     }
                                                                 </dd>
-                                                            }
+                                                                break;
 
-                                                            else
-                                                            {
-                                                                <dd><a href="tel:@prop.GetValue(agency)">@prop.GetValue(agency)</a></dd>
-                                                            }
-                                                        }
-                                                        // handles website links
-                                                        else if (prop.Name == "Website")
-                                                        {
-                                                            <dt>@prop.Name</dt>
-                                                            string websiteString = prop.GetValue(agency).ToString();
-                                                            int start = 0;
-
-                                                            if (websiteString != null)
-                                                            {
-                                                                string[] websites = websiteString.Split(' ');
-                                                                foreach(string website in websites)
-                                                                {
-                                                                    string url = website.Trim();
-                                                                    // if the url is empty, skip it. This is to handle extra spaces in the data
-                                                                    if (url == string.Empty)
-                                                                    {
-                                                                        continue;
-                                                                    }
-                                                                    if (!url.StartsWith("https://") && !url.StartsWith("http://"))
-                                                                    {
-                                                                        url = "https://" + url;
-                                                                    }
-                                                                    <dd><a href="@url">@url</a></dd>
-                                                                }
-                                                            }
-                                                        }
-                                                        // excludes certain columns and displays the rest
-                                                        else if (prop.Name != "AgencyCategories" && prop.Name != "AgencyId" && prop.Name != "AgencyName")
-                                                        {
-                                                            if (prop.Name == "Address1" && agency.Address2 == null)
-                                                            {
-                                                                <dt>Address</dt>
-                                                            }
-                                                            else
-                                                            {
+                                                            case "Phone":
                                                                 <dt>@prop.Name</dt>
-                                                            }
-                                                            <dd>@prop.GetValue(agency)</dd>
+                                                                <dd>
+                                                                    @if (propValueString.Length > 15)
+                                                                    {
+                                                                        for (int j = 0; j < propValueString.Length; j++)
+                                                                        {
+                                                                            if (propValueString[j] == '(' && j + 4 < propValueString.Length && propValueString[j + 4] == ')')
+                                                                            {
+                                                                                if (j > 0) { <br />; }
+                                                                                <a href="tel:@propValueString.Substring(j, 14)">@propValueString.Substring(j, 14)</a><br />
+                                                                                j += 13;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                @propValueString[j];
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <a href="tel:@propValueString">@propValueString</a>
+                                                                    }
+                                                                </dd>
+                                                                break;
+
+                                                            case "Website":
+                                                                <dt>@prop.Name</dt>
+                                                                <dd>
+                                                                    @foreach (var website in propValueString.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                                                                    {
+                                                                        var url = website.Trim();
+                                                                        if (!url.StartsWith("http://") && !url.StartsWith("https://"))
+                                                                        {
+                                                                            url = "https://" + url;
+                                                                        }
+                                                                        <a href="@url">@url</a><br />
+                                                                    }
+                                                                </dd>
+                                                                break;
+
+                                                            default:
+                                                                if (prop.Name != "AgencyCategories" && prop.Name != "AgencyId" && prop.Name != "AgencyName")
+                                                                {
+                                                                    <dt>@(prop.Name == "Address1" && agency.Address2 == null ? "Address" : prop.Name)</dt>
+                                                                    <dd>@propValue</dd>
+                                                                }
+                                                                break;
                                                         }
                                                     }
                                                 }
