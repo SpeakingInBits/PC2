@@ -203,24 +203,24 @@ else
         </h1>
     </div>
         <div id="scrollResults" class="container">
-            @for (int i = 0; i < Model.Agencies.Count; i++)
+            @foreach (var agency in Model.Agencies)
             {
                 <div class="row py-1 results"> <!--css for evenIndex-row to emulate striped table-->
                     <div class="col-md-5 col-9">
-                        @Model.Agencies[i].AgencyName 
-                        @if (Model.CurrentCity == null && Model.Agencies[i].City != null)
+                        @agency.AgencyName 
+                        @if (Model.CurrentCity == null && agency.City != null)
                         {
-                            @(" - " + Model.Agencies[i].City) <!--if user leaves City blank is search append City-->
+                            @(" - " + agency.City) <!--if user leaves City blank is search append City-->
                         }
-                        @if (Model.Agencies[i].AgencyName2 != null)
+                        @if (agency.AgencyName2 != null)
                         {
-                            <p id="agencyName2"> @Model.Agencies[i].AgencyName2 </p>
+                            <p id="agencyName2"> @agency.AgencyName2 </p>
                         }
                     </div>
                     <div class="col-md-5 col-9">
-                        @if (Model.Agencies[i].Phone != null)
+                        @if (agency.Phone != null)
                         {
-                            string phoneNumber = Model.Agencies[i].Phone;
+                            string phoneNumber = agency.Phone;
 
                             @if (phoneNumber.Substring(0, 3) == "tel")
                             {
@@ -251,9 +251,9 @@ else
                             <br />
                         }
 
-                        @if (Model.Agencies[i].Email != null)
+                        @if (agency.Email != null)
                         {
-                            string email = Model.Agencies[i].Email;
+                            string email = agency.Email;
                             int emailStart = 0;
 
                             @*separate multiple emails*@
@@ -277,15 +277,15 @@ else
                         </div>
 
                     <div class="col-md-1 col-2">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailsModal-@i">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailsModal-@agency.AgencyId">
                                 Details
                             </button>
 
-                            <div class="modal fade" id="detailsModal-@i" data-bs-keyboard="false" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true" style="color: black">
+                            <div class="modal fade" id="detailsModal-@agency.AgencyId" data-bs-keyboard="false" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true" style="color: black">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="detailsModalLabel">@Model.Agencies[i].AgencyName</h1>
+                                            <h1 class="modal-title fs-5" id="detailsModalLabel">@agency.AgencyName</h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
@@ -294,13 +294,13 @@ else
                                                 @foreach(var prop in typeof(Agency).GetProperties())
                                                 {
 
-                                                    if (prop.GetValue(Model.Agencies[i]) != null)
+                                                    if (prop.GetValue(agency) != null)
                                                     {
                                                         // handles email links
                                                         if (prop.Name == "Email")
                                                         {
                                                             <dt>@prop.Name</dt>
-                                                            string emailData = prop.GetValue(Model.Agencies[i]).ToString();
+                                                            string emailData = prop.GetValue(agency).ToString();
                                                             @*separate multiple emails*@
                                                             <dd>
                                                                 @{
@@ -322,7 +322,7 @@ else
                                                         else if (prop.Name == "Phone")
                                                         {
                                                             <dt>@prop.Name</dt>
-                                                            string phone = prop.GetValue(Model.Agencies[i]).ToString();
+                                                            string phone = prop.GetValue(agency).ToString();
 
                                                             if (phone.Length > 15)
                                                             {
@@ -352,14 +352,14 @@ else
 
                                                             else
                                                             {
-                                                                <dd><a href="tel:@prop.GetValue(Model.Agencies[i])">@prop.GetValue(Model.Agencies[i])</a></dd>
+                                                                <dd><a href="tel:@prop.GetValue(agency)">@prop.GetValue(agency)</a></dd>
                                                             }
                                                         }
                                                         // handles website links
                                                         else if (prop.Name == "Website")
                                                         {
                                                             <dt>@prop.Name</dt>
-                                                            string websiteString = prop.GetValue(Model.Agencies[i]).ToString();
+                                                            string websiteString = prop.GetValue(agency).ToString();
                                                             int start = 0;
 
                                                             if (websiteString != null)
@@ -384,7 +384,7 @@ else
                                                         // excludes certain columns and displays the rest
                                                         else if (prop.Name != "AgencyCategories" && prop.Name != "AgencyId" && prop.Name != "AgencyName")
                                                         {
-                                                            if (prop.Name == "Address1" && Model.Agencies[i].Address2 == null)
+                                                            if (prop.Name == "Address1" && agency.Address2 == null)
                                                             {
                                                                 <dt>Address</dt>
                                                             }
@@ -392,7 +392,7 @@ else
                                                             {
                                                                 <dt>@prop.Name</dt>
                                                             }
-                                                            <dd>@prop.GetValue(Model.Agencies[i])</dd>
+                                                            <dd>@prop.GetValue(agency)</dd>
                                                         }
                                                     }
                                                 }
