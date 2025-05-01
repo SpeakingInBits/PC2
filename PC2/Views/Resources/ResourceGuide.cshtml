@@ -353,7 +353,7 @@ else
                                                             default:
                                                                 if (prop.Name != nameof(Agency.AgencyCategories) && prop.Name != nameof(Agency.AgencyId) && prop.Name != nameof(Agency.AgencyName))
                                                                 {
-                                                                    <dt>@(prop.Name == "Address1" && agency.Address2 == null ? "Address" : prop.Name)</dt>
+                                                                    <dt>@(prop.Name == nameof(Agency.Address1) && agency.Address2 == null ? "Address" : prop.Name)</dt>
                                                                     <dd>@propValue</dd>
                                                                 }
                                                                 break;
