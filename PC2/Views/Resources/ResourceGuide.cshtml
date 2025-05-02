@@ -222,30 +222,28 @@ else
                         {
                             string phoneNumber = agency.Phone;
 
-                            @if (phoneNumber.Substring(0, 3) == "tel")
+                            @if (phoneNumber.StartsWith("tel"))
                             {
                                 <a href="@phoneNumber">@phoneNumber</a>
                             }
-                            @*handle inconsistencies in phone number data*@
                             else
                             {
-                                @for (int j = 0; j < phoneNumber.Length; j++)
+                                // Regular expression to match phone numbers with optional spaces and parentheses
+                                var regex = new System.Text.RegularExpressions.Regex(@"\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}");
+                                var matches = regex.Matches(phoneNumber);
+
+                                if (matches.Count > 0)
                                 {
-                                    // if the string contains "(xxx)"
-                                    if (phoneNumber[j] == '(' && phoneNumber[j + 4] == ')')
+                                    foreach (var match in matches)
                                     {
-                                        @if (j > 0)
-                                        {
-                                            <br>
-                                        }
-                                        // display phone number as clickable number and move to the end of it
-                                        <a href="tel:@phoneNumber.Substring(j, 14)">@phoneNumber.Substring(j, 14)</a>
-                                        j += 14;
+                                        <a href="tel:@match">@match</a>
+                                        <br />
                                     }
-                                    else // display the character
-                                    {
-                                        @phoneNumber[j];
-                                    }
+                                }
+                                else
+                                {
+                                    // If no matches are found, display the raw phone number
+                                    @phoneNumber
                                 }
                             }
                             <br />
