@@ -42,6 +42,7 @@ namespace PC2.Data
         public virtual DbSet<NewsletterFile> NewsletterFile { get; set; }
     
         public virtual DbSet<HousingProgram> HousingProgram { get; set; }
+        public virtual DbSet<Feedback> Feedback { get; set; }
     }
 
     internal class DateOnlyConverter : ValueConverter<DateOnly, DateTime>
