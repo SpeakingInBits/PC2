@@ -40,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".github\workflows\ci.yml" />
     <None Include="compilerconfig.json" />
   </ItemGroup>
 
