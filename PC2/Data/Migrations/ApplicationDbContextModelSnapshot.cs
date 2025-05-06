@@ -17,7 +17,7 @@ namespace PC2.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -34,7 +34,7 @@ namespace PC2.Data.Migrations
 
                     b.HasIndex("AgencyCategoriesAgencyCategoryId");
 
-                    b.ToTable("AgencyAgencyCategory");
+                    b.ToTable("AgencyAgencyCategory", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -304,7 +304,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("AgencyId");
 
-                    b.ToTable("Agency");
+                    b.ToTable("Agency", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.AgencyCategory", b =>
@@ -321,7 +321,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("AgencyCategoryId");
 
-                    b.ToTable("AgencyCategory");
+                    b.ToTable("AgencyCategory", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.CalendarEvent", b =>
@@ -353,7 +353,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("CalendarEventID");
 
-                    b.ToTable("CalendarEvents");
+                    b.ToTable("CalendarEvents", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.HousingProgram", b =>
@@ -369,7 +369,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("HouseHoldSize");
 
-                    b.ToTable("HousingProgram");
+                    b.ToTable("HousingProgram", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.NewsletterFile", b =>
@@ -390,7 +390,7 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("NewsletterId");
 
-                    b.ToTable("NewsletterFile");
+                    b.ToTable("NewsletterFile", (string)null);
                 });
 
             modelBuilder.Entity("PC2.Models.People", b =>
@@ -403,8 +403,7 @@ namespace PC2.Data.Migrations
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -418,11 +417,9 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("People");
+                    b.ToTable("People", (string)null);
 
                     b.HasDiscriminator().HasValue("People");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("PC2.Models.Board", b =>
