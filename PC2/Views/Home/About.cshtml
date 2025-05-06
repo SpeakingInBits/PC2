@@ -45,7 +45,6 @@
         <img src="~/images/about/au9.png" alt="Photo of Cary Vazquez" />
         <img src="~/images/about/au3.jpg" alt="Photo of Dale Golder"/>
         <img src="~/images/about/au4.jpg" alt="Photo of Kristin Loos"/>
-        <img src="~/images/about/au5.jpg" alt="Photo of Larry Todd"/>
         <img src="~/images/about/au8.jpg" alt="Photo of Michele Lehosky" />
         <img src="~/images/about/au6.jpg" alt="Photo of Christopher Cleveland"/>
         <img src="~/images/about/au7.jpg" alt="Photo of Nathan Becker"/>
@@ -100,19 +99,22 @@
             </tbody>
         </table>
     </div>
-    <h2>Our Steering Committee</h2>
-    <div class="steering-column">
-        <table class="table">
-            <tbody>
-                @for (int i = 0; i < Model.SteeringCommittee.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            <p>@Model.SteeringCommittee[i].Name</p>
-                            <p>@Model.SteeringCommittee[i].Title</p>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    @if (Model.SteeringCommittee.Count > 0)
+    {
+        <h2>Our Steering Committee</h2>
+        <div class="steering-column">
+            <table class="table">
+                <tbody>
+                    @for (int i = 0; i < Model.SteeringCommittee.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <p>@Model.SteeringCommittee[i].Name</p>
+                                <p>@Model.SteeringCommittee[i].Title</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }

@@ -13,7 +13,7 @@ namespace PC2.Models
         /// <summary>
         /// The persons full name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Position title
@@ -79,5 +79,16 @@ namespace PC2.Models
     public class SteeringCommittee : People
     {
     
+    }
+
+    /// <summary>
+    /// Represents a board member, inheriting basic information from <see cref="People"/>.
+    /// </summary>
+    public class Board : People
+    {
+        /// <summary>
+        /// The start date of the board membership.
+        /// </summary>
+        public string MembershipStart { get; set; }
     }
 }
