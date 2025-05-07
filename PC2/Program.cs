@@ -79,9 +79,10 @@ IdentityHelper.CreateDefaultAdmin(serviceProvider.ServiceProvider, IdentityHelpe
 #endif
 
 // If a user tries to access the register page, redirect them to the login page
-app.MapGet("/Identity/Account/Register", context => 
-    Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
-app.MapPost("/Identity/Account/Register", context => 
-    Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
+app.Map("/Identity/Account/Register", async context =>
+{
+    context.Response.Redirect("/Identity/Account/Login", true, true);
+    await Task.CompletedTask;
+});
 
 app.Run();
