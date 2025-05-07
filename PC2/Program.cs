@@ -37,6 +37,12 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     };
 });
 
+// Configure Kestrel server options
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10 MB
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
