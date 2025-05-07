@@ -77,11 +77,11 @@ IdentityHelper.CreateRoles(serviceProvider.ServiceProvider, IdentityHelper.Admin
 IdentityHelper.CreateDefaultAdmin(serviceProvider.ServiceProvider, IdentityHelper.Admin)
               .Wait();
 #endif
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapGet("/Identity/Account/Register", context => Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
-    endpoints.MapPost("/Identity/Account/Register", context => Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
 
-});
+// If a user tries to access the register page, redirect them to the login page
+app.MapGet("/Identity/Account/Register", context => 
+    Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
+app.MapPost("/Identity/Account/Register", context => 
+    Task.Factory.StartNew(() => context.Response.Redirect("/Identity/Account/Login", true, true)));
 
 app.Run();
