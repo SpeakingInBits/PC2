@@ -100,36 +100,15 @@
             </dd>
         }
 
-        @if (Model.Phone != null){
-            <dt class = "col-sm-2">
+        @if (Model.Phone != null)
+        {
+            <dt class="col-sm-2">
                 Phone Number
             </dt>
-            @if (phone.Substring(0, 3) == "tel")
-            {
-                <dd class = "col-sm-10">
-                    <a href="@phone)">@Model.Phone</a>
-                </dd>
-            }       
-            else @*handle inconsistencies in phone number data*@
-            {
-                <dd class = "col-sm-10">
-                    @for (int i = 0; i < phone.Length; i++)
-                    {
-                        // if the string contains "(xxx)"
-                        if (phone[i] == '(' && phone[i + 4] == ')')
-                        {
-                            // display phone number as clickable number and move to the end of it
-                            <a href="tel:@phone.Substring(i, 14)">@phone.Substring(i, 14)</a>
-                            i += 14;
-                        }                      
-                        else // display the character
-                        {
-                            @phone[i]
-                        }
-                    }
-                </dd>
-            }
-        }       
+            <dd class="col-sm-10">
+                @Html.Raw(PC2.Models.RendererHelper.RenderPhone(phone))
+            </dd>
+        }
         @if (Model.TollFree != null)
         {
             <dt class = "col-sm-2">
