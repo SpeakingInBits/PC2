@@ -19,7 +19,7 @@ namespace PC2.Models
                     return string.Empty;
 
                 // Regex for US phone numbers: (xxx) xxx-xxxx, xxx-xxx-xxxx, xxx.xxx.xxxx, xxx xxx xxxx
-                var phoneRegex = new Regex(@"\(?\d{3}\)?[\s\-.]?\d{3}[\s\-.]?\d{4}");
+                Regex phoneRegex = new Regex(@"\(?\d{3}\)?[\s\-.]?\d{3}[\s\-.]?\d{4}");
                 var sb = new StringBuilder();
 
                 int lastIndex = 0;

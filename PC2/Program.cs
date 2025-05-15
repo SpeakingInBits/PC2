@@ -24,7 +24,6 @@ builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<ApplicationInsightsPageViewTracker>();
 });
-builder.Services.AddScoped<RendererHelper>();
 
 // email provider
 builder.Services.AddTransient<IEmailSender, EmailSenderSendGrid>();
