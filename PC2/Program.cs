@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Filters;
+using PC2.Models;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);

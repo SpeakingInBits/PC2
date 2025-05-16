@@ -220,35 +220,9 @@ else
                     <div class="col-md-5 col-9">
                         @if (Model.Agencies[i].Phone != null)
                         {
-                            string phoneNumber = Model.Agencies[i].Phone;
-
-                            @if (phoneNumber.Substring(0, 3) == "tel")
-                            {
-                                <a href="@phoneNumber">@phoneNumber</a>
-                            }
-                            @*handle inconsistencies in phone number data*@
-                            else
-                            {
-                                @for (int j = 0; j < phoneNumber.Length; j++)
-                                {
-                                    // if the string contains "(xxx)"
-                                    if (phoneNumber[j] == '(' && phoneNumber[j + 4] == ')')
-                                    {
-                                        @if (j > 0)
-                                        {
-                                            <br>
-                                        }
-                                        // display phone number as clickable number and move to the end of it
-                                        <a href="tel:@phoneNumber.Substring(j, 14)">@phoneNumber.Substring(j, 14)</a>
-                                        j += 14;
-                                    }
-                                    else // display the character
-                                    {
-                                        @phoneNumber[j];
-                                    }
-                                }
-                            }
-                            <br />
+                            <text>
+                                @Html.Raw(PC2.Models.RendererHelper.RenderPhone(Model.Agencies[i].Phone))
+                            </text>
                         }
 
                         @if (Model.Agencies[i].Email != null)
@@ -322,39 +296,11 @@ else
                                                         else if (prop.Name == "Phone")
                                                         {
                                                             <dt>@prop.Name</dt>
-                                                            string phone = prop.GetValue(Model.Agencies[i]).ToString();
-
-                                                            if (phone.Length > 15)
-                                                            {
-                                                                @*handle inconsistencies in phone number data*@ // borrowed from code above
-                                                                <dd>
-                                                                    @for (int j = 0; j < phone.Length; j++)
-                                                                    {
-                                                                        // if the string contains "(xxx)"
-                                                                        if (phone[j] == '(' && phone[j + 4] == ')')
-                                                                        {
-                                                                            @if (j > 0)
-                                                                            {
-                                                                                <br>
-                                                                            }
-                                                                            // display phone number as clickable number and move to the end of it
-                                                                            <a href="tel:@phone.Substring(j, 14)">@phone.Substring(j, 14)</a>
-                                                                            <br>
-                                                                            j += 14;
-                                                                        }
-                                                                        else // display the character
-                                                                        {
-                                                                            @phone[j];
-                                                                        }
-                                                                    }
-                                                                </dd>
-                                                            }
-
-                                                            else
-                                                            {
-                                                                <dd><a href="tel:@prop.GetValue(Model.Agencies[i])">@prop.GetValue(Model.Agencies[i])</a></dd>
-                                                            }
+                                                            <dd>
+                                                                @Html.Raw(PC2.Models.RendererHelper.RenderPhone(prop.GetValue(Model.Agencies[i])?.ToString()))
+                                                            </dd>
                                                         }
+
                                                         // handles website links
                                                         else if (prop.Name == "Website")
                                                         {
