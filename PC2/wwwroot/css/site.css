@@ -19,13 +19,15 @@ a.navbar-brand {
 /*Overriding the color settings for login/logout*/
 .nav-link {
     color: white !important;
+    font-weight: 700;
+    font-size: 17px;
+    padding: 10px;
 }
 
 /* Provide sufficient contrast against white background */
 a {
     color: #0366d6;
 }
-
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
     color: #fff;
@@ -169,7 +171,7 @@ main {
     height: 130px;
 }
 
-#bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .submenu, .divider, .dropdown-menu {
+#bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .dropdown-menu {
     background-color: rgba(18, 66, 35, 1);
 }
 
@@ -201,6 +203,19 @@ ul.navbar-nav, .dropdown-item {
 .navbar-nav .dropdown-menu {
     position: absolute;
     border: 2px solid black;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-item {
+    color: white !important;
+    padding: 8px 12px;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    color: black !important;
+    background-color: rgba(180, 204, 132, 1);
 }
 
 nav .container {
@@ -266,7 +281,7 @@ nav .container {
 }
 
 /*background color transition when hovered*/
-.menu-item:hover, .submenu-item:hover {
+.menu-item:hover, .submenu-item:hover, .dropdown-item:hover {
     background-color: rgba(180, 204, 132, 1);
     transition: background-color .4s ease 0s;
     -webkit-transition: background-color .4s ease 0s;
@@ -276,9 +291,7 @@ nav .container {
 /*changes text color to provide contrast*/
 .nav-link:hover {
     color: black !important;
-    transition: background-color .4s ease 0s;
-    -webkit-transition: background-color .4s ease 0s;
-    -moz-transition: background-color .4s ease 0s;
+    transition: color .4s ease 0s;
 }
 
 nav a {
@@ -342,7 +355,7 @@ nav a {
 }
 
 .dropdown-toggle {
-    padding: 8px 0 8px 0;
+    padding: 8px 10px;
     font-size: 17px;
     font-weight: 700;
     margin: 0;
@@ -415,6 +428,19 @@ nav a {
 
     #menu-bar {
         width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .navbar-collapse {
+        margin-top: 10px;
+    }
+
+    /* Make dropdown menus full width on mobile */
+    .dropdown-menu {
+        width: 100%;
+        text-align: center;
     }
 
     .footer {
@@ -453,8 +479,8 @@ nav a {
         padding-bottom: 1em;
     }
 
-    #menu-bar * {
-        width: 0;
+    #menu-bar {
+        display: none;
     }
 
     #menu-bar *, .submenu-container * {
@@ -468,6 +494,36 @@ nav a {
 
     .ribbon {
         bottom: -50px;
+    }
+}
+
+/* Fix ribbon alignment at various viewport widths */
+nav {
+    position: relative; /* Ensure ribbons are positioned relative to the navbar */
+}
+
+/* Media query to handle the problematic width range */
+@media only screen and (min-width: 992px) and (max-width: 1080px) {
+    #bootstrap-override nav {
+        /* Ensure consistent positioning behavior */
+        position: relative;
+        /* Make sure the width is consistently calculated and applied */
+        width: 80%;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    
+    .ribbon {
+        position: absolute;
+        bottom: -51px;
+    }
+    
+    #left-ribbon {
+        left: 0;
+    }
+    
+    #right-ribbon {
+        right: 0;
     }
 }
 
@@ -626,6 +682,3 @@ div.results:hover, div.results:hover #agencyName2 {
 .fc-event {
     background-color: cornflowerblue !important;
 }
-
-
-
