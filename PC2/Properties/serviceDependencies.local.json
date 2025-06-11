@@ -7,6 +7,12 @@
     "appInsights1": {
       "type": "appInsights.sdk",
       "dynamicId": null
+    },
+    "storage1": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": null,
+      "type": "storage.emulator",
+      "connectionId": "AzureBlob:StorageConnection"
     }
   }
 }

@@ -64,12 +64,12 @@
             var fileInput = document.getElementById('userFile');
             var fileSizeError = document.getElementById('fileSizeError');
             var uploadButton = document.getElementById('uploadButton');
-            var maxSize = 10 * 1024 * 1024; // 10MB
+            var maxSize = 50 * 1024 * 1024; // 50MB
 
             if (fileInput.files.length > 0) {
                 var file = fileInput.files[0];
                 if (file.size > maxSize) {
-                    fileSizeError.textContent = "The file size exceeds the 10MB limit.";
+                    fileSizeError.textContent = "The file size exceeds the 50MB limit.";
                     uploadButton.disabled = true;
                 } else {
                     fileSizeError.textContent = "";
