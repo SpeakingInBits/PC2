@@ -45,5 +45,20 @@ namespace PC2.Models
 
             return blobClient.Uri.ToString();
         }
+
+        /// <summary>
+        /// Deletes a file (blob) from Azure Blob Storage.
+        /// </summary>
+        /// <param name="blobName">The name of the blob to delete.</param>
+        /// <returns>True if the blob was deleted, false if it did not exist.</returns>
+        public async Task<bool> DeleteFileAsync(string blobName)
+        {
+            var blobServiceClient = new BlobServiceClient(_connectionString);
+            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
+            var blobClient = containerClient.GetBlobClient(blobName);
+
+            var response = await blobClient.DeleteIfExistsAsync();
+            return response.Value;
+        }
     }
 }

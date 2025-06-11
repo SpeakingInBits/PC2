@@ -338,11 +338,10 @@ namespace PC2.Controllers
                 if (newsletter != null)
                 {
                     // actual file name is never changed and object location is never changed when renaming
-                    string? originalFile = Path.GetFileName(newsletter.Location);
+                    string? originalFile = newsletter.Location?.Split('/').LastOrDefault(); // Get the file name from the end of the URL
                     if (originalFile != null)
                     {
-                        string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters", originalFile);
-                        System.IO.File.Delete(filePath);
+                        bool isDeleted = await _azureBlobUploader.DeleteFileAsync(originalFile); // Delete the file from Azure Blob Storage
                     }
 
                     // remove from DB
