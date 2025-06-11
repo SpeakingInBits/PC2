@@ -45,7 +45,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Configure Kestrel server options
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10 MB
+    options.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50 MB
 });
 builder.Services.AddAzureClients(clientBuilder =>
 {
