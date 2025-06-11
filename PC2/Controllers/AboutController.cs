@@ -11,14 +11,16 @@ namespace PC2.Controllers
     public class AboutController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly AzureBlobUploader _azureBlobUploader;
 
         private readonly IWebHostEnvironment _hostingEnvironment;
 
         // Iwebhost environment is used to get the path to the wwwroot folder
-        public AboutController(ApplicationDbContext context, IWebHostEnvironment hostingEnvironment)
+        public AboutController(ApplicationDbContext context, IWebHostEnvironment hostingEnvironment, AzureBlobUploader azureBlobUploader)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            _azureBlobUploader = azureBlobUploader;
         }
 
         public async Task<IActionResult> IndexStaff()
@@ -295,27 +297,14 @@ namespace PC2.Controllers
             {
                 try
                 {
-                    // set path to wwwroot/PDF/focus-newsletter/file.pdf
-                    string directory = Path.Combine(_hostingEnvironment.WebRootPath, "PDF", "focus-newsletters");
-
-                    // Ensure the directory exists
-                    Directory.CreateDirectory(directory);
-
-
-                    string fileName = Path.GetFileName(userFile.FileName);
-                    string filePath = Path.Combine(directory, fileName);
-
-                    // copy physical file to path
-                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                    {
-                        await userFile.CopyToAsync(fileStream);
-                    }
-                    TempData["Message"] = $"{fileName} uploaded successfully";
+                    // Upload the file to BLOB storage
+                    string filePath = await _azureBlobUploader.UploadFileAsync(userFile, userFile.FileName);
+                    TempData["Message"] = $"{userFile.FileName} uploaded successfully";
 
                     NewsletterFile newsLetterFile = new()
                     {
-                        Name = fileName,
-                        Location = $"/PDF/focus-newsletters/{fileName}",
+                        Name = userFile.FileName,
+                        Location = filePath,
                     };
 
                     // add newsletterFile to the DB
