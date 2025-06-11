@@ -16,12 +16,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Register AzureBlobUploader for DI
-builder.Services.AddSingleton<AzureBlobUploader>(_ =>
-{
-    var blobConnectionString = builder.Configuration["AzureBlob:StorageConnection"];
-    var containerName = builder.Configuration["AzureBlob:ContainerName"];
-    return new AzureBlobUploader(blobConnectionString, containerName);
-});
+builder.Services.AddSingleton<AzureBlobUploader>();
 
 builder.Services.AddApplicationInsightsTelemetry(options =>
     options.ConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value);

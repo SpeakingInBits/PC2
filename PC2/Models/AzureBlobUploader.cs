@@ -1,6 +1,7 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Azure;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -14,11 +15,13 @@ namespace PC2.Models
     {
         private readonly string _connectionString;
         private readonly string _containerName;
+        private readonly BlobServiceClient _blobServiceClient;
 
-        public AzureBlobUploader(string connectionString, string containerName)
+        public AzureBlobUploader(IAzureClientFactory<BlobServiceClient> clientFactory, IConfiguration configuration)
         {
-            _connectionString = connectionString;
-            _containerName = containerName;
+            _connectionString = configuration["AzureBlob:StorageConnection"];
+            _containerName = configuration["AzureBlob:ContainerName"];
+            _blobServiceClient = clientFactory.CreateClient("StorageConnection");
         }
 
         /// <summary>
@@ -32,8 +35,7 @@ namespace PC2.Models
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is null or empty.");
 
-            var blobServiceClient = new BlobServiceClient(_connectionString);
-            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
+            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
             var blobClient = containerClient.GetBlobClient(blobName);
@@ -53,8 +55,10 @@ namespace PC2.Models
         /// <returns>True if the blob was deleted, false if it did not exist.</returns>
         public async Task<bool> DeleteFileAsync(string blobName)
         {
-            var blobServiceClient = new BlobServiceClient(_connectionString);
-            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
+            // Decode the blob name to match the expected format in Azure Blob Storage
+            blobName = Uri.UnescapeDataString(blobName);
+
+            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             var blobClient = containerClient.GetBlobClient(blobName);
 
             var response = await blobClient.DeleteIfExistsAsync();
