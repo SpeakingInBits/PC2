@@ -32,7 +32,8 @@ namespace PC2.Models
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is null or empty.");
 
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+            var blobServiceClient = new BlobServiceClient(_connectionString);
+            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
             await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
             var blobClient = containerClient.GetBlobClient(blobName);
