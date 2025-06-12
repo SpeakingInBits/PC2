@@ -34,11 +34,7 @@ namespace PC2.Models
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is null or empty.");
 
-#if DEBUG
-            BlobServiceClient blobServiceClient = new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
-#else
-            BlobServiceClient blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
-#endif
+            BlobServiceClient blobServiceClient = CreateBlobServiceClient();
             var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
             await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
@@ -62,16 +58,21 @@ namespace PC2.Models
             // Decode the blob name to match the expected format in Azure Blob Storage
             blobName = Uri.UnescapeDataString(blobName);
 
-#if DEBUG
-            BlobServiceClient blobServiceClient = new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
-#else
-            BlobServiceClient blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
-#endif
+            BlobServiceClient blobServiceClient = CreateBlobServiceClient(); 
             var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
             var blobClient = containerClient.GetBlobClient(blobName);
 
             var response = await blobClient.DeleteIfExistsAsync();
             return response.Value;
+        }
+
+        private BlobServiceClient CreateBlobServiceClient()
+        {
+#if DEBUG
+            return new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
+#else
+            BlobServiceClient blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
+#endif
         }
     }
 }
