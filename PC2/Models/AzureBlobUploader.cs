@@ -36,7 +36,7 @@ namespace PC2.Models
 
 #if DEBUG
             BlobServiceClient _blobServiceClient = new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
-#elif RELEASE
+#else
             BlobServiceClient _blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
 #endif
             var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
