@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\PDF\focus-newsletters\**" />
-    <Content Remove="wwwroot\PDF\focus-newsletters\**" />
-    <EmbeddedResource Remove="wwwroot\PDF\focus-newsletters\**" />
-    <None Remove="wwwroot\PDF\focus-newsletters\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="compilerconfig.json" />
   </ItemGroup>
 
@@ -47,7 +40,6 @@
     <Folder Include="wwwroot\images\resource-index\" />
     <Folder Include="wwwroot\images\resource\" />
     <Folder Include="wwwroot\PDF\DisabilityAwareness\" />
-    <Folder Include="wwwroot\PDF\Events\" />
     <Folder Include="wwwroot\PDF\legislative-links\" />
   </ItemGroup>
 
