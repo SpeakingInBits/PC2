@@ -35,11 +35,11 @@ namespace PC2.Models
                 throw new ArgumentException("File is null or empty.");
 
 #if DEBUG
-            BlobServiceClient _blobServiceClient = new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
+            BlobServiceClient blobServiceClient = new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
 #else
-            BlobServiceClient _blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
+            BlobServiceClient blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
 #endif
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
             await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
             var blobClient = containerClient.GetBlobClient(blobName);
@@ -63,11 +63,11 @@ namespace PC2.Models
             blobName = Uri.UnescapeDataString(blobName);
 
 #if DEBUG
-            BlobServiceClient _blobServiceClient = new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
-#elif RELEASE
-            BlobServiceClient _blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
+            BlobServiceClient blobServiceClient = new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
+#else
+            BlobServiceClient blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
 #endif
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
             var blobClient = containerClient.GetBlobClient(blobName);
 
             var response = await blobClient.DeleteIfExistsAsync();
