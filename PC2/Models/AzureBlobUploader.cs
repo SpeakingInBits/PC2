@@ -71,7 +71,7 @@ namespace PC2.Models
 #if DEBUG
             return new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
 #else
-            BlobServiceClient blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
+            return new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
 #endif
         }
     }
