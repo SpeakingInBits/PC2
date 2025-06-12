@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
@@ -13,15 +14,13 @@ namespace PC2.Models
     /// </summary>
     public class AzureBlobUploader
     {
-        private readonly string _connectionString;
         private readonly string _containerName;
-        private readonly BlobServiceClient _blobServiceClient;
+        private readonly IConfiguration _configuration;
 
-        public AzureBlobUploader(IAzureClientFactory<BlobServiceClient> clientFactory, IConfiguration configuration)
+        public AzureBlobUploader(IConfiguration configuration)
         {
-            _connectionString = configuration["AzureBlob:StorageConnection"];
             _containerName = configuration["AzureBlob:ContainerName"];
-            _blobServiceClient = clientFactory.CreateClient("StorageConnection");
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -35,6 +34,11 @@ namespace PC2.Models
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is null or empty.");
 
+#if DEBUG
+            BlobServiceClient _blobServiceClient = new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
+#elif RELEASE
+            BlobServiceClient _blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
+#endif
             var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
@@ -58,6 +62,11 @@ namespace PC2.Models
             // Decode the blob name to match the expected format in Azure Blob Storage
             blobName = Uri.UnescapeDataString(blobName);
 
+#if DEBUG
+            BlobServiceClient _blobServiceClient = new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
+#elif RELEASE
+            BlobServiceClient _blobServiceClient = new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
+#endif
             var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             var blobClient = containerClient.GetBlobClient(blobName);
 

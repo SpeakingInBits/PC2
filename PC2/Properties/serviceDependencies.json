@@ -10,7 +10,7 @@
     },
     "storage1": {
       "type": "storage",
-      "connectionId": "AzureBlob:StorageConnection"
+      "connectionId": "AzureBlob:BlobServiceUri"
     }
   }
 }

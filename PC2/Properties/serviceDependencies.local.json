@@ -12,7 +12,7 @@
       "secretStore": "LocalSecretsFile",
       "resourceId": null,
       "type": "storage.emulator",
-      "connectionId": "AzureBlob:StorageConnection"
+      "connectionId": "AzureBlob:BlobServiceUri"
     }
   }
 }
