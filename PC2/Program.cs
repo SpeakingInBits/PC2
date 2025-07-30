@@ -5,6 +5,7 @@ using PC2.Data;
 using PC2.Filters;
 using PC2.Models;
 using System.Globalization;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+// Register AzureBlobUploader for DI
+builder.Services.AddSingleton<AzureBlobUploader>();
 
 builder.Services.AddApplicationInsightsTelemetry(options =>
     options.ConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value);
@@ -41,7 +45,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Configure Kestrel server options
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10 MB
+    options.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50 MB
 });
 
 var app = builder.Build();
