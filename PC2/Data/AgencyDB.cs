@@ -35,14 +35,24 @@ namespace PC2.Data
         }
 
         /// <summary>
-        /// Gets all Agencies that are distinct from the database
+        /// Gets a list of distinct agencies from the database sorted in alphabetical order by Agency Name.
         /// </summary>
-        public static async Task<List<Agency?>> GetDistinctAgenciesAsync(ApplicationDbContext context)
+        public static async Task<List<Agency>> GetDistinctAgenciesAsync(ApplicationDbContext context)
         {
-            return await (from a in context.Agency
-                                       select a).Include(nameof(Agency.AgencyCategories)).GroupBy(a => a.AgencyName)
-                                       .Select(a => a.FirstOrDefault())
-                                       .ToListAsync();
+            var query = context.Agency
+                .Where(a => a.AgencyName != null)
+                .Join(
+                    context.Agency
+                        .Where(x => x.AgencyName != null)
+                        .GroupBy(x => x.AgencyName)
+                        .Select(g => g.Min(x => x.AgencyId)),
+                    a => a.AgencyId,
+                    minId => minId,
+                    (a, minId) => a
+                )
+                .OrderBy(a => a.AgencyName);
+
+            return await query.ToListAsync();
         }
 
         /// <summary>
