@@ -45,11 +45,6 @@ namespace PC2.Controllers
             return View(housingData);
         }
 
-        public IActionResult PartnersForHousing()
-        {
-            return View();
-        }
-
         public IActionResult Privacy()
         {
             return View();
