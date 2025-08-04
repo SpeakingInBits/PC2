@@ -348,42 +348,6 @@ nav a {
     margin: 0;
 }
 
-/* Ensure navbar dropdown menus stay within viewport */
-@media (min-width: 992px) {
-    .navbar-nav .dropdown-menu {
-        min-width: 200px;
-        max-width: 300px;
-        white-space: normal;
-    }
-    
-    .navbar-nav .dropdown-menu.dropdown-menu-end {
-        right: 0;
-        left: auto;
-    }
-}
-
-/* Prevent navbar overflow on smaller screens */
-@media (max-width: 1200px) {
-    #bootstrap-override .menu-item a {
-        font-size: 15px;
-        padding: 8px 5px;
-    }
-    
-    ul.navbar-nav {
-        max-width: 100%;
-    }
-}
-
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-
-    .ribbon {
-        bottom: -52px;
-    }
-}
-
 /*max-width should be 1px less than the breakpoint for <nav>*/
 @media only screen and (max-width: 991px) {
     /*Centers menu items when navbar collapses*/
