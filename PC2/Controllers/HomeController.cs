@@ -45,6 +45,11 @@ namespace PC2.Controllers
             return View(housingData);
         }
 
+        public IActionResult PersonCenteredPlanning()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
