@@ -63,7 +63,7 @@ cfg: { // Application Insights Configuration
                 </h1>
             </div>
         </div>
-        <nav class="navbar navbar-expand-lg navbar-toggleable-lg navbar-dark border-bottom border-top box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-dark border-bottom border-top box-shadow mb-3">
             <div class="container">
                 <div id="menu-bar">
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -86,118 +86,82 @@ cfg: { // Application Insights Configuration
                             <li class="nav-item menu-item">
                                 <a class="nav-link" asp-controller="About" asp-action="HousingProgramData">Housing Program Data</a>
                             </li>
-                            <li id="Calendar-Index" class="nav-item menu-item dropdown" >
-                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown1" aria-controls="navbarNavDarkDropdown1" aria-expanded="false" aria-label="Toggle calendar navigation">
-                                    <span class="navbar-toggler-icon d-none"></span>
-                                </button>
-                                <div class="" id="navbarNavDarkDropdown1">
-                                    <ul class="navbar-nav priority">
-                                        <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Calendar and Events
-                                        </p>
-                                        <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink1">
-                                            <li><a class="dropdown-item" asp-controller="Calendar" asp-action="Index">Calendar</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Calendar" asp-action="Create">Create Event</a></li>
-                                        </ul>
-                                    </ul>
-                                </div>
+                            <li id="Calendar-Index" class="nav-item menu-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="calendarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Calendar and Events
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="calendarDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Calendar" asp-action="Index">Calendar</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Calendar" asp-action="Create">Create Event</a></li>
+                                </ul>
                             </li>
-                            <li class="nav-item menu-item dropdown" >
-                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown2" aria-controls="navbarNavDarkDropdown2" aria-expanded="false" aria-label="Toggle member management navigation">
-                                    <span class="navbar-toggler-icon d-none"></span>
-                                </button>
-                                <div class="" id="navbarNavDarkDropdown2">
-                                    <ul class="navbar-nav priority">                                    
-                                        <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Members
-                                        </p>
-                                        <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink2">
-                                            <li><a class="dropdown-item" asp-controller="About" asp-action="IndexStaff">View Staff</a></li>
-                                            <li><a class="dropdown-item" asp-controller="About" asp-action="CreateStaff">Create Staff Member</a></li>
-                                            <li><a class="dropdown-item" asp-controller="About" asp-action="IndexBoard">View Board</a></li>
-                                            <li><a class="dropdown-item" asp-controller="About" asp-action="CreateBoard">Create Board Member</a></li>
-                                            <li><a class="dropdown-item" asp-controller="About" asp-action="IndexSteeringCommittee">View Steering Committee</a></li>
-                                            <li><a class="dropdown-item" asp-controller="About" asp-action="CreateSteeringCommittee">Create Steering Committee Member</a></li>
-                                            <li><a class="dropdown-item" asp-controller="About" asp-action="UploadNewsletter">Upload Newsletter</a></li>
-                                        </ul>                                
-                                    </ul>
-                                </div>
+                            <li class="nav-item menu-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="membersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Members
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="membersDropdown">
+                                    <li><a class="dropdown-item" asp-controller="About" asp-action="IndexStaff">View Staff</a></li>
+                                    <li><a class="dropdown-item" asp-controller="About" asp-action="CreateStaff">Create Staff Member</a></li>
+                                    <li><a class="dropdown-item" asp-controller="About" asp-action="IndexBoard">View Board</a></li>
+                                    <li><a class="dropdown-item" asp-controller="About" asp-action="CreateBoard">Create Board Member</a></li>
+                                    <li><a class="dropdown-item" asp-controller="About" asp-action="IndexSteeringCommittee">View Steering Committee</a></li>
+                                    <li><a class="dropdown-item" asp-controller="About" asp-action="CreateSteeringCommittee">Create Steering Committee Member</a></li>
+                                    <li><a class="dropdown-item" asp-controller="About" asp-action="UploadNewsletter">Upload Newsletter</a></li>
+                                </ul>
                             </li>
                         }
                         else
                         {                    
                             <li id="Home-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li id="ProgramVideos-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-controller="ProgramVideos" asp-action="Index">Program Videos</a>
-                        </li>
-                        <li id="NewsToKnow-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-area="" asp-controller="NewsToKnow" asp-action="Index">News</a>
-                        </li>
-                        <li id="Events-Index" class="nav-item menu-item dropdown">
-                            <a class="nav-link" asp-controller="Events" asp-action="Index">Events</a>           
-                        </li>
-                        <li id="Resources-Index" class="nav-item menu-item dropdown">
-                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown3" aria-controls="navbarNavDarkDropdown3" aria-expanded="false" aria-label="Toggle resource navigation">
-                                <span class="navbar-toggler-icon d-none"></span>
-                            </button>
-                            <div class="" id="navbarNavDarkDropdown3">
-                                <ul class="navbar-nav priority">                                   
-                                    <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li id="ProgramVideos-Index" class="nav-item menu-item">
+                                <a class="nav-link" asp-controller="ProgramVideos" asp-action="Index">Program Videos</a>
+                            </li>
+                            <li id="NewsToKnow-Index" class="nav-item menu-item">
+                                <a class="nav-link" asp-area="" asp-controller="NewsToKnow" asp-action="Index">News</a>
+                            </li>
+                            <li id="Events-Index" class="nav-item menu-item">
+                                <a class="nav-link" asp-controller="Events" asp-action="Index">Events</a>           
+                            </li>
+                            <li id="Resources-Index" class="nav-item menu-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Resources
-                                    </p>
-                                    <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink3">
-                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="Index">Resources</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceLinks">Resource Links</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="AgeSpecificIssues">Age-Specific Issues</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Legislative Links and Events</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="EmergencyPreparedness">Emergency Preparedness</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Resources" asp-action="VirtualCloset">Virtual Closet</a></li>
-                                    </ul>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="resourcesDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="Index">Resources</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceLinks">Resource Links</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="AgeSpecificIssues">Age-Specific Issues</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Legislative Links and Events</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="EmergencyPreparedness">Emergency Preparedness</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="VirtualCloset">Virtual Closet</a></li>
                                 </ul>
-                            </div>
-                        </li>
-                        <li id="Resource-Guide-Index" class="nav-item menu-item dropdown">
-                            <a class="nav-link" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a>
-                        </li>
-                        <li id="Newsletters-Index" class="nav-item menu-item dropdown">
-                            <a class="nav-link" asp-controller="Resources" asp-action="FocusNewsletters">Focus Newsletters</a>
-                        </li>
-                       
-                        <li id="housing-program" class="nav-item menu-item dropdown" >
-                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown2" aria-controls="navbarNavDarkDropdownHousing" aria-expanded="false" aria-label="Toggle Housing Program navigation">
-                                <span class="navbar-toggler-icon d-none"></span>
-                            </button>
-                            <div class="" id="navbarNavDarkDropdownHousing">
-                                <ul class="navbar-nav priority">                                    
-                                    <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLinkHousing" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            </li>
+                            <li id="Resource-Guide-Index" class="nav-item menu-item">
+                                <a class="nav-link" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a>
+                            </li>
+                            <li id="Newsletters-Index" class="nav-item menu-item">
+                                <a class="nav-link" asp-controller="Resources" asp-action="FocusNewsletters">Focus Newsletters</a>
+                            </li>
+                            <li id="housing-program" class="nav-item menu-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="housingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Other Program Services
-                                    </p>
-                                    <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLinkHousing">
-                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="HousingProgram">PC2's Housing Program</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="PersonCenteredPlanning">Person Centered Planning</a></li>
-                                    </ul>                                
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="housingDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="HousingProgram">PC2's Housing Program</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="PersonCenteredPlanning">Person Centered Planning</a></li>
                                 </ul>
-                            </div>
-                        </li>
-                        <li id="about-menu" class="nav-item menu-item dropdown">
-                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown4" aria-controls="navbarNavDarkDropdown4" aria-expanded="false" aria-label="Toggle about and contact navigation">
-                                    <span class="navbar-toggler-icon d-none"></span>
-                                </button>
-                                <div class="" id="navbarNavDarkDropdown4">
-                                    <ul class="navbar-nav priority">
-                                        <p class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink4" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        About Us
-                                        </p>
-                                        <ul class="dropdown-menu" aria-labelledby="navbarDarkDropdownMenuLink4">
-                                            <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="About">About Us</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Home" asp-action="ContactPage">Contact Us</a></li>
-                                        </ul>
-                                    </ul>
-                                </div>
-                        </li>
+                            </li>
+                            <li id="about-menu" class="nav-item menu-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    About Us
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="About">About Us</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="ContactPage">Contact Us</a></li>
+                                </ul>
+                            </li>
                         }   
                     </ul>
                 </div>
