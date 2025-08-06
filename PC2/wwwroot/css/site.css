@@ -421,21 +421,6 @@ nav a {
     #Resources-Index, #housing-program, #about-menu {
         padding-left: 12px;
     }
-    
-    /* Improve mobile dropdown behavior */
-    .navbar-nav .dropdown-menu {
-        position: static;
-        float: none;
-        width: auto;
-        margin-top: 0;
-        background-color: rgba(18, 66, 35, 0.95);
-        border: none;
-    }
-    
-    .dropdown-menu .dropdown-item {
-        padding: 8px 16px;
-        white-space: normal;
-    }
 }
 
 /*min-width should match the breakpoint for <nav>*/
