@@ -45,7 +45,7 @@ namespace PC2.Controllers
             return View(housingData);
         }
 
-        public IActionResult PartnersForHousing()
+        public IActionResult PersonCenteredPlanning()
         {
             return View();
         }

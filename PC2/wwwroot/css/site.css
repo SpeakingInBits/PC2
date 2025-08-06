@@ -348,27 +348,6 @@ nav a {
     margin: 0;
 }
 
-/*Shows submenu when menu item is hovered*/
-/*#Resources-Index:hover #resources-submenu *,
-#about-menu:hover #about-submenu,
-#about-menu:hover #about-submenu .submenu,
-#about-menu:hover #about-submenu .submenu #contact-item,
-#about-menu:hover #about-submenu .submenu #contact-item a,
-#about-menu:hover #about-submenu .submenu #about-item,
-#about-menu:hover #about-submenu .submenu #about-item a {
-    display: block;
-}*/
-
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-
-    .ribbon {
-        bottom: -52px;
-    }
-}
-
 /*max-width should be 1px less than the breakpoint for <nav>*/
 @media only screen and (max-width: 991px) {
     /*Centers menu items when navbar collapses*/
@@ -411,6 +390,7 @@ nav a {
 
     #bootstrap-override nav {
         margin-top: .4em;
+        width: 95%;
     }
 
     #menu-bar {
