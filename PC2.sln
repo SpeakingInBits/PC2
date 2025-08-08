@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9C9EFAD3-432F-4B6B-BF4E-EADC7A203F0A}"
 	ProjectSection(SolutionItems) = preProject
 		PC2-TestData.sql = PC2-TestData.sql
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PC2Tests", "PC2Tests\PC2Tests.csproj", "{76E35BFF-15BB-4B21-B769-24180B0B1B6E}"
