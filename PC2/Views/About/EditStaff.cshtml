@@ -1,4 +1,4 @@
-﻿@model PC2.Models.Staff
+﻿@model PC2.Models.ViewModels.EditStaffViewModel
 
 @{
     ViewData["Title"] = "Edit Staff Member";
@@ -8,51 +8,158 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditStaff">
+    <div class="col-md-6">
+        <form asp-action="EditStaff" enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ID" />
-            <div class="form-group">
+            
+            <div class="form-group mb-3">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            
+            <div class="form-group mb-3">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group mb-3">
+                        <label asp-for="Phone" class="control-label"></label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="Extension" class="control-label"></label>
+                        <input asp-for="Extension" class="form-control" />
+                        <span asp-validation-for="Extension" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Extension" class="control-label"></label>
-                <input asp-for="Extension" class="form-control" />
-                <span asp-validation-for="Extension" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+            
+            <div class="form-group mb-3">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" class="form-control" type="email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="PriorityOrder" class="control-label">Sort Priority</label>
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Photo</h5>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.CurrentImageUrl))
+                    {
+                        <div class="current-photo mb-3">
+                            <label class="form-label">Current Photo:</label>
+                            <div class="text-center">
+                                <img src="@Model.CurrentImageUrl" alt="@Model.Name" class="img-thumbnail" style="max-width: 200px; max-height: 200px;" />
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input asp-for="RemovePhoto" class="form-check-input" type="checkbox" id="removePhoto" />
+                            <label asp-for="RemovePhoto" class="form-check-label" for="removePhoto">
+                                Remove current photo
+                            </label>
+                        </div>
+
+                        <div class="photo-options" id="photoOptions">
+                            <div class="text-center mb-2">
+                                <strong>Update Photo:</strong>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="form-group mb-3">
+                        <label asp-for="PhotoFile" class="control-label"></label>
+                        <input asp-for="PhotoFile" class="form-control" type="file" accept="image/*" id="photoFile" />
+                        <span asp-validation-for="PhotoFile" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            Upload a new photo file (JPEG, PNG, GIF, or BMP). Large images will be automatically resized.
+                        </small>
+                    </div>
+
+                    <div class="text-center mb-2">
+                        <strong>OR</strong>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="ImageUrl" class="control-label"></label>
+                        <input asp-for="ImageUrl" class="form-control" type="url" id="imageUrl" />
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            Enter a URL to an existing photo online
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="PriorityOrder" class="control-label"></label>
                 <select asp-for="PriorityOrder" class="form-control">
                     <option value="1">Director</option>
                     <option value="10">Other</option>
                 </select>
                 <span asp-validation-for="PriorityOrder" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="IndexStaff" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="IndexStaff">Back to List</a>
-</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Handle remove photo checkbox
+        const removePhotoCheckbox = document.getElementById('removePhoto');
+        const photoOptions = document.getElementById('photoOptions');
+        const photoFileInput = document.getElementById('photoFile');
+        const imageUrlInput = document.getElementById('imageUrl');
+
+        if (removePhotoCheckbox) {
+            removePhotoCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Disable photo options when remove is checked
+                    if (photoOptions) photoOptions.style.opacity = '0.5';
+                    if (photoFileInput) photoFileInput.disabled = true;
+                    if (imageUrlInput) imageUrlInput.disabled = true;
+                } else {
+                    // Enable photo options when remove is unchecked
+                    if (photoOptions) photoOptions.style.opacity = '1';
+                    if (photoFileInput) photoFileInput.disabled = false;
+                    if (imageUrlInput) imageUrlInput.disabled = false;
+                }
+            });
+        }
+
+        // Clear the other input when one is selected
+        if (photoFileInput) {
+            photoFileInput.addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    if (imageUrlInput) imageUrlInput.value = '';
+                    if (removePhotoCheckbox) removePhotoCheckbox.checked = false;
+                }
+            });
+        }
+
+        if (imageUrlInput) {
+            imageUrlInput.addEventListener('input', function() {
+                if (this.value.trim() !== '') {
+                    if (photoFileInput) photoFileInput.value = '';
+                    if (removePhotoCheckbox) removePhotoCheckbox.checked = false;
+                }
+            });
+        }
+    </script>
+}
 

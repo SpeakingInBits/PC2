@@ -18,6 +18,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // Register AzureBlobUploader for DI
 builder.Services.AddSingleton<AzureBlobUploader>();
 
+// Register ImageService for DI
+builder.Services.AddScoped<PC2.Services.ImageService>();
+
 builder.Services.AddApplicationInsightsTelemetry(options =>
     options.ConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value);
 

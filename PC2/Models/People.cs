@@ -51,6 +51,12 @@ namespace PC2.Models
         public required string Email { get; set; }
 
         /// <summary>
+        /// URL to the staff member's photo/image.
+        /// </summary>
+        [DataType(DataType.Url)]
+        public string? ImageUrl { get; set; }
+
+        /// <summary>
         /// Gets a formatted display of the phone number and extension.
         /// </summary>
         public string? PhoneDisplay

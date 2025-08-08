@@ -1,0 +1,30 @@
+@model PC2.Models.People
+
+@{
+    ViewData["Title"] = "Person Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h4>@Model.Name</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Name)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Name)</dd>
+        
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Title)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Title)</dd>
+        
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.PriorityOrder)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.PriorityOrder)</dd>
+        
+        <dt class="col-sm-2">Type</dt>
+        <dd class="col-sm-10">@Model.GetType().Name</dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>

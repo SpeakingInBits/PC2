@@ -1,41 +1,48 @@
-﻿@model PC2.Models.AboutUsModel
+﻿@model AboutUsModel
 @{
     ViewData["Title"] = "About Us";
 }
+@section Head{
+    <style>
+        .aboutUS {
+            font-size: 15px;
+            text-align: center;
+            width: 60%;
+            line-height: 1.3em;
+            margin: 2.8em auto 1.5em auto;
+        }
 
-<style>
-    .aboutUS {
-        font-size: 15px;
-        text-align: center;
-        width: 60%;
-        line-height: 1.3em;
-        margin: 2.8em auto 1.5em auto;
-    }
+        .centHead {
+            text-align: center;
+            font-weight: bold;
+            width: 60%;
+            margin: 2.8em auto 1.5em auto;
+        }
 
-    .centHead {
-        text-align: center;
-        font-weight: bold;
-        width: 60%;
-        margin: 2.8em auto 1.5em auto;
-    }
+        .headerPic {
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-    .headerPic {
-        margin-left: auto;
-        margin-right: auto;
-    }
+        .people-list > div {
+            margin-bottom: 1em;
+            text-align: center;
+        }
 
-    .people-list > div{
-        margin-bottom: 1em;
-        text-align:center;
-    }
+        .people-list > h2 {
+            font-size: 1.3em;
+            text-align: center;
+            margin: 2em 0 1.25em 0;
+        }
 
-    .people-list > h2{
-        font-size: 1.3em;
-        text-align:center;
-        margin: 2em 0 1.25em 0;
-    }
-
-</style>
+        /* Minimal custom CSS for circular images */
+        .staff-avatar {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+    </style>
+}
 
 
 <div>
@@ -54,69 +61,147 @@
 </div>
 
 <div id="content" class="people-list">
-    <h1>@ViewData["Title"]</h1>
+    <h1 class="text-center">@ViewData["Title"]</h1>
     <div class="divider"></div>
 
     <h2>Our Staff</h2>
 
-    <div class="staff-column">
-        <table class="table">
-            <tbody>
-                @for (int i = 0; i < Model.Staff.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            <p>@Model.Staff[i].Name</p>
-                            <p>@Model.Staff[i].Title</p>
-                            @if(Model.Staff[i].PhoneDisplay != null)
+    @* Display staff with images using Bootstrap Cards *@
+    @if (Model.Staff.Any(s => !string.IsNullOrEmpty(s.ImageUrl)))
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mb-5">
+            @foreach (var staff in Model.Staff.Where(s => !string.IsNullOrEmpty(s.ImageUrl)))
+            {
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body d-flex flex-column">
+                            <img src="@staff.ImageUrl" alt="@staff.Name" class="staff-avatar rounded-circle mx-auto mb-3 border" />
+                            <h5 class="card-title mb-2">@staff.Name</h5>
+                            @if (!string.IsNullOrEmpty(staff.Title))
                             {
-                                <p>
-                                    <a href="tel:@Model.Staff[i].Phone">@Model.Staff[i].PhoneDisplay</a>
+                                <p class="card-text fw-bold text-muted mb-2">@staff.Title</p>
+                            }
+                            <div class="mt-auto">
+                                @if(staff.PhoneDisplay != null)
+                                {
+                                    <p class="card-text mb-1">
+                                        <a href="tel:@staff.Phone" class="text-decoration-none">@staff.PhoneDisplay</a>
+                                    </p>
+                                }
+                                <p class="card-text mb-0">
+                                    <a href="mailto:@staff.Email" class="text-decoration-none">@staff.Email</a>
                                 </p>
-                            }
-                            <a href="mailto:@Model.Staff[i].Email">@Model.Staff[i].Email</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @* Fall back to table for staff without images *@
+    @if (Model.Staff.Any(s => string.IsNullOrEmpty(s.ImageUrl)))
+    {
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Additional Staff Members</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    @foreach (var staff in Model.Staff.Where(s => string.IsNullOrEmpty(s.ImageUrl)))
+                                    {
+                                        <tr>
+                                            <td class="text-center">
+                                                <p class="mb-1"><strong>@staff.Name</strong></p>
+                                                @if (!string.IsNullOrEmpty(staff.Title))
+                                                {
+                                                    <p class="mb-1 text-muted">@staff.Title</p>
+                                                }
+                                                @if(staff.PhoneDisplay != null)
+                                                {
+                                                    <p class="mb-1">
+                                                        <a href="tel:@staff.Phone" class="text-decoration-none">@staff.PhoneDisplay</a>
+                                                    </p>
+                                                }
+                                                <p class="mb-0">
+                                                    <a href="mailto:@staff.Email" class="text-decoration-none">@staff.Email</a>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
     <h2>Our Board</h2>
-    <div class="board-column">
-        <table class="table">
-            <tbody>
-                @for (int i = 0; i < Model.Board.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            <p>@Model.Board[i].Name</p>
-                            @if (Model.Board[i].Title != null)
-                            {
-                                <p>@Model.Board[i].Title</p>
-                            }
-                            <p>Member since @Model.Board[i].MembershipStart</p>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Board Members</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <tbody>
+                                @for (int i = 0; i < Model.Board.Count; i++)
+                                {
+                                    <tr>
+                                        <td class="text-center">
+                                            <p class="mb-1"><strong>@Model.Board[i].Name</strong></p>
+                                            @if (Model.Board[i].Title != null)
+                                            {
+                                                <p class="mb-1 text-muted">@Model.Board[i].Title</p>
+                                            }
+                                            <p class="mb-0 small text-secondary">Member since @Model.Board[i].MembershipStart</p>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
     @if (Model.SteeringCommittee.Count > 0)
     {
         <h2>Our Steering Committee</h2>
-        <div class="steering-column">
-            <table class="table">
-                <tbody>
-                    @for (int i = 0; i < Model.SteeringCommittee.Count; i++)
-                    {
-                        <tr>
-                            <td>
-                                <p>@Model.SteeringCommittee[i].Name</p>
-                                <p>@Model.SteeringCommittee[i].Title</p>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Steering Committee Members</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    @for (int i = 0; i < Model.SteeringCommittee.Count; i++)
+                                    {
+                                        <tr>
+                                            <td class="text-center">
+                                                <p class="mb-1"><strong>@Model.SteeringCommittee[i].Name</strong></p>
+                                                <p class="mb-0 text-muted">@Model.SteeringCommittee[i].Title</p>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     }
+</div>
