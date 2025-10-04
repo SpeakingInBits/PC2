@@ -23,7 +23,15 @@ namespace PC2.Controllers
             return View(eventsModel);
         }
 
-        // Returns events in JSON format for FullCalendar
+        /// <summary>
+        /// Retrieves all calendar events and returns them in a format compatible with FullCalendar.
+        /// Links, emails, and phone numbers in event descriptions are converted to clickable HTML links.
+        /// </summary>
+        /// <remarks>This method is intended for use by pages that require event data
+        /// formatted for the FullCalendar JavaScript library. The returned list will be empty if no events are
+        /// found.</remarks>
+        /// <returns>A JSON result containing a list of event objects, where each object includes the event title, start and end
+        /// date-times in ISO 8601 format, and a flag indicating whether the event is a PC2 event.</returns>
         public async Task<IActionResult> GetEvents()
         {
             // Get events from the database
@@ -37,7 +45,7 @@ namespace PC2.Controllers
             {
                 var calendarEvent = new
                 {
-                    title = e.EventDescription,
+                    title = TextLinkifier.Linkify(e.EventDescription),
                     start = e.StartingDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),  // FullCalendar format
                     end = e.EndingDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),      // FullCalendar format
                     isPC2Event = e.PC2Event,

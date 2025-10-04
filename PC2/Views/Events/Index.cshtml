@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Event Calendar";
 }
-
+<!-- Events banner -->
 <div class="d-flex justify-content-center">
     <img src=~/images/events/events1.jpg alt="Flyer for upcoming community event on PC2" />
     <img src=~/images/events/events2.jpg alt="PC2 event poster featuring local artists" />
@@ -45,6 +45,14 @@
             width: 20px;
             height: 20px;
             margin-right: 10px;
+        }
+
+		/* CSS to word break on multiple lines in the event modal dialog */
+        #modalEventTitle {
+            word-wrap: break-word; /* Legacy property for older browsers */
+            word-break: break-word; /* Breaks long words at arbitrary points */
+            overflow-wrap: break-word; /* Modern standard property */
+            hyphens: auto; /* Adds hyphens when breaking words */
         }
     </style>
 }
@@ -115,7 +123,7 @@
                     endTime = 'N/A';
                 }
 
-                document.getElementById('modalEventTitle').innerText = info.event.title;
+                document.getElementById('modalEventTitle').innerHTML = info.event.title;
                 document.getElementById('modalEventDate').innerText = startTime;
                 document.getElementById('modalEventEndTime').innerText = endTime;
 
