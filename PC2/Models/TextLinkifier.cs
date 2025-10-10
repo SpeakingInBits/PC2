@@ -42,9 +42,9 @@ public static class TextLinkifier
         if (string.IsNullOrWhiteSpace(text))
             return text;
 
-        string emailPattern = @"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b";
+        string emailPattern = @"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}\b";
         string emailReplacement = "<a href=\"mailto:$0\">$0</a>";
-        return Regex.Replace(text, emailPattern, emailReplacement);
+        return Regex.Replace(text, emailPattern, emailReplacement, RegexOptions.IgnoreCase);
     }
 
     /// <summary>
