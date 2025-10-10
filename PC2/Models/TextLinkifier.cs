@@ -1,14 +1,16 @@
-using System.Text.RegularExpressions;
+using System.Net;
 
 namespace PC2.Models;
 
 /// <summary>
 /// Provides utilities for converting plain text URLs, emails, and phone numbers into clickable links.
+/// HTML-encodes input to prevent XSS attacks.
 /// </summary>
 public static class TextLinkifier
 {
     /// <summary>
     /// Converts URLs, email addresses, and phone numbers in plain text to HTML links.
+    /// HTML-encodes the input first to prevent XSS attacks.
     /// </summary>
     /// <param name="text">The plain text to process.</param>
     /// <returns>HTML string with clickable links.</returns>
@@ -17,8 +19,8 @@ public static class TextLinkifier
         if (string.IsNullOrWhiteSpace(text))
             return text;
 
-        string result = text;
-        result = System.Net.WebUtility.HtmlEncode(result);
+        // HTML-encode first to prevent XSS attacks
+        string result = WebUtility.HtmlEncode(text);
 
         // Convert email addresses to mailto links
         result = LinkifyEmails(result);
@@ -35,48 +37,41 @@ public static class TextLinkifier
     /// <summary>
     /// Converts email addresses in text to mailto links.
     /// </summary>
-    /// <param name="text">The text to process.</param>
+    /// <param name="text">The HTML-encoded text to process.</param>
     /// <returns>Text with email addresses converted to mailto links.</returns>
     public static string LinkifyEmails(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
             return text;
 
-        string emailPattern = @"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b";
-        string emailReplacement = "<a href=\"mailto:$0\">$0</a>";
-        return Regex.Replace(text, emailPattern, emailReplacement);
+        return RegexHelpers.EmailPattern().Replace(text, "<a href=\"mailto:$0\">$0</a>");
     }
 
     /// <summary>
     /// Converts web URLs (http/https) in text to hyperlinks.
     /// Enhanced to handle trailing punctuation correctly.
     /// </summary>
-    /// <param name="text">The text to process.</param>
+    /// <param name="text">The HTML-encoded text to process.</param>
     /// <returns>Text with URLs converted to hyperlinks.</returns>
     public static string LinkifyUrls(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
             return text;
 
-        // Enhanced pattern to exclude common trailing punctuation
-        string webPattern = @"https?://[^\s<>""{}|\\^`\[\]]+[^\s<>""{}|\\^`\[\].,;:!?)]";
-        string webReplacement = "<a href=\"$0\" target=\"_blank\" rel=\"noopener noreferrer\">$0</a>";
-        return Regex.Replace(text, webPattern, webReplacement);
+        return RegexHelpers.UrlPattern().Replace(text, "<a href=\"$0\" target=\"_blank\" rel=\"noopener noreferrer\">$0</a>");
     }
 
     /// <summary>
     /// Converts phone numbers in text to tel links.
     /// Matches formats like: 123-456-7890, 123.456.7890, or 1234567890
     /// </summary>
-    /// <param name="text">The text to process.</param>
+    /// <param name="text">The HTML-encoded text to process.</param>
     /// <returns>Text with phone numbers converted to tel links.</returns>
     public static string LinkifyPhoneNumbers(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
             return text;
 
-        string phonePattern = @"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b";
-        string phoneReplacement = "<a href=\"tel:$0\">$0</a>";
-        return Regex.Replace(text, phonePattern, phoneReplacement);
+        return RegexHelpers.PhonePattern().Replace(text, "<a href=\"tel:$0\">$0</a>");
     }
 }
