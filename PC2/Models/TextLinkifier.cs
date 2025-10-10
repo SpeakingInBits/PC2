@@ -18,6 +18,7 @@ public static class TextLinkifier
             return text;
 
         string result = text;
+        result = System.Web.HttpUtility.HtmlEncode(result);
 
         // Convert email addresses to mailto links
         result = LinkifyEmails(result);
