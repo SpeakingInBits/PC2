@@ -13,13 +13,10 @@ namespace PC2.Controllers
         private readonly ApplicationDbContext _context;
         private readonly AzureBlobUploader _azureBlobUploader;
 
-        private readonly IWebHostEnvironment _hostingEnvironment;
-
         // Iwebhost environment is used to get the path to the wwwroot folder
-        public AboutController(ApplicationDbContext context, IWebHostEnvironment hostingEnvironment, AzureBlobUploader azureBlobUploader)
+        public AboutController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader)
         {
             _context = context;
-            _hostingEnvironment = hostingEnvironment;
             _azureBlobUploader = azureBlobUploader;
         }
 
