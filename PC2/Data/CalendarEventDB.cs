@@ -9,7 +9,7 @@ namespace PC2.Data
         private static DateOnly today = DateOnly.FromDateTime(DateTime.Today);
 
         /// <summary>
-        /// Retrieve all events for simple admin editing
+        /// Retrieve all events for the current day and future dates
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
