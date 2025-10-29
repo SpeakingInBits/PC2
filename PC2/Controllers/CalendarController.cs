@@ -67,6 +67,13 @@ namespace PC2.Controllers
                 errorExists = true;
             }
 
+            //if the start time is after the end time
+            if (TimeOnly.Parse(model.StartingTime) >= TimeOnly.Parse(model.EndingTime))
+            {
+                ModelState.AddModelError("StartingTime", "Starting time must be before ending time");
+                errorExists = true;
+            }
+
             if (!errorExists)
             {
                 CalendarEvent newEvent = new()
