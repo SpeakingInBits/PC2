@@ -163,6 +163,13 @@ namespace PC2.Controllers
         /// </summary>
         public bool IsCountyEvent { get; set; }
 
+        /// <summary>
+        /// Validates the current object based on a set of predefined rules.
+        /// </summary>
+        /// <param name="validationContext">The context in which the validation is performed. This parameter provides additional information  about the
+        /// object being validated.</param>
+        /// <returns>An <see cref="IEnumerable{ValidationResult}"/> containing the validation errors, if any.  If the object is
+        /// valid, the collection will be empty.</returns>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             // At least one, but not both, event type must be selected
