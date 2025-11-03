@@ -43,55 +43,19 @@ namespace PC2.Controllers
                 return View(model);
             }
 
-            bool errorExists = false;
-
-            // if neither check boxes are checked
-            if (!model.IsCountyEvent && !model.IsPc2Event)
+            CalendarEvent newEvent = new()
             {
-                ModelState.AddModelError("IsCountyEvent", "Please check the PC2 or County Event checkbox");
-                errorExists = true;
-                
-            }
+                DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent),
+                StartingTime = TimeOnly.Parse(model.StartingTime),
+                EndingTime = TimeOnly.Parse(model.EndingTime),
+                EventDescription = model.Description,
+                PC2Event = model.IsPc2Event,
+                CountyEvent = model.IsCountyEvent
+            };
 
-            // if both are checked
-            if (model.IsCountyEvent && model.IsPc2Event)
-            {
-                ModelState.AddModelError("IsCountyEvent", "Please select only one checkbox");
-                errorExists = true;
-            }
+            await CalendarEventDB.AddEvent(_context, newEvent);
 
-            //if the start date is before current date
-            if (model.DateOfEvent < DateTime.Now.Date)
-            {
-                ModelState.AddModelError("DateOfEvent", "Starting day must be at a current or future date");
-                errorExists = true;
-            }
-
-            if (!errorExists)
-            {
-                CalendarEvent newEvent = new()
-                {
-                    DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent),
-                    StartingTime = TimeOnly.Parse(model.StartingTime),
-                    EndingTime = TimeOnly.Parse(model.EndingTime),
-                    EventDescription = model.Description
-                };
-
-                if (model.IsPc2Event)
-                {
-                    newEvent.PC2Event = true;
-                }
-                else if (model.IsCountyEvent)
-                {
-                    newEvent.CountyEvent = true;
-                }
-
-                await CalendarEventDB.AddEvent(_context, newEvent);
-
-                return RedirectToAction("Index");
-            }
-
-            return View(model);
+            return RedirectToAction("Index");
         }
 
         /// <summary>
@@ -158,7 +122,7 @@ namespace PC2.Controllers
         }
         
     }
-    public class CalendarCreateEventViewModel
+    public class CalendarCreateEventViewModel : IValidatableObject
     {
         /// <summary>
         /// PK value used to Edit/Delete event
@@ -198,5 +162,53 @@ namespace PC2.Controllers
         /// Is the event a county sponsored event
         /// </summary>
         public bool IsCountyEvent { get; set; }
+
+        /// <summary>
+        /// Validates the current object based on a set of predefined rules.
+        /// </summary>
+        /// <param name="validationContext">The context in which the validation is performed. This parameter provides additional information  about the
+        /// object being validated.</param>
+        /// <returns>An <see cref="IEnumerable{ValidationResult}"/> containing the validation errors, if any.  If the object is
+        /// valid, the collection will be empty.</returns>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            // At least one, but not both, event type must be selected
+            if (!IsCountyEvent && !IsPc2Event)
+            {
+                yield return new ValidationResult(
+                    "Please check the PC2 or County Event checkbox",
+                    new[] { nameof(IsCountyEvent), nameof(IsPc2Event) });
+            }
+            if (IsCountyEvent && IsPc2Event)
+            {
+                yield return new ValidationResult(
+                    "Please select only one checkbox",
+                    new[] { nameof(IsCountyEvent), nameof(IsPc2Event) });
+            }
+
+            // Date must be today or in the future
+            if (DateOfEvent.Date < DateTime.Now.Date)
+            {
+                yield return new ValidationResult(
+                    "Starting day must be at a current or future date",
+                    new[] { nameof(DateOfEvent) });
+            }
+
+            // Start time must be before end time
+            if (TimeOnly.TryParse(StartingTime, out var start) &&
+                TimeOnly.TryParse(EndingTime, out var end))
+            {
+                if (start >= end)
+                {
+                    yield return new ValidationResult(
+                        "Starting time must be before ending time",
+                        new[] { nameof(StartingTime) });
+
+                    yield return new ValidationResult(
+                        "Ending time must be after starting time",
+                        new[] { nameof(EndingTime) });
+                }
+            }
+        }
     }
 }
