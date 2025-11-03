@@ -126,6 +126,17 @@
 
                 var myModal = new bootstrap.Modal(document.getElementById('eventModal'));
                 myModal.show();
+            },
+
+            validRange: function(currentDate) {
+                // Today's date
+                const start = new Date(currentDate);
+
+                // Sets end to 1 year in future based on today's date
+                const end = new Date(currentDate);
+                end.setMonth(end.getMonth() + 12);
+
+                return { start, end };
             }
         });
 
