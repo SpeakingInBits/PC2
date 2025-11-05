@@ -14,190 +14,191 @@ public class AboutController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly AzureBlobUploader _azureBlobUploader;
+    private readonly ImageService _imageService;
 
-        // Iwebhost environment is used to get the path to the wwwroot folder
-        public AboutController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader, ImageService imageService)
-        {
-            _context = context;
-            _azureBlobUploader = azureBlobUploader;
-            _imageService = imageService;
-        }
+    // Iwebhost environment is used to get the path to the wwwroot folder
+    public AboutController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader, ImageService imageService)
+    {
+        _context = context;
+        _azureBlobUploader = azureBlobUploader;
+        _imageService = imageService;
+    }
 
     public async Task<IActionResult> IndexStaff()
     {
         return View(await StaffDB.GetAllStaffForEditing(_context));
     }
 
-        /// <summary>
-        /// Creates a staff member
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public IActionResult CreateStaff()
-        {
-            return View(new CreateStaffViewModel());
-        }
+    /// <summary>
+    /// Creates a staff member
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult CreateStaff()
+    {
+        return View(new CreateStaffViewModel());
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateStaff(CreateStaffViewModel model)
+    [HttpPost]
+    public async Task<IActionResult> CreateStaff(CreateStaffViewModel model)
+    {
+        if (ModelState.IsValid)
         {
-            if (ModelState.IsValid)
+            var staff = new Staff
             {
-                var staff = new Staff
-                {
-                    Name = model.Name,
-                    Title = model.Title,
-                    Phone = model.Phone,
-                    Extension = model.Extension,
-                    Email = model.Email,
-                    PriorityOrder = model.PriorityOrder
-                };
+                Name = model.Name,
+                Title = model.Title,
+                Phone = model.Phone,
+                Extension = model.Extension,
+                Email = model.Email,
+                PriorityOrder = model.PriorityOrder
+            };
 
-                // Handle image upload
-                await HandleImageUpload(model.PhotoFile, model.ImageUrl, staff);
+            // Handle image upload
+            await HandleImageUpload(model.PhotoFile, model.ImageUrl, staff);
 
-                await StaffDB.AddStaff(_context, staff);
-                return RedirectToAction("IndexStaff");
-            }
-            return View(model);
+            await StaffDB.AddStaff(_context, staff);
+            return RedirectToAction("IndexStaff");
+        }
+        return View(model);
+    }
+
+    /// <summary>
+    /// Edits a staff member
+    /// </summary>
+    /// <param name="id">The id for the staff member</param>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> EditStaff(int id)
+    {
+        var staff = await StaffDB.GetStaffMember(_context, id);
+        if (staff == null)
+        {
+            return NotFound();
         }
 
-        /// <summary>
-        /// Edits a staff member
-        /// </summary>
-        /// <param name="id">The id for the staff member</param>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> EditStaff(int id)
+        var model = new EditStaffViewModel
         {
-            var staff = await StaffDB.GetStaffMember(_context, id);
+            ID = staff.ID,
+            Name = staff.Name,
+            Title = staff.Title,
+            Phone = staff.Phone,
+            Extension = staff.Extension,
+            Email = staff.Email,
+            CurrentImageUrl = staff.ImageUrl,
+            ImageUrl = staff.ImageUrl,
+            PriorityOrder = staff.PriorityOrder
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditStaff(EditStaffViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var staff = await StaffDB.GetStaffMember(_context, model.ID);
             if (staff == null)
             {
                 return NotFound();
             }
 
-            var model = new EditStaffViewModel
-            {
-                ID = staff.ID,
-                Name = staff.Name,
-                Title = staff.Title,
-                Phone = staff.Phone,
-                Extension = staff.Extension,
-                Email = staff.Email,
-                CurrentImageUrl = staff.ImageUrl,
-                ImageUrl = staff.ImageUrl,
-                PriorityOrder = staff.PriorityOrder
-            };
+            // Update basic properties
+            staff.Name = model.Name;
+            staff.Title = model.Title;
+            staff.Phone = model.Phone;
+            staff.Extension = model.Extension;
+            staff.Email = model.Email;
+            staff.PriorityOrder = model.PriorityOrder;
 
-            return View(model);
+            // Handle photo removal
+            if (model.RemovePhoto)
+            {
+                await RemoveStaffPhoto(staff);
+            }
+            // Handle new photo upload
+            else if (model.PhotoFile != null || !string.IsNullOrEmpty(model.ImageUrl))
+            {
+                await HandleImageUpload(model.PhotoFile, model.ImageUrl, staff, model.ID);
+            }
+
+            await StaffDB.SaveChanges(_context, staff);
+            return RedirectToAction("IndexStaff");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> EditStaff(EditStaffViewModel model)
+        // If model is invalid, reload current image URL for display
+        model.CurrentImageUrl = (await StaffDB.GetStaffMember(_context, model.ID))?.ImageUrl;
+        return View(model);
+    }
+
+    private async Task HandleImageUpload(IFormFile? photoFile, string? imageUrl, Staff staff, int? staffId = null)
+    {
+        try
         {
-            if (ModelState.IsValid)
+            // Priority: uploaded file over URL
+            if (photoFile != null && photoFile.Length > 0)
             {
-                var staff = await StaffDB.GetStaffMember(_context, model.ID);
-                if (staff == null)
+                // Validate image file
+                if (!ImageService.IsValidImageFile(photoFile))
                 {
-                    return NotFound();
+                    throw new InvalidOperationException("Please upload a valid image file (JPEG, PNG, GIF, or BMP).");
                 }
 
-                // Update basic properties
-                staff.Name = model.Name;
-                staff.Title = model.Title;
-                staff.Phone = model.Phone;
-                staff.Extension = model.Extension;
-                staff.Email = model.Email;
-                staff.PriorityOrder = model.PriorityOrder;
-
-                // Handle photo removal
-                if (model.RemovePhoto)
+                // Delete old photo if updating existing staff
+                if (staffId.HasValue && !string.IsNullOrEmpty(staff.ImageUrl))
                 {
                     await RemoveStaffPhoto(staff);
                 }
-                // Handle new photo upload
-                else if (model.PhotoFile != null || !string.IsNullOrEmpty(model.ImageUrl))
-                {
-                    await HandleImageUpload(model.PhotoFile, model.ImageUrl, staff, model.ID);
-                }
 
-                await StaffDB.SaveChanges(_context, staff);
-                return RedirectToAction("IndexStaff");
+                // Generate safe filename
+                var safeFileName = ImageService.GetSafeImageFileName(photoFile.FileName, staffId ?? 0);
+
+                // Resize image
+                using var resizedImageStream = await _imageService.ResizeImageAsync(photoFile.OpenReadStream());
+
+                // Create IFormFile from resized image
+                var resizedFormFile = new FormFileFromStream(resizedImageStream, safeFileName, photoFile.ContentType);
+
+                // Upload to Azure Blob
+                staff.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName);
             }
-            
-            // If model is invalid, reload current image URL for display
-            model.CurrentImageUrl = (await StaffDB.GetStaffMember(_context, model.ID))?.ImageUrl;
-            return View(model);
+            else if (!string.IsNullOrEmpty(imageUrl) && Uri.IsWellFormedUriString(imageUrl, UriKind.Absolute))
+            {
+                // Use provided URL
+                staff.ImageUrl = imageUrl;
+            }
         }
+        catch (Exception ex)
+        {
+            // Log error and continue without setting image
+            // In a production app, you might want to add this error to ModelState
+            Console.WriteLine($"Error handling image upload: {ex.Message}");
+        }
+    }
 
-        private async Task HandleImageUpload(IFormFile? photoFile, string? imageUrl, Staff staff, int? staffId = null)
+    private async Task RemoveStaffPhoto(Staff staff)
+    {
+        if (!string.IsNullOrEmpty(staff.ImageUrl))
         {
             try
             {
-                // Priority: uploaded file over URL
-                if (photoFile != null && photoFile.Length > 0)
+                // Extract filename from URL for Azure Blob deletion
+                var fileName = staff.ImageUrl.Split('/').LastOrDefault();
+                if (!string.IsNullOrEmpty(fileName))
                 {
-                    // Validate image file
-                    if (!ImageService.IsValidImageFile(photoFile))
-                    {
-                        throw new InvalidOperationException("Please upload a valid image file (JPEG, PNG, GIF, or BMP).");
-                    }
-
-                    // Delete old photo if updating existing staff
-                    if (staffId.HasValue && !string.IsNullOrEmpty(staff.ImageUrl))
-                    {
-                        await RemoveStaffPhoto(staff);
-                    }
-
-                    // Generate safe filename
-                    var safeFileName = ImageService.GetSafeImageFileName(photoFile.FileName, staffId ?? 0);
-
-                    // Resize image
-                    using var resizedImageStream = await _imageService.ResizeImageAsync(photoFile.OpenReadStream());
-
-                    // Create IFormFile from resized image
-                    var resizedFormFile = new FormFileFromStream(resizedImageStream, safeFileName, photoFile.ContentType);
-
-                    // Upload to Azure Blob
-                    staff.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName);
-                }
-                else if (!string.IsNullOrEmpty(imageUrl) && Uri.IsWellFormedUriString(imageUrl, UriKind.Absolute))
-                {
-                    // Use provided URL
-                    staff.ImageUrl = imageUrl;
+                    await _azureBlobUploader.DeleteFileAsync(fileName);
                 }
             }
             catch (Exception ex)
             {
-                // Log error and continue without setting image
-                // In a production app, you might want to add this error to ModelState
-                Console.WriteLine($"Error handling image upload: {ex.Message}");
+                // Log error but continue
+                Console.WriteLine($"Error deleting photo: {ex.Message}");
             }
-        }
 
-        private async Task RemoveStaffPhoto(Staff staff)
-        {
-            if (!string.IsNullOrEmpty(staff.ImageUrl))
-            {
-                try
-                {
-                    // Extract filename from URL for Azure Blob deletion
-                    var fileName = staff.ImageUrl.Split('/').LastOrDefault();
-                    if (!string.IsNullOrEmpty(fileName))
-                    {
-                        await _azureBlobUploader.DeleteFileAsync(fileName);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Log error but continue
-                    Console.WriteLine($"Error deleting photo: {ex.Message}");
-                }
-
-                staff.ImageUrl = null;
-            }
+            staff.ImageUrl = null;
         }
+    }
 
     /// <summary>
     /// Deletes a staff member
@@ -249,7 +250,7 @@ public class AboutController : Controller
             await BoardDB.CreateBoardMember(_context, board);
             return RedirectToAction("IndexBoard");
         }
-        
+
         return View(board);
     }
 
@@ -272,7 +273,7 @@ public class AboutController : Controller
             await BoardDB.EditBoardMember(_context, board);
             return RedirectToAction("IndexBoard");
         }
-        
+
         return View(board);
     }
 
@@ -349,7 +350,7 @@ public class AboutController : Controller
             await SteeringCommitteeDB.EditSteeringCommittee(_context, steeringCommittee);
             return RedirectToAction("IndexSteeringCommittee");
         }
-        
+
         return View(steeringCommittee);
     }
 
@@ -497,16 +498,16 @@ public class AboutController : Controller
     public async Task<IActionResult> ConfirmRenameNewsletter(int id)
     {
         NewsletterFile? newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
-        
+
         if (newsletter != null)
         {
-            string oldName = newsletter.Name;          
+            string oldName = newsletter.Name;
             string newName = Request.Form["Name"];
- 
+
             await NewsletterFileDB.RenameFileAsync(_context, id, newName);
             TempData["Message"] = $"Newsletter {oldName} renamed to {newName}";
         }
-        
+
         return RedirectToAction("UploadNewsletter");
     }
 }
