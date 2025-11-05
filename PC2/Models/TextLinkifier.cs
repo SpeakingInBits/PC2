@@ -22,6 +22,10 @@ public static class TextLinkifier
         // HTML-encode first to prevent XSS attacks
         string result = WebUtility.HtmlEncode(text);
 
+        // HTML-decode to decode HTML encoded characters
+        // e.g. &#39; back to ' apostrophe
+        result = WebUtility.HtmlDecode(result);
+
         // Convert email addresses to mailto links
         result = LinkifyEmails(result);
 
