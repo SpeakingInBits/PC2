@@ -80,7 +80,15 @@
     integrity="sha384-B1OFx8Gy9GjPu8UbUyXbGQpzll9ubAUQ9agInFJ8NnD7nYG1u/CLR+Sqr5yifl4q" 
     crossorigin="anonymous"></script>
 
+<script src="https://unpkg.com/dompurify@2.4.7/dist/purify.min.js"></script>
+
 <script>
+    function decodeHtmlEntities(encodedStr) {
+        const txt = document.createElement('textarea');
+        txt.innerHTML = encodedStr;
+        return txt.value;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
 
         var calendarContainer = document.getElementById('calendar');
@@ -96,11 +104,14 @@
                     .then(function(events) {
                         // Add color differentiation
                         events.forEach(event => {
-                            if (event.isPC2Event) {
-                                event.classNames = ['pc2-event'];
-                            } else {
-                                event.classNames = ['county-event'];
-                            }
+                            event.classNames = [event.isPC2Event ? 'pc2-event' : 'county-event'];
+
+                            // Decode and sanitize
+                            var decoded = decodeHtmlEntities(event.title);
+                            event.safeHtml = DOMPurify.sanitize(decoded);
+
+                            console.log("var decoded: " + decoded);
+                            console.log("event.safeHtml: " + event.safeHtml);
                         });
                         successCallback(events);
                     })
@@ -108,6 +119,22 @@
                         console.error('Error fetching events:', error);
                         failureCallback(error);
                     });
+            },
+
+            // Custom rendering for clickable HTML links
+            eventContent: function(arg) {
+                // Constructs text for time. e.g. 14:20:00 -> 2p
+                const startTime = arg.event.allDay ?
+                                    '' :
+                                    arg.event.start.toLocaleTimeString(
+                                        [], { hour: 'numeric' })
+                                            .replace(' AM', 'a')
+                                            .replace(' PM', 'p');
+                return { html: `
+                    <div class="fc-daygrid-event-dot"></div>
+                    <div class="fc-event-time">${startTime}</div>
+                    <div class="fc-event-title">${arg.event.extendedProps.safeHtml}</div>
+                `};
             },
 
             eventClick: function(info) {
@@ -120,7 +147,7 @@
                     endTime = 'N/A';
                 }
 
-                document.getElementById('modalEventTitle').innerHTML = info.event.title;
+                document.getElementById('modalEventTitle').innerHTML = DOMPurify.sanitize(decodeHtmlEntities(info.event.title));
                 document.getElementById('modalEventDate').innerText = startTime;
                 document.getElementById('modalEventEndTime').innerText = endTime;
 
