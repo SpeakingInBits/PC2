@@ -109,6 +109,7 @@
 
             // Custom rendering for clickable HTML links
             eventContent: function(arg) {
+                const startTime = arg.event.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
                 return { html: `
                     <div class="fc-daygrid-event-dot"></div>
                     <div class="fc-event-time">${startTime}</div>
