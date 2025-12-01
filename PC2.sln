@@ -1,14 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11109.219 d18.0-oob
+VisualStudioVersion = 18.0.11109.219
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PC2", "PC2\PC2.csproj", "{230B9FA8-2AC9-430C-8A27-1689D540448C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9C9EFAD3-432F-4B6B-BF4E-EADC7A203F0A}"
 	ProjectSection(SolutionItems) = preProject
 		.mcp.json = .mcp.json
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		PC2-TestData.sql = PC2-TestData.sql
+		.github\workflows\pc2online.yml = .github\workflows\pc2online.yml
 		README.md = README.md
 	EndProjectSection
 EndProject

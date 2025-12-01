@@ -7,7 +7,7 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: PC2/publish
   AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.pc2online_7d76 }}
   CONFIGURATION: Release
-  DOTNET_CORE_VERSION: 9.0.x
+  DOTNET_CORE_VERSION: 10.x
   WORKING_DIRECTORY: PC2
   DB_CONNECTION_STRING: ${{ secrets.DatabaseConnectionString }}
 jobs:
@@ -36,7 +36,7 @@ jobs:
     - name: Run Code First Migrations
       run: |
         dotnet new tool-manifest
-        dotnet tool install --global dotnet-ef
+        dotnet tool install --global dotnet-ef --version 10.*
         dotnet tool restore
         dotnet ef database update -p PC2 --connection "${{ env.DB_CONNECTION_STRING }}"
     - name: Publish Artifacts
