@@ -22,7 +22,14 @@ namespace PC2.Controllers
 
             await CalendarEventDB.DeletePastEvents(_context);
 
-            return View(calendarEvents);
+            // Convert to view models with sanitized descriptions
+            List<CalendarEventViewModel> viewModels = calendarEvents.Select(e => new CalendarEventViewModel
+            {
+                Event = e,
+                SanitizedDescription = TextLinkifier.Linkify(e.EventDescription)
+            }).ToList();
+
+            return View(viewModels);
         }
 
         /// <summary>

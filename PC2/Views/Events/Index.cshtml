@@ -96,11 +96,8 @@
                     .then(function(events) {
                         // Add color differentiation
                         events.forEach(event => {
-                            if (event.isPC2Event) {
-                                event.classNames = ['pc2-event'];
-                            } else {
-                                event.classNames = ['county-event'];
-                            }
+                            event.classNames = [event.isPC2Event ? 'pc2-event' : 'county-event'];
+                            event.safeHtml = event.title;
                         });
                         successCallback(events);
                     })
@@ -108,6 +105,16 @@
                         console.error('Error fetching events:', error);
                         failureCallback(error);
                     });
+            },
+
+            // Custom rendering for clickable HTML links
+            eventContent: function(arg) {
+                const startTime = arg.event.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                return { html: `
+                    <div class="fc-daygrid-event-dot"></div>
+                    <div class="fc-event-time">${startTime}</div>
+                    <div class="fc-event-title">${arg.event.extendedProps.safeHtml}</div>
+                `};
             },
 
             eventClick: function(info) {

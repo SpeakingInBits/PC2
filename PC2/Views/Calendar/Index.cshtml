@@ -1,10 +1,10 @@
-﻿@model List<CalendarEvent>
+﻿@model List<CalendarEventViewModel>
 @{
     ViewData["Title"] = "Event Calendar";
 
-    List<List<CalendarEvent>> eventDateGroups =
+    List<List<CalendarEventViewModel>> eventDateGroups =
             Model
-            .GroupBy(calEvent => calEvent.DateOfEvent)
+            .GroupBy(vm => vm.Event.DateOfEvent)
             .Select(group => group.ToList())
             .ToList();
 }
@@ -73,28 +73,26 @@
                 {
                     <tr>
                         <td class="agenda-date" class="active" rowspan="@eventDateGroups[currentDate].Count">
-                            <div class="dayofmonth">@eventDateGroups[currentDate][0].DateOfEvent.Day</div>
-                            <div class="dayofweek">@eventDateGroups[currentDate][0].DateOfEvent.DayOfWeek</div>
-                            <div class="shortdate text-muted">@eventDateGroups[currentDate][0].DateOfEvent.ToString("MMMM"),&nbsp;@eventDateGroups[currentDate][0].DateOfEvent.Year</div>
+                            <div class="dayofmonth">@eventDateGroups[currentDate][0].Event.DateOfEvent.Day</div>
+                            <div class="dayofweek">@eventDateGroups[currentDate][0].Event.DateOfEvent.DayOfWeek</div>
+                            <div class="shortdate text-muted">@eventDateGroups[currentDate][0].Event.DateOfEvent.ToString("MMMM"),&nbsp;@eventDateGroups[currentDate][0].Event.DateOfEvent.Year</div>
                         </td>
                         @*loop through all events on this date*@
                         @for (int currentEvent = 0; currentEvent < eventDateGroups[currentDate].Count; currentEvent++) 
-                        {
-                            string eventDescription = eventDateGroups[currentDate][currentEvent].EventDescription;                         
+                        {                      
                             @if (currentEvent > 0) // if this is not the first event on this date, then start a new row
                             {                             
                                 <tr>
                                     <td class="agenda-time">
-                                        @eventDateGroups[currentDate][currentEvent].StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].EndingTime
+                                        @eventDateGroups[currentDate][currentEvent].Event.StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].Event.EndingTime
                                     </td>
                                     <td class="agenda-events">
                                         <div class="agenda-event">                                                                                                                            
-                                            @*// use partial view, pass in eventdescription as ViewData*@
-                                            @(await Html.PartialAsync("_IndexPartial", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }))                                                 
+                                            @Html.Raw(eventDateGroups[currentDate][currentEvent].SanitizedDescription)                                                 
                                        </div>
                                     </td>
                                     <td>
-                                        @if (@eventDateGroups[currentDate][currentEvent].PC2Event)
+                                        @if (@eventDateGroups[currentDate][currentEvent].Event.PC2Event)
                                         {
                                             <p>
                                                 PC2 Event
@@ -109,8 +107,8 @@
                                     </td>
                                     <td>
                                         <p>
-                                            <a asp-action="Edit" asp-route-id="@eventDateGroups[currentDate][currentEvent].CalendarEventID">Edit Event</a> |
-                                            <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@eventDateGroups[currentDate][currentEvent].CalendarEventID">Delete Event</a>
+                                            <a asp-action="Edit" asp-route-id="@eventDateGroups[currentDate][currentEvent].Event.CalendarEventID">Edit Event</a> |
+                                            <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@eventDateGroups[currentDate][currentEvent].Event.CalendarEventID">Delete Event</a>
                                         </p>
                                     </td>
                                 </tr>
@@ -118,16 +116,15 @@
                             else
                             {
                                 <td class="agenda-time">
-                                    @eventDateGroups[currentDate][currentEvent].StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].EndingTime
+                                    @eventDateGroups[currentDate][currentEvent].Event.StartingTime &nbsp;-&nbsp; @eventDateGroups[currentDate][currentEvent].Event.EndingTime
                                 </td>
                                 <td class="agenda-events">
                                     <div class="agenda-event">                                     
-                                        @*// use partial view, pass in eventdescription as ViewData*@
-                                        @(await Html.PartialAsync("_IndexPartial", new ViewDataDictionary(ViewData) { { "eventDescription", eventDescription } }))                                                                                
+                                        @Html.Raw(eventDateGroups[currentDate][currentEvent].SanitizedDescription)                                                                                
                                     </div>
                                 </td>
                                 <td>
-                                        @if (@eventDateGroups[currentDate][currentEvent].PC2Event)
+                                        @if (@eventDateGroups[currentDate][currentEvent].Event.PC2Event)
                                         {
                                             <p>
                                                 PC2 Event
@@ -142,8 +139,8 @@
                                     </td>
                                 <td>
                                     <p>
-                                        <a asp-action="Edit" asp-route-id="@eventDateGroups[currentDate][currentEvent].CalendarEventID">Edit Event</a> |
-                                        <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@eventDateGroups[currentDate][currentEvent].CalendarEventID">Delete Event</a>
+                                        <a asp-action="Edit" asp-route-id="@eventDateGroups[currentDate][currentEvent].Event.CalendarEventID">Edit Event</a> |
+                                        <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@eventDateGroups[currentDate][currentEvent].Event.CalendarEventID">Delete Event</a>
                                     </p>
                                 </td>
                             }
