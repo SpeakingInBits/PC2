@@ -51,7 +51,13 @@ namespace PC2.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            Agency agency = await AgencyDB.GetAgencyAsync(_context, id);
+            Agency? agency = await AgencyDB.GetAgencyAsync(_context, id);
+
+            if (agency == null)
+            {
+                return NotFound();
+            }
+
             ViewData["ExistingServices"] = agency.AgencyCategories;
             ViewData["Categories"] = await AgencyCategoryDB.GetAgencyCategoriesAsync(_context);
             return View(agency);
