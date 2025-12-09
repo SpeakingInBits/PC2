@@ -149,6 +149,12 @@ namespace PC2.Data
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Asynchronously retrieves an agency by its unique identifier, including its associated categories.
+        /// </summary>
+        /// <param name="id">The unique identifier of the agency to retrieve.</param>
+        /// <returns>Result contains the agency with the specified
+        /// identifier, or null if no such agency exists.</returns>
         public static async Task<Agency?> GetAgencyAsync(ApplicationDbContext context, int id)
         {
             return await (from a in context.Agency
