@@ -30,7 +30,7 @@ public class HomeController : Controller
 
     public async Task<IActionResult> About()
     {
-        AboutUsModel aboutUs = new AboutUsModel();
+        AboutUsViewModel aboutUs = new AboutUsViewModel();
         aboutUs.Staff = await StaffDB.GetAllStaff(_context);
         aboutUs.Board = await BoardDB.GetAllBoardMembers(_context);
         aboutUs.SteeringCommittee = await SteeringCommitteeDB.GetAllSteeringCommittee(_context);
