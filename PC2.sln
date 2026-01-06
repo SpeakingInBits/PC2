@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PC2", "PC2\PC2.csproj", "{2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9C9EFAD3-432F-4B6B-BF4E-EADC7A203F0A}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.mcp.json = .mcp.json
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		PC2-TestData.sql = PC2-TestData.sql
