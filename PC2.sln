@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.mcp.json = .mcp.json
+		CodingConventions.md = CodingConventions.md
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		PC2-TestData.sql = PC2-TestData.sql
 		.github\workflows\pc2online.yml = .github\workflows\pc2online.yml
