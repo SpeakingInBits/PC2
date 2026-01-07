@@ -118,13 +118,13 @@ public class CalendarCreateEventViewModel : IValidatableObject
         {
             yield return new ValidationResult(
                 "Please check the PC2 or County Event checkbox",
-                new[] { nameof(IsCountyEvent), nameof(IsPc2Event) });
+                new[] { nameof(IsCountyEvent) });
         }
-        if (IsCountyEvent && IsPc2Event)
+        else if (IsCountyEvent && IsPc2Event)
         {
             yield return new ValidationResult(
                 "Please select only one checkbox",
-                new[] { nameof(IsCountyEvent), nameof(IsPc2Event) });
+                new[] { nameof(IsCountyEvent) });
         }
 
         // Date must be today or in the future
