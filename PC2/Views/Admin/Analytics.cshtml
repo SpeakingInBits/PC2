@@ -134,7 +134,7 @@
                                 <label for="year" class="form-label">Year</label>
                                 <select class="form-select" id="year" name="year">
                                     <option value="">Select Year</option>
-                                    @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 5; y--)
+                                    @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 1; y--)
                                     {
                                         <option value="@y" selected="@(Model.SelectedYear == y)">@y</option>
                                     }
