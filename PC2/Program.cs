@@ -2,7 +2,6 @@ using IdentityLogin.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
-using PC2.Filters;
 using PC2.Models;
 using PC2.Services;
 using System.Globalization;
@@ -40,10 +39,7 @@ builder.Services.AddApplicationInsightsTelemetry(options =>
 builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOptions)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews(options =>
-{
-    options.Filters.Add<ApplicationInsightsPageViewTracker>();
-});
+builder.Services.AddControllersWithViews();
 
 // email provider
 builder.Services.AddTransient<IEmailSender, EmailSenderSendGrid>();
