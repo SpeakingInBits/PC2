@@ -194,10 +194,14 @@ namespace PC2.Services
 
             try
             {
+                // Use the same filtering as Azure Portal's default metrics
+                // This matches the "Browser" view which filters out non-browser clients
                 var query = $@"
                     pageViews
                     | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
+                    | where isempty(operation_SyntheticSource)
+                    | where client_Type == 'Browser' or client_Type == 'PC'
                     | summarize ViewCount = count() by name
                     | order by ViewCount desc
                     | limit 50";
@@ -245,6 +249,8 @@ namespace PC2.Services
                     | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where name == 'FocusNewsletter'
+                    | where isempty(operation_SyntheticSource)
+                    | where client_Type == 'Browser' or client_Type == 'PC'
                     | extend linkUrl = tostring(customDimensions.linkUrl)
                     | summarize DownloadCount = count() by linkUrl
                     | order by DownloadCount desc";
@@ -296,6 +302,8 @@ namespace PC2.Services
                     | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where name == 'ResourceGuideSearch'
+                    | where isempty(operation_SyntheticSource)
+                    | where client_Type == 'Browser' or client_Type == 'PC'
                     | extend SearchType = tostring(customDimensions.SearchType)
                     | extend SearchTerm = tostring(customDimensions.SearchTerm)
                     | summarize SearchCount = count() by SearchType, SearchTerm
