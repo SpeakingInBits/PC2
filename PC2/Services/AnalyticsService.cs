@@ -196,12 +196,16 @@ namespace PC2.Services
             {
                 // Use the same filtering as Azure Portal's default metrics
                 // This matches the "Browser" view which filters out non-browser clients
+                // Also filters out dynamic routes like /Resources/Details/123 that aren't useful for reporting
                 var query = $@"
                     pageViews
                     | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where isempty(operation_SyntheticSource)
                     | where client_Type == 'Browser' or client_Type == 'PC'
+                    | where name !has '/Details/' and name !endswith '/Details'
+                    | where name !has '/Edit/' and name !endswith '/Edit'
+                    | where name !has '/Delete/' and name !endswith '/Delete'
                     | summarize ViewCount = count() by name
                     | order by ViewCount desc
                     | limit 50";
