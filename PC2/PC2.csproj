@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Filters\" />
     <Folder Include="wwwroot\images\age-specific-issues\" />
     <Folder Include="wwwroot\images\resource-newsletters\" />
     <Folder Include="wwwroot\images\resource-closet\" />
