@@ -22,8 +22,20 @@ builder.Services.AddSingleton<AzureBlobUploader>();
 // Register AnalyticsService for DI
 builder.Services.AddScoped<AnalyticsService>();
 
+// Configure Application Insights - only add if connection string is provided
+var appInsightsConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value;
 builder.Services.AddApplicationInsightsTelemetry(options =>
-    options.ConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value);
+{
+    options.ConnectionString = appInsightsConnectionString;
+        
+    // Enable developer mode in development for faster telemetry
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableAdaptiveSampling = false;
+        options.EnableDebugLogger = true;
+    }
+});
+
 
 builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOptions)
     .AddRoles<IdentityRole>()
