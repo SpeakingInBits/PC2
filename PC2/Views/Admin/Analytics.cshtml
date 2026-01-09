@@ -1,0 +1,192 @@
+@model PC2.Models.AnalyticsViewModel
+
+@{
+    ViewData["Title"] = "Analytics Dashboard";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="divider"></div>
+<br />
+
+@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.InfoMessage))
+{
+    <div class="alert alert-warning" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        @ViewBag.InfoMessage
+    </div>
+}
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Page Views</h5>
+                <h2 class="display-4">@Model.TotalPageViews</h2>
+                <p class="card-text">Past 30 days</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">PDF Downloads</h5>
+                <h2 class="display-4">@Model.TotalPdfDownloads</h2>
+                <p class="card-text">Past 30 days</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Searches</h5>
+                <h2 class="display-4">@Model.TotalSearches</h2>
+                <p class="card-text">Past 30 days</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Page Views Section -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0"><i class="bi bi-eye-fill me-2"></i>Top Page Views (Past 30 Days)</h3>
+    </div>
+    <div class="card-body">
+        @if (Model.PageViews.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Page URL</th>
+                            <th class="text-end">View Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pageView in Model.PageViews.Take(20))
+                        {
+                            <tr>
+                                <td>@pageView.PageUrl</td>
+                                <td class="text-end">
+                                    <span class="badge bg-primary rounded-pill">@pageView.ViewCount</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                No page view data available for the past 30 days.
+            </div>
+        }
+    </div>
+</div>
+
+<!-- PDF Downloads Section -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h3 class="mb-0"><i class="bi bi-file-earmark-pdf-fill me-2"></i>PDF Downloads (Past 30 Days)</h3>
+    </div>
+    <div class="card-body">
+        @if (Model.PdfDownloads.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>URL</th>
+                            <th class="text-end">Download Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var download in Model.PdfDownloads)
+                        {
+                            <tr>
+                                <td>
+                                    <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                                    @download.FileName
+                                </td>
+                                <td>
+                                    <small class="text-muted">@download.FileUrl</small>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-success rounded-pill">@download.DownloadCount</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                No PDF download data available for the past 30 days.
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Search Terms Section -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h3 class="mb-0"><i class="bi bi-search me-2"></i>Resource Guide Search Terms (Past 30 Days)</h3>
+    </div>
+    <div class="card-body">
+        @if (Model.SearchTerms.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Search Type</th>
+                            <th>Search Term</th>
+                            <th class="text-end">Search Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var search in Model.SearchTerms)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">@search.SearchType</span>
+                                </td>
+                                <td>@search.SearchTerm</td>
+                                <td class="text-end">
+                                    <span class="badge bg-info rounded-pill">@search.SearchCount</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                No search data available for the past 30 days.
+            </div>
+        }
+    </div>
+</div>
+
+<div class="alert alert-secondary">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <strong>Note:</strong> Analytics data is retrieved from Azure Application Insights for the past 30 days.
+    Data is updated in near real-time and may take a few minutes to appear after events occur.
+</div>

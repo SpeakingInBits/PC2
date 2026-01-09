@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Filters;
 using PC2.Models;
+using PC2.Services;
 using System.Globalization;
 using Microsoft.Extensions.Azure;
 
@@ -17,6 +18,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Register AzureBlobUploader for DI
 builder.Services.AddSingleton<AzureBlobUploader>();
+
+// Register AnalyticsService for DI
+builder.Services.AddScoped<AnalyticsService>();
 
 builder.Services.AddApplicationInsightsTelemetry(options =>
     options.ConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value);
