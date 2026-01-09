@@ -44,12 +44,18 @@ namespace PC2.Services
         }
 
         /// <summary>
-        /// Retrieves analytics data for the past 30 days including page views, downloads, and search terms
+        /// Retrieves analytics data for the specified date range including page views, downloads, and search terms
         /// </summary>
+        /// <param name="startDate">Start date for the query (defaults to 30 days ago)</param>
+        /// <param name="endDate">End date for the query (defaults to now)</param>
         /// <returns>AnalyticsViewModel populated with data from Application Insights</returns>
-        public async Task<AnalyticsViewModel> GetAnalyticsDataAsync()
+        public async Task<AnalyticsViewModel> GetAnalyticsDataAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            var viewModel = new AnalyticsViewModel();
+            var viewModel = new AnalyticsViewModel
+            {
+                StartDate = startDate ?? DateTime.UtcNow.AddDays(-30),
+                EndDate = endDate ?? DateTime.UtcNow
+            };
 
             if (!_isConfigured || _logsQueryClient == null || string.IsNullOrEmpty(_workspaceId))
             {
@@ -58,16 +64,19 @@ namespace PC2.Services
 
             try
             {
-                // Get page views for the past 30 days
-                viewModel.PageViews = await GetPageViewsAsync();
+                // Calculate time range
+                var timeRange = CalculateQueryTimeRange(viewModel.StartDate.Value, viewModel.EndDate.Value);
+
+                // Get page views for the specified date range
+                viewModel.PageViews = await GetPageViewsAsync(viewModel.StartDate.Value, viewModel.EndDate.Value, timeRange);
                 viewModel.TotalPageViews = viewModel.PageViews.Sum(pv => pv.ViewCount);
 
                 // Get PDF downloads
-                viewModel.PdfDownloads = await GetPdfDownloadsAsync();
+                viewModel.PdfDownloads = await GetPdfDownloadsAsync(viewModel.StartDate.Value, viewModel.EndDate.Value, timeRange);
                 viewModel.TotalPdfDownloads = viewModel.PdfDownloads.Sum(d => d.DownloadCount);
 
                 // Get search terms from resource guide
-                viewModel.SearchTerms = await GetSearchTermsAsync();
+                viewModel.SearchTerms = await GetSearchTermsAsync(viewModel.StartDate.Value, viewModel.EndDate.Value, timeRange);
                 viewModel.TotalSearches = viewModel.SearchTerms.Sum(st => st.SearchCount);
             }
             catch (Exception ex)
@@ -80,9 +89,21 @@ namespace PC2.Services
         }
 
         /// <summary>
-        /// Retrieves page view data for the past 30 days
+        /// Calculates the QueryTimeRange based on start and end dates
         /// </summary>
-        private async Task<List<PageViewData>> GetPageViewsAsync()
+        private QueryTimeRange CalculateQueryTimeRange(DateTime startDate, DateTime endDate)
+        {
+            // Convert to UTC if not already
+            var startUtc = startDate.Kind == DateTimeKind.Utc ? startDate : startDate.ToUniversalTime();
+            var endUtc = endDate.Kind == DateTimeKind.Utc ? endDate : endDate.ToUniversalTime();
+
+            return new QueryTimeRange(startUtc, endUtc);
+        }
+
+        /// <summary>
+        /// Retrieves page view data for the specified date range
+        /// </summary>
+        private async Task<List<PageViewData>> GetPageViewsAsync(DateTime startDate, DateTime endDate, QueryTimeRange timeRange)
         {
             var pageViews = new List<PageViewData>();
 
@@ -91,9 +112,10 @@ namespace PC2.Services
 
             try
             {
-                var query = @"
+                var query = $@"
                     pageViews
-                    | where timestamp > ago(30d)
+                    | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
+                    | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
                     | summarize ViewCount = count() by name
                     | order by ViewCount desc
                     | limit 50";
@@ -101,7 +123,7 @@ namespace PC2.Services
                 Response<LogsQueryResult> response = await _logsQueryClient.QueryWorkspaceAsync(
                     _workspaceId,
                     query,
-                    new QueryTimeRange(TimeSpan.FromDays(30)));
+                    timeRange);
 
                 if (response.Value.Status == LogsQueryResultStatus.Success)
                 {
@@ -125,9 +147,9 @@ namespace PC2.Services
         }
 
         /// <summary>
-        /// Retrieves PDF download events from custom telemetry
+        /// Retrieves PDF download events from custom telemetry for the specified date range
         /// </summary>
-        private async Task<List<DownloadData>> GetPdfDownloadsAsync()
+        private async Task<List<DownloadData>> GetPdfDownloadsAsync(DateTime startDate, DateTime endDate, QueryTimeRange timeRange)
         {
             var downloads = new List<DownloadData>();
 
@@ -136,9 +158,10 @@ namespace PC2.Services
 
             try
             {
-                var query = @"
+                var query = $@"
                     customEvents
-                    | where timestamp > ago(30d)
+                    | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
+                    | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where name == 'FocusNewsletter'
                     | extend linkUrl = tostring(customDimensions.linkUrl)
                     | summarize DownloadCount = count() by linkUrl
@@ -147,7 +170,7 @@ namespace PC2.Services
                 Response<LogsQueryResult> response = await _logsQueryClient.QueryWorkspaceAsync(
                     _workspaceId,
                     query,
-                    new QueryTimeRange(TimeSpan.FromDays(30)));
+                    timeRange);
 
                 if (response.Value.Status == LogsQueryResultStatus.Success)
                 {
@@ -175,9 +198,9 @@ namespace PC2.Services
         }
 
         /// <summary>
-        /// Retrieves search term data from ResourceGuideSearch custom events
+        /// Retrieves search term data from ResourceGuideSearch custom events for the specified date range
         /// </summary>
-        private async Task<List<SearchTermData>> GetSearchTermsAsync()
+        private async Task<List<SearchTermData>> GetSearchTermsAsync(DateTime startDate, DateTime endDate, QueryTimeRange timeRange)
         {
             var searchTerms = new List<SearchTermData>();
 
@@ -186,9 +209,10 @@ namespace PC2.Services
 
             try
             {
-                var query = @"
+                var query = $@"
                     customEvents
-                    | where timestamp > ago(30d)
+                    | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
+                    | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where name == 'ResourceGuideSearch'
                     | extend SearchType = tostring(customDimensions.SearchType)
                     | extend SearchTerm = tostring(customDimensions.SearchTerm)
@@ -199,7 +223,7 @@ namespace PC2.Services
                 Response<LogsQueryResult> response = await _logsQueryClient.QueryWorkspaceAsync(
                     _workspaceId,
                     query,
-                    new QueryTimeRange(TimeSpan.FromDays(30)));
+                    timeRange);
 
                 if (response.Value.Status == LogsQueryResultStatus.Success)
                 {

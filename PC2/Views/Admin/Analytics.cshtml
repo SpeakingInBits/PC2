@@ -4,6 +4,23 @@
     ViewData["Title"] = "Analytics Dashboard";
 }
 
+@section Head {
+    <style>
+        /* Override Bootstrap's default tab link colors to ensure visibility */
+        #filterTabs .nav-link {
+            color: #212529 !important; /* Bootstrap's dark color */
+        }
+        
+        #filterTabs .nav-link:hover {
+            color: #000 !important;
+        }
+        
+        #filterTabs .nav-link.active {
+            color: #0d6efd !important; /* Bootstrap's primary blue for active tab */
+        }
+    </style>
+}
+
 <h1>@ViewData["Title"]</h1>
 <div class="divider"></div>
 <br />
@@ -24,13 +41,144 @@
     </div>
 }
 
+<!-- Date Filter Section -->
+<div class="card mb-4">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0"><i class="bi bi-funnel-fill me-2"></i>Filter Analytics Data</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="Analytics" id="filterForm">
+            <div class="row">
+                <!-- Custom Date Range Tab -->
+                <div class="col-md-12 mb-3">
+                    <ul class="nav nav-tabs" id="filterTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link text-dark" id="date-range-tab" data-bs-toggle="tab" data-bs-target="#date-range" 
+                                    type="button" role="tab" aria-controls="date-range" aria-selected="false">
+                                <i class="bi bi-calendar-range me-1"></i>Date Range
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active text-dark" id="month-year-tab" data-bs-toggle="tab" data-bs-target="#month-year" 
+                                    type="button" role="tab" aria-controls="month-year" aria-selected="true">
+                                <i class="bi bi-calendar-month me-1"></i>Month & Year
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="filterTabsContent">
+                <!-- Date Range Tab Content -->
+                <div class="tab-pane fade" id="date-range" role="tabpanel" aria-labelledby="date-range-tab">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" 
+                                       value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" 
+                                       value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <div class="mb-3 w-100">
+                                <button type="submit" class="btn btn-primary w-100" onclick="clearMonthYear()">
+                                    <i class="bi bi-search me-1"></i>Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Month & Year Tab Content -->
+                <div class="tab-pane fade show active" id="month-year" role="tabpanel" aria-labelledby="month-year-tab">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label for="month" class="form-label">Month</label>
+                                <select class="form-select" id="month" name="month">
+                                    <option value="">Select Month</option>
+                                    <option value="1" selected="@(Model.SelectedMonth == 1)">January</option>
+                                    <option value="2" selected="@(Model.SelectedMonth == 2)">February</option>
+                                    <option value="3" selected="@(Model.SelectedMonth == 3)">March</option>
+                                    <option value="4" selected="@(Model.SelectedMonth == 4)">April</option>
+                                    <option value="5" selected="@(Model.SelectedMonth == 5)">May</option>
+                                    <option value="6" selected="@(Model.SelectedMonth == 6)">June</option>
+                                    <option value="7" selected="@(Model.SelectedMonth == 7)">July</option>
+                                    <option value="8" selected="@(Model.SelectedMonth == 8)">August</option>
+                                    <option value="9" selected="@(Model.SelectedMonth == 9)">September</option>
+                                    <option value="10" selected="@(Model.SelectedMonth == 10)">October</option>
+                                    <option value="11" selected="@(Model.SelectedMonth == 11)">November</option>
+                                    <option value="12" selected="@(Model.SelectedMonth == 12)">December</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label for="year" class="form-label">Year</label>
+                                <select class="form-select" id="year" name="year">
+                                    <option value="">Select Year</option>
+                                    @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 5; y--)
+                                    {
+                                        <option value="@y" selected="@(Model.SelectedYear == y)">@y</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <div class="mb-3 w-100">
+                                <button type="submit" class="btn btn-primary w-100" onclick="clearDateRange()">
+                                    <i class="bi bi-search me-1"></i>Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Filter Buttons -->
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <div class="btn-group" role="group" aria-label="Quick date filters">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setDateRange(7)">Last 7 Days</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setDateRange(30)">Last 30 Days</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setDateRange(90)">Last 90 Days</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setCurrentMonth()">Current Month</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setLastMonth()">Last Month</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+        {
+            <div class="alert alert-info mt-3 mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Showing data from <strong>@Model.StartDate.Value.ToString("MMM dd, yyyy")</strong> to <strong>@Model.EndDate.Value.ToString("MMM dd, yyyy")</strong>
+            </div>
+        }
+    </div>
+</div>
+
 <div class="row mb-4">
     <div class="col-md-4">
         <div class="card text-white bg-primary mb-3">
             <div class="card-body">
                 <h5 class="card-title">Total Page Views</h5>
                 <h2 class="display-4">@Model.TotalPageViews</h2>
-                <p class="card-text">Past 30 days</p>
+                <p class="card-text">
+                    @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+                    {
+                        var days = (Model.EndDate.Value - Model.StartDate.Value).Days + 1;
+                        <text>@days day(s)</text>
+                    }
+                </p>
             </div>
         </div>
     </div>
@@ -39,7 +187,13 @@
             <div class="card-body">
                 <h5 class="card-title">PDF Downloads</h5>
                 <h2 class="display-4">@Model.TotalPdfDownloads</h2>
-                <p class="card-text">Past 30 days</p>
+                <p class="card-text">
+                    @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+                    {
+                        var days = (Model.EndDate.Value - Model.StartDate.Value).Days + 1;
+                        <text>@days day(s)</text>
+                    }
+                </p>
             </div>
         </div>
     </div>
@@ -48,7 +202,13 @@
             <div class="card-body">
                 <h5 class="card-title">Total Searches</h5>
                 <h2 class="display-4">@Model.TotalSearches</h2>
-                <p class="card-text">Past 30 days</p>
+                <p class="card-text">
+                    @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+                    {
+                        var days = (Model.EndDate.Value - Model.StartDate.Value).Days + 1;
+                        <text>@days day(s)</text>
+                    }
+                </p>
             </div>
         </div>
     </div>
@@ -57,7 +217,7 @@
 <!-- Page Views Section -->
 <div class="card mb-4">
     <div class="card-header bg-primary text-white">
-        <h3 class="mb-0"><i class="bi bi-eye-fill me-2"></i>Top Page Views (Past 30 Days)</h3>
+        <h3 class="mb-0"><i class="bi bi-eye-fill me-2"></i>Top Page Views</h3>
     </div>
     <div class="card-body">
         @if (Model.PageViews.Any())
@@ -88,7 +248,7 @@
         {
             <div class="alert alert-info">
                 <i class="bi bi-info-circle me-2"></i>
-                No page view data available for the past 30 days.
+                No page view data available for the selected date range.
             </div>
         }
     </div>
@@ -97,7 +257,7 @@
 <!-- PDF Downloads Section -->
 <div class="card mb-4">
     <div class="card-header bg-success text-white">
-        <h3 class="mb-0"><i class="bi bi-file-earmark-pdf-fill me-2"></i>PDF Downloads (Past 30 Days)</h3>
+        <h3 class="mb-0"><i class="bi bi-file-earmark-pdf-fill me-2"></i>PDF Downloads</h3>
     </div>
     <div class="card-body">
         @if (Model.PdfDownloads.Any())
@@ -135,7 +295,7 @@
         {
             <div class="alert alert-info">
                 <i class="bi bi-info-circle me-2"></i>
-                No PDF download data available for the past 30 days.
+                No PDF download data available for the selected date range.
             </div>
         }
     </div>
@@ -144,7 +304,7 @@
 <!-- Search Terms Section -->
 <div class="card mb-4">
     <div class="card-header bg-info text-white">
-        <h3 class="mb-0"><i class="bi bi-search me-2"></i>Resource Guide Search Terms (Past 30 Days)</h3>
+        <h3 class="mb-0"><i class="bi bi-search me-2"></i>Resource Guide Search Terms</h3>
     </div>
     <div class="card-body">
         @if (Model.SearchTerms.Any())
@@ -179,7 +339,7 @@
         {
             <div class="alert alert-info">
                 <i class="bi bi-info-circle me-2"></i>
-                No search data available for the past 30 days.
+                No search data available for the selected date range.
             </div>
         }
     </div>
@@ -187,6 +347,74 @@
 
 <div class="alert alert-secondary">
     <i class="bi bi-info-circle-fill me-2"></i>
-    <strong>Note:</strong> Analytics data is retrieved from Azure Application Insights for the past 30 days.
+    <strong>Note:</strong> Analytics data is retrieved from Azure Application Insights.
     Data is updated in near real-time and may take a few minutes to appear after events occur.
 </div>
+
+@section Scripts {
+    <script>
+        // Clear month/year fields when using date range
+        function clearMonthYear() {
+            document.getElementById('month').value = '';
+            document.getElementById('year').value = '';
+        }
+
+        // Clear date range fields when using month/year
+        function clearDateRange() {
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+        }
+
+        // Set date range for quick filters
+        function setDateRange(days) {
+            const today = new Date();
+            const startDate = new Date(today);
+            startDate.setDate(today.getDate() - days);
+            
+            document.getElementById('startDate').value = formatDate(startDate);
+            document.getElementById('endDate').value = formatDate(today);
+            
+            // Switch to date range tab and clear month/year
+            document.getElementById('date-range-tab').click();
+            clearMonthYear();
+            
+            document.getElementById('filterForm').submit();
+        }
+
+        // Set current month
+        function setCurrentMonth() {
+            const today = new Date();
+            document.getElementById('month').value = today.getMonth() + 1;
+            document.getElementById('year').value = today.getFullYear();
+            
+            // Switch to month/year tab and clear date range
+            document.getElementById('month-year-tab').click();
+            clearDateRange();
+            
+            document.getElementById('filterForm').submit();
+        }
+
+        // Set last month
+        function setLastMonth() {
+            const today = new Date();
+            const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            
+            document.getElementById('month').value = lastMonth.getMonth() + 1;
+            document.getElementById('year').value = lastMonth.getFullYear();
+            
+            // Switch to month/year tab and clear date range
+            document.getElementById('month-year-tab').click();
+            clearDateRange();
+            
+            document.getElementById('filterForm').submit();
+        }
+
+        // Format date as YYYY-MM-DD
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+    </script>
+}

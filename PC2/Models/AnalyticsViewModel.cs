@@ -6,7 +6,7 @@ namespace PC2.Models
     public class AnalyticsViewModel
     {
         /// <summary>
-        /// List of page views for the past 30 days
+        /// List of page views for the specified date range
         /// </summary>
         public List<PageViewData> PageViews { get; set; } = new List<PageViewData>();
 
@@ -21,7 +21,7 @@ namespace PC2.Models
         public List<SearchTermData> SearchTerms { get; set; } = new List<SearchTermData>();
 
         /// <summary>
-        /// Total number of page views in the past 30 days
+        /// Total number of page views in the specified date range
         /// </summary>
         public int TotalPageViews { get; set; }
 
@@ -34,6 +34,26 @@ namespace PC2.Models
         /// Total number of searches
         /// </summary>
         public int TotalSearches { get; set; }
+
+        /// <summary>
+        /// Start date for the analytics filter
+        /// </summary>
+        public DateTime? StartDate { get; set; }
+
+        /// <summary>
+        /// End date for the analytics filter
+        /// </summary>
+        public DateTime? EndDate { get; set; }
+
+        /// <summary>
+        /// Selected month for month/year filter (1-12)
+        /// </summary>
+        public int? SelectedMonth { get; set; }
+
+        /// <summary>
+        /// Selected year for month/year filter
+        /// </summary>
+        public int? SelectedYear { get; set; }
     }
 
     /// <summary>
