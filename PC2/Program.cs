@@ -2,8 +2,8 @@ using IdentityLogin.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
-using PC2.Filters;
 using PC2.Models;
+using PC2.Services;
 using System.Globalization;
 using Microsoft.Extensions.Azure;
 
@@ -18,16 +18,28 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // Register AzureBlobUploader for DI
 builder.Services.AddSingleton<AzureBlobUploader>();
 
+// Register AnalyticsService for DI
+builder.Services.AddScoped<AnalyticsService>();
+
+// Configure Application Insights - only add if connection string is provided
+var appInsightsConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value;
 builder.Services.AddApplicationInsightsTelemetry(options =>
-    options.ConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value);
+{
+    options.ConnectionString = appInsightsConnectionString;
+        
+    // Enable developer mode in development for faster telemetry
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableAdaptiveSampling = false;
+        options.EnableDebugLogger = true;
+    }
+});
+
 
 builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOptions)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews(options =>
-{
-    options.Filters.Add<ApplicationInsightsPageViewTracker>();
-});
+builder.Services.AddControllersWithViews();
 
 // email provider
 builder.Services.AddTransient<IEmailSender, EmailSenderSendGrid>();
