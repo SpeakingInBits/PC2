@@ -3,6 +3,7 @@ using Azure.Monitor.Query.Models;
 using Azure;
 using PC2.Models;
 using Azure.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace PC2.Services;
 
@@ -14,9 +15,11 @@ public class AnalyticsService
     private readonly LogsQueryClient? _logsQueryClient;
     private readonly string? _workspaceId;
     private readonly bool _isAzureConfigured;
+    private readonly ILogger<AnalyticsService> _logger;
 
-    public AnalyticsService(IConfiguration configuration)
+    public AnalyticsService(IConfiguration configuration, ILogger<AnalyticsService> logger)
     {
+        _logger = logger;
         _workspaceId = configuration["ApplicationInsights:WorkspaceId"];
         var connectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
 
@@ -29,18 +32,19 @@ public class AnalyticsService
                 // This will use Azure CLI credentials, managed identity, or environment variables
                 _logsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
                 _isAzureConfigured = true;
+                _logger.LogInformation("Successfully initialized Azure Application Insights client");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to initialize Azure Application Insights client: {ex.Message}");
-                Console.WriteLine("Falling back to local Application Insights data");
+                _logger.LogError(ex, "Failed to initialize Azure Application Insights client");
+                _logger.LogWarning("Falling back to local Application Insights data");
                 _isAzureConfigured = false;
             }
         }
         else
         {
             // Use local Application Insights telemetry
-            Console.WriteLine("Azure Application Insights not configured. Using local telemetry data.");
+            _logger.LogInformation("Azure Application Insights not configured. Using local telemetry data");
             _isAzureConfigured = false;
         }
     }
@@ -75,7 +79,7 @@ public class AnalyticsService
         catch (Exception ex)
         {
             // Log error but return partial data if available
-            Console.WriteLine($"Error retrieving analytics data: {ex.Message}");
+            _logger.LogError(ex, "Error retrieving analytics data");
         }
 
         return viewModel;
@@ -107,6 +111,8 @@ public class AnalyticsService
     /// </summary>
     private void GetLocalAnalyticsData(AnalyticsViewModel viewModel)
     {
+        _logger.LogDebug("Providing sample analytics data for local development");
+        
         // Sample page views
         viewModel.PageViews = new List<PageViewData>
         {
@@ -215,7 +221,7 @@ public class AnalyticsService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error retrieving page views: {ex.Message}");
+            _logger.LogError(ex, "Error retrieving page views from Application Insights");
         }
 
         return pageViews;
@@ -268,7 +274,7 @@ public class AnalyticsService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error retrieving PDF downloads: {ex.Message}");
+            _logger.LogError(ex, "Error retrieving PDF downloads from Application Insights");
         }
 
         return downloads;
@@ -320,7 +326,7 @@ public class AnalyticsService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error retrieving search terms: {ex.Message}");
+            _logger.LogError(ex, "Error retrieving search terms from Application Insights");
         }
 
         return searchTerms;
