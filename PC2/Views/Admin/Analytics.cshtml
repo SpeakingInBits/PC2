@@ -366,105 +366,51 @@
 
 @section Scripts {
     <script>
-        // Copy analytics data to clipboard in formatted text
-        function copyAnalyticsToClipboard() {
-            const startDate = '@Model.StartDate?.ToString("MMM dd, yyyy")';
-            const endDate = '@Model.EndDate?.ToString("MMM dd, yyyy")';
-            const days = @((Model.EndDate.HasValue && Model.StartDate.HasValue) ? (Model.EndDate.Value - Model.StartDate.Value).Days + 1 : 0);
-            
-            let report = '=== PC2 ANALYTICS REPORT ===\n\n';
-            report += `Date Range: ${startDate} to ${endDate} (${days} days)\n`;
-            report += `Generated: ${new Date().toLocaleString()}\n\n`;
-            
-            // Summary Statistics
-            report += '--- SUMMARY STATISTICS ---\n';
-            report += `Total Page Views: @Model.TotalPageViews\n`;
-            report += `Total PDF Downloads: @Model.TotalPdfDownloads\n`;
-            report += `Total Searches: @Model.TotalSearches\n\n`;
-            
-            // Page Views
-            report += '--- TOP PAGE VIEWS ---\n';
-            @if (Model.PageViews.Any())
-            {
-                @foreach (var pageView in Model.PageViews.Take(20))
+        // Hidden data for clipboard export
+        var analyticsData = {
+            startDate: '@Model.StartDate?.ToString("MMM dd, yyyy")',
+            endDate: '@Model.EndDate?.ToString("MMM dd, yyyy")',
+            days: @((Model.EndDate.HasValue && Model.StartDate.HasValue) ? (Model.EndDate.Value - Model.StartDate.Value).Days + 1 : 0),
+            totalPageViews: @Model.TotalPageViews,
+            totalPdfDownloads: @Model.TotalPdfDownloads,
+            totalSearches: @Model.TotalSearches,
+            pageViews: [
+                @if (Model.PageViews.Any())
                 {
-                    <text>
-            report += '@Html.Raw(pageView.PageUrl.Replace("'", "\\'"))' + ' - ' + '@pageView.ViewCount views\n';
-                    </text>
+                        for (int i = 0; i < Model.PageViews.Take(20).Count(); i++)
+                        {
+                                var pv = Model.PageViews.ElementAt(i);
+                                var comma = i < Model.PageViews.Take(20).Count() - 1 ? "," : "";
+                                <text>        { url: '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(pv.PageUrl))', count: @pv.ViewCount }@comma
+                        </text>
+                        }
                 }
-            }
-            else
-            {
-                <text>
-            report += 'No page view data available\n';
-                </text>
-            }
-            report += '\n';
-            
-            // PDF Downloads
-            report += '--- PDF DOWNLOADS ---\n';
-            @if (Model.PdfDownloads.Any())
-            {
-                @foreach (var download in Model.PdfDownloads)
+            ],
+            pdfDownloads: [
+                @if (Model.PdfDownloads.Any())
                 {
-                    <text>
-            report += '@Html.Raw(download.FileName.Replace("'", "\\'"))' + ' - ' + '@download.DownloadCount downloads\n';
-                    </text>
+                        for (int i = 0; i < Model.PdfDownloads.Count(); i++)
+                        {
+                                var dl = Model.PdfDownloads.ElementAt(i);
+                                var comma = i < Model.PdfDownloads.Count() - 1 ? "," : "";
+                                <text>        { name: '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(dl.FileName))', count: @dl.DownloadCount }@comma
+                        </text>
+                        }
                 }
-            }
-            else
-            {
-                <text>
-            report += 'No PDF download data available\n';
-                </text>
-            }
-            report += '\n';
-            
-            // Search Terms
-            report += '--- RESOURCE GUIDE SEARCH TERMS ---\n';
-            @if (Model.SearchTerms.Any())
-            {
-                @foreach (var search in Model.SearchTerms)
+            ],
+            searchTerms: [
+                @if (Model.SearchTerms.Any())
                 {
-                    <text>
-            report += '@search.SearchType' + ': ' + '@Html.Raw(search.SearchTerm.Replace("'", "\\'"))' + ' - ' + '@search.SearchCount searches\n';
-                    </text>
+                        for (int i = 0; i < Model.SearchTerms.Count(); i++)
+                        {
+                                var st = Model.SearchTerms.ElementAt(i);
+                                var comma = i < Model.SearchTerms.Count() - 1 ? "," : "";
+                                <text>{ type: '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(st.SearchType))', term: '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(st.SearchTerm))', count: @st.SearchCount }@comma
+                        </text>
+                        }
                 }
-            }
-            else
-            {
-                <text>
-            report += 'No search data available\n';
-                </text>
-            }
-            
-            report += '\n=== END OF REPORT ===\n';
-            
-            // Copy to clipboard
-            navigator.clipboard.writeText(report).then(function() {
-                // Show success message
-                const successMsg = document.getElementById('copySuccess');
-                successMsg.style.display = 'inline';
-                setTimeout(function() {
-                    successMsg.style.display = 'none';
-                }, 3000);
-            }).catch(function(err) {
-                alert('Failed to copy to clipboard: ' + err);
-            });
-        }
-
-        // Clear month/year fields when using date range
-        function clearMonthYear() {
-            document.getElementById('month').value = '';
-            document.getElementById('year').value = '';
-        }
-
-        // Clear date range fields when using month/year
-        function clearDateRange() {
-            document.getElementById('startDate').value = '';
-            document.getElementById('endDate').value = '';
-        }
-
-        // Set date range for quick filters
+            ]
+        };
     </script>
+	<script src="~/js/admin-analytics.js"></script>
 }
