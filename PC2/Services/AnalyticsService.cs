@@ -28,9 +28,7 @@ public class AnalyticsService
         {
             try
             {
-                // Create the logs query client using DefaultAzureCredential
-                // This will use Azure CLI credentials, managed identity, or environment variables
-                _logsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+                _logsQueryClient = new LogsQueryClient(new ManagedIdentityCredential());
                 _isAzureConfigured = true;
                 _logger.LogInformation("Successfully initialized Azure Application Insights client");
             }
