@@ -23,28 +23,23 @@ public class AnalyticsService
         _workspaceId = configuration["ApplicationInsights:WorkspaceId"];
         var connectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
 
-        // Only initialize Azure client if both workspace ID and connection string are configured
-        if (!string.IsNullOrEmpty(_workspaceId) && !string.IsNullOrEmpty(connectionString))
+#if !DEBUG
+        try
         {
-            try
-            {
-                _logsQueryClient = new LogsQueryClient(new ManagedIdentityCredential());
-                _isAzureConfigured = true;
-                _logger.LogInformation("Successfully initialized Azure Application Insights client");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to initialize Azure Application Insights client");
-                _logger.LogWarning("Falling back to local Application Insights data");
-                _isAzureConfigured = false;
-            }
+            _logsQueryClient = new LogsQueryClient(new ManagedIdentityCredential());
+            _isAzureConfigured = true;
+            _logger.LogInformation("Successfully initialized Azure Application Insights client");
         }
-        else
+        catch (Exception ex)
         {
-            // Use local Application Insights telemetry
-            _logger.LogInformation("Azure Application Insights not configured. Using local telemetry data");
+            _logger.LogError(ex, "Failed to initialize Azure Application Insights client");
+            _logger.LogWarning("Falling back to local Application Insights data");
             _isAzureConfigured = false;
         }
+#else
+        // Use local hardcoded data for dev
+        _isAzureConfigured = false;
+#endif
     }
 
     /// <summary>
@@ -63,7 +58,7 @@ public class AnalyticsService
 
         try
         {
-            if (_isAzureConfigured && _logsQueryClient != null && !string.IsNullOrEmpty(_workspaceId))
+            if (_isAzureConfigured && _logsQueryClient != null)
             {
                 // Use Azure Application Insights Log Analytics
                 await GetAzureAnalyticsDataAsync(viewModel);
@@ -179,7 +174,7 @@ public class AnalyticsService
     {
         var pageViews = new List<PageViewData>();
 
-        if (_logsQueryClient == null || string.IsNullOrEmpty(_workspaceId))
+        if (_logsQueryClient == null)
             return pageViews;
 
         try
@@ -232,7 +227,7 @@ public class AnalyticsService
     {
         var downloads = new List<DownloadData>();
 
-        if (_logsQueryClient == null || string.IsNullOrEmpty(_workspaceId))
+        if (_logsQueryClient == null)
             return downloads;
 
         try
@@ -285,7 +280,7 @@ public class AnalyticsService
     {
         var searchTerms = new List<SearchTermData>();
 
-        if (_logsQueryClient == null || string.IsNullOrEmpty(_workspaceId))
+        if (_logsQueryClient == null)
             return searchTerms;
 
         try
