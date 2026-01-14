@@ -191,11 +191,13 @@ public class AnalyticsService
             // This filter can be safely removed in the future once the old server data falls off.
             var query = $@"
                     AppPageViews
-                    | where TimeGenerated between (datetime({startDate}) .. datetime({endDate}))
+                    | where TimeGenerated between (datetime({startDate:yyyy-MM-ddTHH:mm:ssZ}) .. datetime({endDate:yyyy-MM-ddTHH:mm:ssZ}))
                     | where isempty(SyntheticSource)
                     | where ClientType == 'Browser' or ClientType == 'PC'
-                    | where isnotempty(UserId)  // Only count users with valid IDs
-                    | summarize UniqueUsers = dcount(UserId)";
+                    | where Name !startswith '/'
+                    | summarize ViewCount = count() by Name
+                    | order by ViewCount desc
+                    | limit 50";
 
             Response<LogsQueryResult> response = await _logsQueryClient.QueryWorkspaceAsync(
                 _workspaceId,
