@@ -148,5 +148,36 @@ namespace PC2.Controllers
 
             return View(newsletterFiles);
         }
+
+        /// <summary>
+        /// Tracks newsletter download events via AJAX
+        /// </summary>
+        /// <param name="linkUrl">The URL of the newsletter being downloaded</param>
+        /// <param name="searchType">The type of action (e.g., "Download")</param>
+        [HttpPost]
+        public IActionResult TrackNewsletterDownload([FromBody] NewsletterDownloadRequest request)
+        {
+            if (_telemetryClient != null && !string.IsNullOrEmpty(request?.LinkUrl))
+            {
+                _telemetryClient.TrackEvent("FocusNewsletter",
+                    new Dictionary<string, string>
+                    {
+                        { "linkUrl", request.LinkUrl },
+                        { "SearchType", request.SearchType ?? "Download" }
+                    });
+            }
+
+            return Ok();
+        }
+    }
+
+    /// <summary>
+    /// Request model for newsletter download tracking
+    /// </summary>
+    public class NewsletterDownloadRequest
+    {
+        public string LinkUrl { get; set; }
+        public string SearchType { get; set; }
+    }
     }
 }
