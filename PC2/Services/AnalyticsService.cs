@@ -97,6 +97,9 @@ public class AnalyticsService
         // Get search terms from resource guide
         viewModel.SearchTerms = await GetSearchTermsAsync(viewModel.StartDate.Value, viewModel.EndDate.Value, timeRange);
         viewModel.TotalSearches = viewModel.SearchTerms.Sum(st => st.SearchCount);
+
+        // Get unique user count
+        viewModel.TotalUniqueUsers = await GetUniqueUsersAsync(viewModel.StartDate.Value, viewModel.EndDate.Value, timeRange);
     }
 
     /// <summary>
@@ -153,6 +156,9 @@ public class AnalyticsService
             new SearchTermData { SearchType = "CityAndCategory", SearchTerm = "Tacoma - Education", SearchCount = 4 }
         };
         viewModel.TotalSearches = viewModel.SearchTerms.Sum(st => st.SearchCount);
+
+        // Sample unique users count
+        viewModel.TotalUniqueUsers = 42;
     }
 
     /// <summary>
@@ -184,15 +190,12 @@ public class AnalyticsService
             // Filter out old server side tracking by ensuring page view does not start with "/"
             // This filter can be safely removed in the future once the old server data falls off.
             var query = $@"
-                    pageViews
-                    | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
-                    | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
-                    | where isempty(operation_SyntheticSource)
-                    | where client_Type == 'Browser' or client_Type == 'PC'
-                    | where name !startswith '/'
-                    | summarize ViewCount = count() by name
-                    | order by ViewCount desc
-                    | limit 50";
+                    AppPageViews
+                    | where TimeGenerated between (datetime({startDate}) .. datetime({endDate}))
+                    | where isempty(SyntheticSource)
+                    | where ClientType == 'Browser' or ClientType == 'PC'
+                    | where isnotempty(UserId)  // Only count users with valid IDs
+                    | summarize UniqueUsers = dcount(UserId)";
 
             Response<LogsQueryResult> response = await _logsQueryClient.QueryWorkspaceAsync(
                 _workspaceId,
@@ -233,13 +236,12 @@ public class AnalyticsService
         try
         {
             var query = $@"
-                    customEvents
-                    | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
-                    | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
-                    | where name == 'FocusNewsletter'
-                    | where isempty(operation_SyntheticSource)
-                    | where client_Type == 'Browser' or client_Type == 'PC'
-                    | extend linkUrl = tostring(customDimensions.linkUrl)
+                    AppEvents
+                    | where TimeGenerated between (datetime({startDate:yyyy-MM-ddTHH:mm:ssZ}) .. datetime({endDate:yyyy-MM-ddTHH:mm:ssZ}))
+                    | where Name == 'FocusNewsletter'
+                    | where isempty(SyntheticSource)
+                    | where ClientType == 'Browser' or ClientType == 'PC'
+                    | extend linkUrl = tostring(Properties.linkUrl)
                     | summarize DownloadCount = count() by linkUrl
                     | order by DownloadCount desc";
 
@@ -286,14 +288,13 @@ public class AnalyticsService
         try
         {
             var query = $@"
-                    customEvents
-                    | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
-                    | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
-                    | where name == 'ResourceGuideSearch'
-                    | where isempty(operation_SyntheticSource)
-                    | where client_Type == 'Browser' or client_Type == 'PC'
-                    | extend SearchType = tostring(customDimensions.SearchType)
-                    | extend SearchTerm = tostring(customDimensions.SearchTerm)
+                    AppEvents
+                    | where TimeGenerated between (datetime({startDate:yyyy-MM-ddTHH:mm:ssZ}) .. datetime({endDate:yyyy-MM-ddTHH:mm:ssZ}))
+                    | where Name == 'ResourceGuideSearch'
+                    | where isempty(SyntheticSource)
+                    | where ClientType == 'Browser' or ClientType == 'PC'
+                    | extend SearchType = tostring(Properties.SearchType)
+                    | extend SearchTerm = tostring(Properties.SearchTerm)
                     | summarize SearchCount = count() by SearchType, SearchTerm
                     | order by SearchCount desc
                     | limit 100";
@@ -323,6 +324,47 @@ public class AnalyticsService
         }
 
         return searchTerms;
+    }
+
+    /// <summary>
+    /// Retrieves the count of unique users for the specified date range from Azure
+    /// </summary>
+    private async Task<int> GetUniqueUsersAsync(DateTime startDate, DateTime endDate, QueryTimeRange timeRange)
+    {
+        if (_logsQueryClient == null)
+            return 0;
+
+        try
+        {
+            var query = $@"
+                    AppPageViews
+                    | where TimeGenerated between (datetime({startDate:yyyy-MM-ddTHH:mm:ssZ}) .. datetime({endDate:yyyy-MM-ddTHH:mm:ssZ}))
+                    | where isempty(SyntheticSource)
+                    | where ClientType == 'Browser' or ClientType == 'PC'
+                    | where isnotempty(UserId)  // Only count users with valid IDs
+                    | summarize UniqueUsers = dcount(UserId)";
+
+            Response<LogsQueryResult> response = await _logsQueryClient.QueryWorkspaceAsync(
+                _workspaceId,
+                query,
+                timeRange);
+
+            if (response.Value.Status == LogsQueryResultStatus.Success)
+            {
+                var table = response.Value.Table;
+                if (table.Rows.Count > 0)
+                {
+                    var row = table.Rows[0];
+                    return int.TryParse(row[0]?.ToString(), out int count) ? count : 0;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving unique users from Application Insights");
+        }
+
+        return 0;
     }
 
     /// <summary>

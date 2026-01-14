@@ -61,13 +61,22 @@ else
 {
     <script>
         function trackExternalLink(url) {
-            appInsights.trackEvent({
-                name: "FocusNewsletter",
-                properties: {
+            // Track the download via AJAX call to the server
+            fetch('@Url.Action("TrackNewsletterDownload", "Resources")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({
                     linkUrl: url,
-                    SearchType: "Download"
-                }
+                    searchType: 'Download'
+                })
+            }).catch(error => {
+                console.error('Error tracking download:', error);
             });
+            
+            // Open the PDF in a new window
             window.open(url);
         }
     </script>

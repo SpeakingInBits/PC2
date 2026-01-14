@@ -222,6 +222,21 @@
             </div>
         </div>
     </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Unique Visitors</h5>
+                <h2 class="display-4">@Model.TotalUniqueUsers</h2>
+                <p class="card-text">
+                    @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+                    {
+                        var days = (Model.EndDate.Value - Model.StartDate.Value).Days + 1;
+                        <text>@days day(s)</text>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Page Views Section -->
@@ -374,6 +389,7 @@
             totalPageViews: @Model.TotalPageViews,
             totalPdfDownloads: @Model.TotalPdfDownloads,
             totalSearches: @Model.TotalSearches,
+            totalUniqueUsers: @Model.TotalUniqueUsers,
             pageViews: [
                 @if (Model.PageViews.Any())
                 {

@@ -60,7 +60,8 @@ public class AdminController : Controller
             // If no data was returned, show configuration message
             if (analyticsData.TotalPageViews == 0 && 
                 analyticsData.TotalPdfDownloads == 0 && 
-                analyticsData.TotalSearches == 0)
+                analyticsData.TotalSearches == 0 &&
+                analyticsData.TotalUniqueUsers == 0)
             {
                 ViewBag.InfoMessage = "No data found for the selected date range. " +
                     "Application Insights may not be configured, or there is no data for this period. " +

@@ -36,6 +36,11 @@ namespace PC2.Models
         public int TotalSearches { get; set; }
 
         /// <summary>
+        /// Total number of unique users in the specified date range
+        /// </summary>
+        public int TotalUniqueUsers { get; set; }
+
+        /// <summary>
         /// Start date for the analytics filter
         /// </summary>
         public DateTime? StartDate { get; set; }
