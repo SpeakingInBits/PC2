@@ -179,5 +179,4 @@ namespace PC2.Controllers
         public string LinkUrl { get; set; }
         public string SearchType { get; set; }
     }
-    }
 }
