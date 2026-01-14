@@ -8,9 +8,8 @@
     <title>@ViewData["Title"] - PC2Online</title>
 
 @{
-    var appInsightsKey = Configuration["ApplicationInsights:InstrumentationKey"];
     var appInsightsConnectionString = Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
-    var enableAppInsights = !string.IsNullOrEmpty(appInsightsConnectionString) || !string.IsNullOrEmpty(appInsightsKey);
+    var enableAppInsights = !string.IsNullOrEmpty(appInsightsConnectionString);
 }
 
 @if (enableAppInsights)
@@ -24,7 +23,7 @@
     crossOrigin: "anonymous", // When supplied this will add the provided value as the cross origin attribute on the script tag
     // onInit: null, // Once the application insights instance has loaded and initialized this callback function will be called with 1 argument -- the sdk instance (DO NOT ADD anything to the sdk.queue -- As they won't get called)
     cfg: { // Application Insights Configuration
-        instrumentationKey: "c4b69618-5135-49c7-a75d-215953ddde9b"
+            instrumentationKey: "d6fbaa0b-1571-49b5-953c-44f2298d5c35"
     }});
     </script>
 }
