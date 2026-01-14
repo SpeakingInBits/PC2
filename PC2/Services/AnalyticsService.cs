@@ -184,7 +184,7 @@ public class AnalyticsService
             // Filter out old server side tracking by ensuring page view does not start with "/"
             // This filter can be safely removed in the future once the old server data falls off.
             var query = $@"
-                    pageViews
+                    AppPageViews
                     | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where isempty(operation_SyntheticSource)
@@ -233,7 +233,7 @@ public class AnalyticsService
         try
         {
             var query = $@"
-                    customEvents
+                    AppEvents
                     | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where name == 'FocusNewsletter'
@@ -286,7 +286,7 @@ public class AnalyticsService
         try
         {
             var query = $@"
-                    customEvents
+                    AppEvents
                     | where timestamp >= datetime({startDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where timestamp <= datetime({endDate:yyyy-MM-ddTHH:mm:ssZ})
                     | where name == 'ResourceGuideSearch'
