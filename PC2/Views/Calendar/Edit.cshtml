@@ -1,4 +1,4 @@
-﻿@model PC2.Controllers.CalendarCreateEventViewModel
+﻿@model CalendarCreateEventViewModel
 
 @{
     ViewData["Title"] = "Edit Event";
@@ -42,6 +42,8 @@
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="IsCountyEvent" /> @Html.DisplayNameFor(model => model.IsCountyEvent)
                 </label>
+                <br>
+                <span asp-validation-for="IsCountyEvent" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

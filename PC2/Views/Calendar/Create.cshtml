@@ -1,4 +1,4 @@
-﻿@model PC2.Controllers.CalendarCreateEventViewModel
+﻿@model CalendarCreateEventViewModel
 @{
     ViewData["Title"] = "Create Event";
 }
@@ -9,7 +9,7 @@
 
 <div class="row justify-content-center">
     <div class="col-md-4">
-        <div asp-validation-summary="All" class="text-danger"></div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <form id="create" class="form" asp-action="Create" method="post">
             <div class="form-group">
                 <label class="control-label">Set date for event</label>

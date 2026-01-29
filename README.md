@@ -3,10 +3,9 @@ PC2 is a modern, database-driven website for the Pierce County Coalition for Dev
 It provides a searchable resource guide, file uploads, and administrative features, replacing the original Wix-based site the client had.
 
 ## Technology Stack
-- ASP.NET Core MVC (.NET 9)
+- ASP.NET Core MVC
 - Azure Blob Storage (Azurite Emulator for local development)
 - SQL Server (localdb for development)
-- Visual Studio 2022
 
 ## Production Environment
 This website is hosted on Azure App Service, providing a reliable and scalable platform for production use. The database 
@@ -15,9 +14,9 @@ is hosted on Azure SQL Database.
 ## Getting Started
 
 ### Prerequisites
-- Visual Studio 2022
+- Visual Studio 2026
 - Ensure the SQL Server Data Tools component are installed with Visual Studio.
-- .NET 9 SDK (bundled with Visual Studio 2022)
+- .NET 10 SDK (bundled with Visual Studio 2026)
 - ASP.NET and web development workload
 
 ### Setup Instructions

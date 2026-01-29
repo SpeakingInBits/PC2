@@ -1,0 +1,432 @@
+@model PC2.Models.AnalyticsViewModel
+
+@{
+    ViewData["Title"] = "Analytics Dashboard";
+}
+
+@section Head {
+    <style>
+        /* Override Bootstrap's default tab link colors to ensure visibility */
+        #filterTabs .nav-link {
+            color: #212529 !important; /* Bootstrap's dark color */
+        }
+        
+        #filterTabs .nav-link:hover {
+            color: #000 !important;
+        }
+        
+        #filterTabs .nav-link.active {
+            color: #0d6efd !important; /* Bootstrap's primary blue for active tab */
+        }
+    </style>
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="divider"></div>
+<br />
+
+<!-- Copy to Clipboard Button -->
+<div class="mb-3">
+    <button type="button" class="btn btn-success" id="copyToClipboardBtn" onclick="copyAnalyticsToClipboard()">
+        <i class="bi bi-clipboard-check me-2"></i>Copy Analytics Report to Clipboard
+    </button>
+    <span id="copySuccess" class="text-success ms-2" style="display: none;">
+        <i class="bi bi-check-circle-fill"></i> Copied to clipboard!
+    </span>
+</div>
+
+@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.InfoMessage))
+{
+    <div class="alert alert-warning" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        @ViewBag.InfoMessage
+    </div>
+}
+
+<!-- Date Filter Section -->
+<div class="card mb-4">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0"><i class="bi bi-funnel-fill me-2"></i>Filter Analytics Data</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="Analytics" id="filterForm">
+            <div class="row">
+                <!-- Custom Date Range Tab -->
+                <div class="col-md-12 mb-3">
+                    <ul class="nav nav-tabs" id="filterTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link text-dark" id="date-range-tab" data-bs-toggle="tab" data-bs-target="#date-range" 
+                                    type="button" role="tab" aria-controls="date-range" aria-selected="false">
+                                <i class="bi bi-calendar-range me-1"></i>Date Range
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active text-dark" id="month-year-tab" data-bs-toggle="tab" data-bs-target="#month-year" 
+                                    type="button" role="tab" aria-controls="month-year" aria-selected="true">
+                                <i class="bi bi-calendar-month me-1"></i>Month & Year
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="filterTabsContent">
+                <!-- Date Range Tab Content -->
+                <div class="tab-pane fade" id="date-range" role="tabpanel" aria-labelledby="date-range-tab">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" 
+                                       value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" 
+                                       value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <div class="mb-3 w-100">
+                                <button type="submit" class="btn btn-primary w-100" onclick="clearMonthYear()">
+                                    <i class="bi bi-search me-1"></i>Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Month & Year Tab Content -->
+                <div class="tab-pane fade show active" id="month-year" role="tabpanel" aria-labelledby="month-year-tab">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label for="month" class="form-label">Month</label>
+                                <select class="form-select" id="month" name="month">
+                                    <option value="">Select Month</option>
+                                    <option value="1" selected="@(Model.SelectedMonth == 1)">January</option>
+                                    <option value="2" selected="@(Model.SelectedMonth == 2)">February</option>
+                                    <option value="3" selected="@(Model.SelectedMonth == 3)">March</option>
+                                    <option value="4" selected="@(Model.SelectedMonth == 4)">April</option>
+                                    <option value="5" selected="@(Model.SelectedMonth == 5)">May</option>
+                                    <option value="6" selected="@(Model.SelectedMonth == 6)">June</option>
+                                    <option value="7" selected="@(Model.SelectedMonth == 7)">July</option>
+                                    <option value="8" selected="@(Model.SelectedMonth == 8)">August</option>
+                                    <option value="9" selected="@(Model.SelectedMonth == 9)">September</option>
+                                    <option value="10" selected="@(Model.SelectedMonth == 10)">October</option>
+                                    <option value="11" selected="@(Model.SelectedMonth == 11)">November</option>
+                                    <option value="12" selected="@(Model.SelectedMonth == 12)">December</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label for="year" class="form-label">Year</label>
+                                <select class="form-select" id="year" name="year">
+                                    <option value="">Select Year</option>
+                                    @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 1; y--)
+                                    {
+                                        <option value="@y" selected="@(Model.SelectedYear == y)">@y</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <div class="mb-3 w-100">
+                                <button type="submit" class="btn btn-primary w-100" onclick="clearDateRange()">
+                                    <i class="bi bi-search me-1"></i>Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Filter Buttons -->
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <div class="btn-group" role="group" aria-label="Quick date filters">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setDateRange(7)">Last 7 Days</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setDateRange(30)">Last 30 Days</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setDateRange(90)">Last 90 Days</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setCurrentMonth()">Current Month</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setLastMonth()">Last Month</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+        {
+            <div class="alert alert-info mt-3 mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Showing data from <strong>@Model.StartDate.Value.ToString("MMM dd, yyyy")</strong> to <strong>@Model.EndDate.Value.ToString("MMM dd, yyyy")</strong>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Page Views</h5>
+                <h2 class="display-4">@Model.TotalPageViews</h2>
+                <p class="card-text">
+                    @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+                    {
+                        var days = (Model.EndDate.Value - Model.StartDate.Value).Days + 1;
+                        <text>@days day(s)</text>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">PDF Downloads</h5>
+                <h2 class="display-4">@Model.TotalPdfDownloads</h2>
+                <p class="card-text">
+                    @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+                    {
+                        var days = (Model.EndDate.Value - Model.StartDate.Value).Days + 1;
+                        <text>@days day(s)</text>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Searches</h5>
+                <h2 class="display-4">@Model.TotalSearches</h2>
+                <p class="card-text">
+                    @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+                    {
+                        var days = (Model.EndDate.Value - Model.StartDate.Value).Days + 1;
+                        <text>@days day(s)</text>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Unique Visitors</h5>
+                <h2 class="display-4">@Model.TotalUniqueUsers</h2>
+                <p class="card-text">
+                    @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+                    {
+                        var days = (Model.EndDate.Value - Model.StartDate.Value).Days + 1;
+                        <text>@days day(s)</text>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Page Views Section -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0"><i class="bi bi-eye-fill me-2"></i>Top Page Views</h3>
+    </div>
+    <div class="card-body">
+        @if (Model.PageViews.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Page URL</th>
+                            <th class="text-end">View Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pageView in Model.PageViews.Take(20))
+                        {
+                            <tr>
+                                <td>@pageView.PageUrl</td>
+                                <td class="text-end">
+                                    <span class="badge bg-primary rounded-pill">@pageView.ViewCount</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                No page view data available for the selected date range.
+            </div>
+        }
+    </div>
+</div>
+
+<!-- PDF Downloads Section -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h3 class="mb-0"><i class="bi bi-file-earmark-pdf-fill me-2"></i>PDF Downloads</h3>
+    </div>
+    <div class="card-body">
+        @if (Model.PdfDownloads.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>URL</th>
+                            <th class="text-end">Download Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var download in Model.PdfDownloads)
+                        {
+                            <tr>
+                                <td>
+                                    <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                                    @download.FileName
+                                </td>
+                                <td>
+                                    <small class="text-muted">@download.FileUrl</small>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-success rounded-pill">@download.DownloadCount</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                No PDF download data available for the selected date range.
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Search Terms Section -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h3 class="mb-0"><i class="bi bi-search me-2"></i>Resource Guide Search Terms</h3>
+    </div>
+    <div class="card-body">
+        @if (Model.SearchTerms.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Search Type</th>
+                            <th>Search Term</th>
+                            <th class="text-end">Search Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var search in Model.SearchTerms)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">@search.SearchType</span>
+                                </td>
+                                <td>@search.SearchTerm</td>
+                                <td class="text-end">
+                                    <span class="badge bg-info rounded-pill">@search.SearchCount</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                No search data available for the selected date range.
+            </div>
+        }
+    </div>
+</div>
+
+<div class="alert alert-secondary">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <strong>Note:</strong> Analytics data is retrieved from Azure Application Insights.
+    Data is updated in near real-time and may take a few minutes to appear after events occur.
+    <br />
+    <i class="bi bi-shield-check me-2"></i>
+    <strong>Bot Filtering:</strong> All metrics exclude bot traffic and synthetic tests, showing only real human users.
+</div>
+
+@section Scripts {
+    <script>
+        // Hidden data for clipboard export
+        var analyticsData = {
+            startDate: '@Model.StartDate?.ToString("MMM dd, yyyy")',
+            endDate: '@Model.EndDate?.ToString("MMM dd, yyyy")',
+            days: @((Model.EndDate.HasValue && Model.StartDate.HasValue) ? (Model.EndDate.Value - Model.StartDate.Value).Days + 1 : 0),
+            totalPageViews: @Model.TotalPageViews,
+            totalPdfDownloads: @Model.TotalPdfDownloads,
+            totalSearches: @Model.TotalSearches,
+            totalUniqueUsers: @Model.TotalUniqueUsers,
+            pageViews: [
+                @if (Model.PageViews.Any())
+                {
+                        for (int i = 0; i < Model.PageViews.Take(20).Count(); i++)
+                        {
+                                var pv = Model.PageViews.ElementAt(i);
+                                var comma = i < Model.PageViews.Take(20).Count() - 1 ? "," : "";
+                                <text>        { url: '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(pv.PageUrl))', count: @pv.ViewCount }@comma
+                        </text>
+                        }
+                }
+            ],
+            pdfDownloads: [
+                @if (Model.PdfDownloads.Any())
+                {
+                        for (int i = 0; i < Model.PdfDownloads.Count(); i++)
+                        {
+                                var dl = Model.PdfDownloads.ElementAt(i);
+                                var comma = i < Model.PdfDownloads.Count() - 1 ? "," : "";
+                                <text>        { name: '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(dl.FileName))', count: @dl.DownloadCount }@comma
+                        </text>
+                        }
+                }
+            ],
+            searchTerms: [
+                @if (Model.SearchTerms.Any())
+                {
+                        for (int i = 0; i < Model.SearchTerms.Count(); i++)
+                        {
+                                var st = Model.SearchTerms.ElementAt(i);
+                                var comma = i < Model.SearchTerms.Count() - 1 ? "," : "";
+                                <text>{ type: '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(st.SearchType))', term: '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(st.SearchTerm))', count: @st.SearchCount }@comma
+                        </text>
+                        }
+                }
+            ]
+        };
+    </script>
+	<script src="~/js/analytics.js"></script>
+}
