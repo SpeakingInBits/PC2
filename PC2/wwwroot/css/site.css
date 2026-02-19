@@ -64,22 +64,18 @@ html {
 }
 
 body {
-    /* Margin bottom by footer height */
-    margin-bottom: 60px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .footer {
-    position: absolute;
     display: flex;
-    vertical-align: middle;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    padding: 0 calc(12% - 50px);
-    bottom: 0;
+    padding: 12px calc(12% - 50px);
     width: 100%;
-    white-space: nowrap;
-    height: 67px;
-    margin-top: 200px;
-    margin-bottom: 77px;
     background-color: rgba(18, 66, 35, 1);
     color: rgb(248, 249, 250);
     font-weight: bold;
@@ -88,8 +84,6 @@ body {
 }
 
 main {
-    /* Prevents absolutely positioned footer from overlapping main*/
-    margin-bottom: 155px;
     overflow: hidden;
 }
 
@@ -187,6 +181,10 @@ main {
     margin: auto;
     width: 100%;
     max-width: 2000px;
+}
+
+body > .container {
+    flex: 1 0 auto;
 }
 
 ul.navbar-nav, .dropdown-item {
@@ -398,12 +396,18 @@ nav a {
     }
 
     .footer {
-        height: 134px;
-        margin-bottom: 0;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
     }
 
     .footer-column {
+        flex: unset;
+        width: 100%;
         flex-direction: column;
+        align-items: center;
+        gap: 10px;
     }
 
     /*Turns two column list into one*/
