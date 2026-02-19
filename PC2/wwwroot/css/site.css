@@ -163,7 +163,7 @@ main {
     height: 130px;
 }
 
-#bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .submenu, .divider, .dropdown-menu {
+#bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .divider, .dropdown-menu {
     background-color: rgba(18, 66, 35, 1);
 }
 
@@ -190,14 +190,11 @@ body > .container {
 ul.navbar-nav, .dropdown-item {
     text-align: center;
     justify-content: space-around;
-    -webkit-justify-content: space-around; /*Safari 6.1+*/
-    display: -webkit-flex; /*Safari*/
     max-width: 950px;
     margin: 0 auto;
 }
 
 .navbar-nav .dropdown-menu {
-    position: absolute;
     border: 2px solid black;
 }
 
@@ -248,12 +245,9 @@ nav .container {
 }
 
 /*text color transition when hovered*/
-#bootstrap-override .menu-item:hover > a, #bootstrap-override .submenu-item:hover > a {
+#bootstrap-override .menu-item:hover > a {
     color: black;
     transition: color .4s ease 0s;
-    -webkit-transition: color .4s ease 0s;
-    -moz-transition: color .4s ease 0s;
-    -o-transition: color .4s ease 0s;
 }
 
 .menu-item {
@@ -264,19 +258,15 @@ nav .container {
 }
 
 /*background color transition when hovered*/
-.menu-item:hover, .submenu-item:hover {
+.menu-item:hover {
     background-color: rgba(180, 204, 132, 1);
     transition: background-color .4s ease 0s;
-    -webkit-transition: background-color .4s ease 0s;
-    -moz-transition: background-color .4s ease 0s;
 }
 
 /*changes text color to provide contrast*/
 .nav-link:hover {
     color: black !important;
     transition: background-color .4s ease 0s;
-    -webkit-transition: background-color .4s ease 0s;
-    -moz-transition: background-color .4s ease 0s;
 }
 
 nav a {
@@ -300,43 +290,6 @@ nav a {
 #right-ribbon {
     border-left-width: 0;
     right: 0;
-}
-
-.submenu-container {
-    padding: 15px 0 0 0;
-    background-color: transparent;
-    position: absolute;
-    left: 50%;
-    top: 60px;
-    -webkit-transform: translate(-50%, 0%);
-    -ms-transform: translate(-50%, 0%);
-    -moz-transform: translate(-50%, 0%);
-    -o-transform: translate(-50%, 0%);
-    transform: translate(-50%, 0%);
-    z-index: 11;
-}
-
-#bootstrap-override .submenu-item a {
-    white-space: nowrap;
-    padding: 4px 7px 9px 7px;
-    text-align: center;
-}
-
-.submenu-item {
-    height: 30px;
-    list-style-type: none;
-}
-
-#bootstrap-override .submenu {
-    padding: 0;
-    position: static;
-    margin: 0;
-    border-radius: 0;
-    min-width: 90px;
-}
-
-.priority > a {
-    z-index: 10;
 }
 
 .dropdown-toggle {
