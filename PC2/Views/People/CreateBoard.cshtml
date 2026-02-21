@@ -1,32 +1,31 @@
-﻿@model PC2.Models.Board
+@model PC2.Models.Board
 
 @{
     ViewData["Title"] = "Create Board Member";
 }
 
 <h1>@ViewData["Title"]</h1>
-
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="CreateBoard">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="MembershipStart" class="control-label">Membership Start Year</label>
                 <input asp-for="MembershipStart" class="form-control" />
                 <span asp-validation-for="MembershipStart" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="PriorityOrder" class="control-label">Sort Priority</label>
                 <select asp-for="PriorityOrder" class="form-control">
                     <option value="1">Board Chair</option>
@@ -37,12 +36,12 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="IndexBoard" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,17 +1,15 @@
-@model PC2.Models.People
+@model PC2.Models.SteeringCommittee
 
 @{
-    ViewData["Title"] = "Edit Person";
+    ViewData["Title"] = "Create Steering Committee Member";
 }
 
-<h1>Edit @Model.Name</h1>
-
+<h1>@ViewData["Title"]</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="CreateSteeringCommittee">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ID" />
             <div class="form-group mb-3">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -22,15 +20,9 @@
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            <div class="form-group mb-3">
-                <label asp-for="PriorityOrder" class="control-label">Sort Priority</label>
-                <input asp-for="PriorityOrder" class="form-control" type="number" min="0" max="255" />
-                <span asp-validation-for="PriorityOrder" class="text-danger"></span>
-                <small class="form-text text-muted">Lower numbers have higher priority (0 = highest)</small>
-            </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="IndexSteeringCommittee" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

@@ -39,15 +39,9 @@ namespace PC2.Models.ViewModels
         /// <summary>
         /// Photo file upload
         /// </summary>
+        [Required(ErrorMessage = "Please upload a photo.")]
         [Display(Name = "Photo")]
         public IFormFile? PhotoFile { get; set; }
-
-        /// <summary>
-        /// Alternative: Photo URL (if not uploading a file)
-        /// </summary>
-        [DataType(DataType.Url)]
-        [Display(Name = "Photo URL (if not uploading file)")]
-        public string? ImageUrl { get; set; }
 
         /// <summary>
         /// Used to sort People by their display priority. Lower number
@@ -104,13 +98,6 @@ namespace PC2.Models.ViewModels
         /// </summary>
         [Display(Name = "New Photo")]
         public IFormFile? PhotoFile { get; set; }
-
-        /// <summary>
-        /// Alternative: Photo URL (if not uploading a file)
-        /// </summary>
-        [DataType(DataType.Url)]
-        [Display(Name = "Photo URL (if not uploading file)")]
-        public string? ImageUrl { get; set; }
 
         /// <summary>
         /// Whether to remove the current photo

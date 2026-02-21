@@ -1,4 +1,4 @@
-﻿@model PC2.Models.ViewModels.CreateStaffViewModel
+@model PC2.Models.ViewModels.CreateStaffViewModel
 
 @{
     ViewData["Title"] = "Create Staff Member";
@@ -10,19 +10,19 @@
     <div class="col-md-6">
         <form asp-action="CreateStaff" enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
+
             <div class="form-group mb-3">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            
+
             <div class="form-group mb-3">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            
+
             <div class="row">
                 <div class="col-md-8">
                     <div class="form-group mb-3">
@@ -39,7 +39,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="form-group mb-3">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" type="email" />
@@ -53,23 +53,10 @@
                 <div class="card-body">
                     <div class="form-group mb-3">
                         <label asp-for="PhotoFile" class="control-label"></label>
-                        <input asp-for="PhotoFile" class="form-control" type="file" accept="image/*" id="photoFile" />
+                        <input asp-for="PhotoFile" class="form-control" type="file" accept="image/*" />
                         <span asp-validation-for="PhotoFile" class="text-danger"></span>
                         <small class="form-text text-muted">
                             Upload a photo file (JPEG, PNG, GIF, or BMP). Large images will be automatically resized.
-                        </small>
-                    </div>
-
-                    <div class="text-center mb-2">
-                        <strong>OR</strong>
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label asp-for="ImageUrl" class="control-label"></label>
-                        <input asp-for="ImageUrl" class="form-control" type="url" id="imageUrl" />
-                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
-                        <small class="form-text text-muted">
-                            Enter a URL to an existing photo online
                         </small>
                     </div>
                 </div>
@@ -83,7 +70,7 @@
                 </select>
                 <span asp-validation-for="PriorityOrder" class="text-danger"></span>
             </div>
-            
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
                 <a asp-action="IndexStaff" class="btn btn-secondary">Cancel</a>
@@ -94,19 +81,4 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        // Clear the other input when one is selected
-        document.getElementById('photoFile').addEventListener('change', function() {
-            if (this.files && this.files.length > 0) {
-                document.getElementById('imageUrl').value = '';
-            }
-        });
-
-        document.getElementById('imageUrl').addEventListener('input', function() {
-            if (this.value.trim() !== '') {
-                document.getElementById('photoFile').value = '';
-            }
-        });
-    </script>
 }
-
