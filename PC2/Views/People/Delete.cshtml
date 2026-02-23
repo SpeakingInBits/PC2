@@ -16,6 +16,15 @@
 <h3>Are you sure you want to delete @Model.Name?</h3>
 <div>
     <hr />
+
+    @if (!string.IsNullOrEmpty(Model.CurrentImageUrl))
+    {
+        <div class="mb-3 text-center">
+            <img src="@Model.CurrentImageUrl" alt="@Model.Name" class="img-thumbnail"
+                 style="max-width: 200px; max-height: 200px;" />
+        </div>
+    }
+
     <dl class="row">
         <dt class="col-sm-2">Name</dt>
         <dd class="col-sm-10">@Model.Name</dd>

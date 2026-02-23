@@ -118,11 +118,11 @@ namespace PC2.Services
         /// <summary>
         /// Gets a safe filename for uploaded images
         /// </summary>
-        public static string GetSafeImageFileName(string originalFileName, int staffId)
+        public static string GetSafeImageFileName(string originalFileName, int personId)
         {
             var extension = Path.GetExtension(originalFileName);
             var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-            return $"staff_{staffId}_{timestamp}{extension}";
+            return $"person_{personId}_{timestamp}{extension}";
         }
     }
 }

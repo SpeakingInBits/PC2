@@ -43,7 +43,7 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(PersonViewModel model)
         {
-            ValidateTypeSpecificFields(model, isCreate: true);
+            ValidateTypeSpecificFields(model);
 
             if (ModelState.IsValid)
             {
@@ -112,7 +112,7 @@ namespace PC2.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(PersonViewModel model)
         {
-            ValidateTypeSpecificFields(model, isCreate: false);
+            ValidateTypeSpecificFields(model);
 
             if (ModelState.IsValid)
             {
@@ -204,15 +204,10 @@ namespace PC2.Controllers
             return RedirectToAction(nameof(Index), new { type });
         }
 
-        private void ValidateTypeSpecificFields(PersonViewModel model, bool isCreate)
+        private void ValidateTypeSpecificFields(PersonViewModel model)
         {
-            if (model.Type == PersonType.Staff)
-            {
-                if (string.IsNullOrWhiteSpace(model.Email))
-                    ModelState.AddModelError(nameof(PersonViewModel.Email), "Email is required for staff members.");
-                if (isCreate && model.PhotoFile == null)
-                    ModelState.AddModelError(nameof(PersonViewModel.PhotoFile), "Please upload a photo.");
-            }
+            if (model.Type == PersonType.Staff && string.IsNullOrWhiteSpace(model.Email))
+                ModelState.AddModelError(nameof(PersonViewModel.Email), "Email is required for staff members.");
             if (model.Type == PersonType.Board && string.IsNullOrWhiteSpace(model.MembershipStart))
                 ModelState.AddModelError(nameof(PersonViewModel.MembershipStart), "Membership start year is required.");
         }

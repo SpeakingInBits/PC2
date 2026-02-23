@@ -93,6 +93,8 @@
                         <small class="form-text text-muted">
                             Upload a new photo (JPEG, PNG, GIF, or BMP). Large images will be automatically resized.
                         </small>
+                        <img id="photoPreview" src="" alt="New photo preview" class="img-thumbnail mt-2"
+                             style="max-width: 200px; max-height: 200px; display: none;" />
                     </div>
                 </div>
             </div>
@@ -135,12 +137,34 @@
         const removePhoto = document.getElementById('removePhoto');
         const photoUpload = document.getElementById('photoUpload');
         const photoFile = document.getElementById('photoFile');
+        const photoPreview = document.getElementById('photoPreview');
+
+        if (photoFile) {
+            photoFile.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        photoPreview.src = e.target.result;
+                        photoPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    photoPreview.src = '';
+                    photoPreview.style.display = 'none';
+                }
+            });
+        }
 
         if (removePhoto) {
             removePhoto.addEventListener('change', function () {
                 const disabled = this.checked;
                 if (photoUpload) photoUpload.style.opacity = disabled ? '0.5' : '1';
                 if (photoFile) photoFile.disabled = disabled;
+                if (disabled) {
+                    photoPreview.src = '';
+                    photoPreview.style.display = 'none';
+                }
             });
         }
     </script>

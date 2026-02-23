@@ -72,12 +72,13 @@
                 <div class="card-body">
                     <div class="form-group mb-3">
                         <label asp-for="PhotoFile" class="control-label"></label>
-                        <input asp-for="PhotoFile" class="form-control" type="file" accept="image/*" />
+                        <input asp-for="PhotoFile" class="form-control" type="file" accept="image/*" id="photoFile" />
                         <span asp-validation-for="PhotoFile" class="text-danger"></span>
                         <small class="form-text text-muted">
                             Upload a photo file (JPEG, PNG, GIF, or BMP). Large images will be automatically resized.
-                            @if (Model.Type == PersonType.Staff) { <strong>Required for staff.</strong> }
                         </small>
+                        <img id="photoPreview" src="" alt="Photo preview" class="img-thumbnail mt-2"
+                             style="max-width: 200px; max-height: 200px; display: none;" />
                     </div>
                 </div>
             </div>
@@ -116,4 +117,21 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('photoFile').addEventListener('change', function () {
+            const preview = document.getElementById('photoPreview');
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+        });
+    </script>
 }
