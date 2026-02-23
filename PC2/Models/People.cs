@@ -25,6 +25,12 @@ namespace PC2.Models
         /// is a higher priority
         /// </summary>
         public byte PriorityOrder { get; set; }
+
+        /// <summary>
+        /// URL to the person's photo/image.
+        /// </summary>
+        [DataType(DataType.Url)]
+        public string? ImageUrl { get; set; }
     }
 
     /// <summary>
@@ -49,12 +55,6 @@ namespace PC2.Models
         [DataType(DataType.EmailAddress)]
         [EmailAddress]
         public required string Email { get; set; }
-
-        /// <summary>
-        /// URL to the staff member's photo/image.
-        /// </summary>
-        [DataType(DataType.Url)]
-        public string? ImageUrl { get; set; }
 
         /// <summary>
         /// Gets a formatted display of the phone number and extension.
