@@ -1,0 +1,147 @@
+@model PC2.Models.ViewModels.PersonViewModel
+@using PC2.Models
+
+@{
+    ViewData["Title"] = Model.Type switch
+    {
+        PersonType.Staff => "Edit Staff Member",
+        PersonType.Board => "Edit Board Member",
+        PersonType.SteeringCommittee => "Edit Steering Committee Member",
+        _ => "Edit Member"
+    };
+}
+
+<h1>Edit @Model.Name</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="Type" />
+            <input type="hidden" asp-for="CurrentImageUrl" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            @if (Model.Type == PersonType.Staff)
+            {
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group mb-3">
+                            <label asp-for="Phone" class="control-label"></label>
+                            <input asp-for="Phone" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="Extension" class="control-label"></label>
+                            <input asp-for="Extension" class="form-control" />
+                            <span asp-validation-for="Extension" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" type="email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            }
+
+            @if (Model.Type == PersonType.Board)
+            {
+                <div class="form-group mb-3">
+                    <label asp-for="MembershipStart" class="control-label"></label>
+                    <input asp-for="MembershipStart" class="form-control" />
+                    <span asp-validation-for="MembershipStart" class="text-danger"></span>
+                </div>
+            }
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Photo</h5>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.CurrentImageUrl))
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Current Photo:</label>
+                            <div class="text-center">
+                                <img src="@Model.CurrentImageUrl" alt="@Model.Name" class="img-thumbnail"
+                                     style="max-width: 200px; max-height: 200px;" />
+                            </div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input asp-for="RemovePhoto" class="form-check-input" id="removePhoto" />
+                            <label asp-for="RemovePhoto" class="form-check-label">Remove current photo</label>
+                        </div>
+                    }
+                    <div class="form-group mb-3" id="photoUpload">
+                        <label asp-for="PhotoFile" class="control-label"></label>
+                        <input asp-for="PhotoFile" class="form-control" type="file" accept="image/*" id="photoFile" />
+                        <span asp-validation-for="PhotoFile" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            Upload a new photo (JPEG, PNG, GIF, or BMP). Large images will be automatically resized.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="PriorityOrder" class="control-label"></label>
+                @if (Model.Type == PersonType.Staff)
+                {
+                    <select asp-for="PriorityOrder" class="form-control">
+                        <option value="1">Director</option>
+                        <option value="10">Other</option>
+                    </select>
+                }
+                else if (Model.Type == PersonType.Board)
+                {
+                    <select asp-for="PriorityOrder" class="form-control">
+                        <option value="1">Board Chair</option>
+                        <option value="5">Treasurer</option>
+                        <option value="10">Other</option>
+                    </select>
+                }
+                else
+                {
+                    <input asp-for="PriorityOrder" class="form-control" type="number" min="1" max="255" />
+                }
+                <span asp-validation-for="PriorityOrder" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" asp-route-type="@Model.Type.ToString()" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const removePhoto = document.getElementById('removePhoto');
+        const photoUpload = document.getElementById('photoUpload');
+        const photoFile = document.getElementById('photoFile');
+
+        if (removePhoto) {
+            removePhoto.addEventListener('change', function () {
+                const disabled = this.checked;
+                if (photoUpload) photoUpload.style.opacity = disabled ? '0.5' : '1';
+                if (photoFile) photoFile.disabled = disabled;
+            });
+        }
+    </script>
+}

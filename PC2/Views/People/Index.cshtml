@@ -1,0 +1,62 @@
+@model IEnumerable<PC2.Models.ViewModels.PersonViewModel>
+@using PC2.Models
+
+@{
+    var type = (PersonType)ViewData["PersonType"]!;
+    ViewData["Title"] = type switch
+    {
+        PersonType.Staff => "Staff Members",
+        PersonType.Board => "Board Members",
+        PersonType.SteeringCommittee => "Steering Committee Members",
+        _ => "Members"
+    };
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" asp-route-type="@type.ToString()" class="btn btn-primary">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Title</th>
+            @if (type == PersonType.Staff)
+            {
+                <th>Phone</th>
+                <th>Extension</th>
+                <th>Email</th>
+            }
+            @if (type == PersonType.Board)
+            {
+                <th>Membership Start</th>
+            }
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Title</td>
+                @if (type == PersonType.Staff)
+                {
+                    <td>@item.Phone</td>
+                    <td>@item.Extension</td>
+                    <td>@item.Email</td>
+                }
+                @if (type == PersonType.Board)
+                {
+                    <td>Member since @item.MembershipStart</td>
+                }
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID" asp-route-type="@item.Type.ToString()">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID" asp-route-type="@item.Type.ToString()">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

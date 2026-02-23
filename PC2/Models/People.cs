@@ -97,4 +97,11 @@ namespace PC2.Models
         /// </summary>
         public string MembershipStart { get; set; }
     }
+
+    public enum PersonType
+    {
+        Staff,
+        Board,
+        SteeringCommittee
+    }
 }

@@ -21,261 +21,218 @@ namespace PC2.Controllers
             _imageService = imageService;
         }
 
-        // ---- Staff ----
-
-        public async Task<IActionResult> IndexStaff()
+        public async Task<IActionResult> Index(PersonType type)
         {
-            return View(await StaffDB.GetAllStaffForEditing(_context));
+            ViewData["PersonType"] = type;
+            IEnumerable<PersonViewModel> people = type switch
+            {
+                PersonType.Staff => (await StaffDB.GetAllStaffForEditing(_context)).Select(PersonViewModel.FromStaff),
+                PersonType.Board => (await BoardDB.GetAllBoardMembersForEditing(_context)).Select(PersonViewModel.FromBoard),
+                PersonType.SteeringCommittee => (await SteeringCommitteeDB.GetAllSteeringCommittee(_context)).Select(PersonViewModel.FromSteeringCommittee),
+                _ => []
+            };
+            return View(people);
         }
 
         [HttpGet]
-        public IActionResult CreateStaff()
+        public IActionResult Create(PersonType type)
         {
-            return View(new CreateStaffViewModel());
+            return View(new PersonViewModel { Type = type });
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStaff(CreateStaffViewModel model)
+        public async Task<IActionResult> Create(PersonViewModel model)
         {
+            ValidateTypeSpecificFields(model, isCreate: true);
+
             if (ModelState.IsValid)
             {
-                var staff = new Staff
+                switch (model.Type)
                 {
-                    Name = model.Name,
-                    Title = model.Title,
-                    Phone = model.Phone,
-                    Extension = model.Extension,
-                    Email = model.Email,
-                    PriorityOrder = model.PriorityOrder
-                };
+                    case PersonType.Staff:
+                        var staff = new Staff
+                        {
+                            Name = model.Name,
+                            Title = model.Title,
+                            Phone = model.Phone,
+                            Extension = model.Extension,
+                            Email = model.Email!,
+                            PriorityOrder = model.PriorityOrder
+                        };
+                        await HandlePhotoUpload(model.PhotoFile, staff);
+                        await StaffDB.AddStaff(_context, staff);
+                        break;
 
-                await HandlePhotoUpload(model.PhotoFile, staff);
-                await StaffDB.AddStaff(_context, staff);
-                return RedirectToAction(nameof(IndexStaff));
+                    case PersonType.Board:
+                        var board = new Board
+                        {
+                            Name = model.Name,
+                            Title = model.Title,
+                            MembershipStart = model.MembershipStart!,
+                            PriorityOrder = model.PriorityOrder
+                        };
+                        await HandlePhotoUpload(model.PhotoFile, board);
+                        await BoardDB.CreateBoardMember(_context, board);
+                        break;
+
+                    case PersonType.SteeringCommittee:
+                        var sc = new SteeringCommittee
+                        {
+                            Name = model.Name,
+                            Title = model.Title,
+                            PriorityOrder = model.PriorityOrder
+                        };
+                        await HandlePhotoUpload(model.PhotoFile, sc);
+                        await SteeringCommitteeDB.Create(_context, sc);
+                        break;
+                }
+                return RedirectToAction(nameof(Index), new { type = model.Type });
             }
             return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditStaff(int id)
+        public async Task<IActionResult> Edit(int id, PersonType type)
         {
-            var staff = await StaffDB.GetStaffMember(_context, id);
-            if (staff == null)
+            PersonViewModel? model = type switch
             {
-                return NotFound();
-            }
-
-            var model = new EditStaffViewModel
-            {
-                ID = staff.ID,
-                Name = staff.Name,
-                Title = staff.Title,
-                Phone = staff.Phone,
-                Extension = staff.Extension,
-                Email = staff.Email,
-                CurrentImageUrl = staff.ImageUrl,
-                PriorityOrder = staff.PriorityOrder
+                PersonType.Staff => await StaffDB.GetStaffMember(_context, id) is Staff s
+                    ? PersonViewModel.FromStaff(s) : null,
+                PersonType.Board => await BoardDB.GetBoardMember(_context, id) is Board b
+                    ? PersonViewModel.FromBoard(b) : null,
+                PersonType.SteeringCommittee => await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id) is SteeringCommittee sc
+                    ? PersonViewModel.FromSteeringCommittee(sc) : null,
+                _ => null
             };
 
+            if (model == null) return NotFound();
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditStaff(EditStaffViewModel model)
+        public async Task<IActionResult> Edit(PersonViewModel model)
         {
+            ValidateTypeSpecificFields(model, isCreate: false);
+
             if (ModelState.IsValid)
             {
-                var staff = await StaffDB.GetStaffMember(_context, model.ID);
-                if (staff == null)
+                switch (model.Type)
                 {
-                    return NotFound();
-                }
+                    case PersonType.Staff:
+                        var staff = await StaffDB.GetStaffMember(_context, model.ID);
+                        if (staff == null) return NotFound();
+                        staff.Name = model.Name;
+                        staff.Title = model.Title;
+                        staff.Phone = model.Phone;
+                        staff.Extension = model.Extension;
+                        staff.Email = model.Email!;
+                        staff.PriorityOrder = model.PriorityOrder;
+                        if (model.RemovePhoto) await RemovePersonPhoto(staff);
+                        else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, staff, model.ID);
+                        await StaffDB.SaveChanges(_context, staff);
+                        break;
 
-                staff.Name = model.Name;
-                staff.Title = model.Title;
-                staff.Phone = model.Phone;
-                staff.Extension = model.Extension;
-                staff.Email = model.Email;
-                staff.PriorityOrder = model.PriorityOrder;
+                    case PersonType.Board:
+                        var board = await BoardDB.GetBoardMember(_context, model.ID);
+                        if (board == null) return NotFound();
+                        board.Name = model.Name;
+                        board.Title = model.Title;
+                        board.MembershipStart = model.MembershipStart!;
+                        board.PriorityOrder = model.PriorityOrder;
+                        if (model.RemovePhoto) await RemovePersonPhoto(board);
+                        else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, board, model.ID);
+                        await BoardDB.EditBoardMember(_context, board);
+                        break;
 
-                if (model.RemovePhoto)
-                {
-                    await RemoveStaffPhoto(staff);
+                    case PersonType.SteeringCommittee:
+                        var sc = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, model.ID);
+                        if (sc == null) return NotFound();
+                        sc.Name = model.Name;
+                        sc.Title = model.Title;
+                        sc.PriorityOrder = model.PriorityOrder;
+                        if (model.RemovePhoto) await RemovePersonPhoto(sc);
+                        else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, sc, model.ID);
+                        await SteeringCommitteeDB.EditSteeringCommittee(_context, sc);
+                        break;
                 }
-                else if (model.PhotoFile != null)
-                {
-                    await HandlePhotoUpload(model.PhotoFile, staff, model.ID);
-                }
-
-                await StaffDB.SaveChanges(_context, staff);
-                return RedirectToAction(nameof(IndexStaff));
+                return RedirectToAction(nameof(Index), new { type = model.Type });
             }
-
-            model.CurrentImageUrl = (await StaffDB.GetStaffMember(_context, model.ID))?.ImageUrl;
             return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> DeleteStaff(int id)
+        public async Task<IActionResult> Delete(int id, PersonType type)
         {
-            return View(await StaffDB.GetStaffMember(_context, id));
-        }
-
-        [HttpPost, ActionName("DeleteStaff")]
-        public async Task<IActionResult> ConfirmDeleteStaff(int id)
-        {
-            Staff? staff = await StaffDB.GetStaffMember(_context, id);
-            if (staff == null)
+            PersonViewModel? model = type switch
             {
-                return NotFound();
-            }
+                PersonType.Staff => await StaffDB.GetStaffMember(_context, id) is Staff s
+                    ? PersonViewModel.FromStaff(s) : null,
+                PersonType.Board => await BoardDB.GetBoardMember(_context, id) is Board b
+                    ? PersonViewModel.FromBoard(b) : null,
+                PersonType.SteeringCommittee => await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id) is SteeringCommittee sc
+                    ? PersonViewModel.FromSteeringCommittee(sc) : null,
+                _ => null
+            };
 
-            await StaffDB.Delete(_context, staff);
-            return RedirectToAction(nameof(IndexStaff));
+            if (model == null) return NotFound();
+            return View(model);
         }
 
-        // ---- Board ----
-
-        public async Task<IActionResult> IndexBoard()
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> ConfirmDelete(int id, PersonType type)
         {
-            return View(await BoardDB.GetAllBoardMembersForEditing(_context));
-        }
-
-        [HttpGet]
-        public IActionResult CreateBoard()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateBoard(Board board)
-        {
-            if (ModelState.IsValid)
+            switch (type)
             {
-                await BoardDB.CreateBoardMember(_context, board);
-                return RedirectToAction(nameof(IndexBoard));
+                case PersonType.Staff:
+                    var staff = await StaffDB.GetStaffMember(_context, id);
+                    if (staff == null) return NotFound();
+                    await StaffDB.Delete(_context, staff);
+                    break;
+
+                case PersonType.Board:
+                    var board = await BoardDB.GetBoardMember(_context, id);
+                    if (board == null) return NotFound();
+                    await BoardDB.Delete(_context, board);
+                    break;
+
+                case PersonType.SteeringCommittee:
+                    var sc = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id);
+                    if (sc == null) return NotFound();
+                    await SteeringCommitteeDB.Delete(_context, sc);
+                    break;
             }
-            return View(board);
+            return RedirectToAction(nameof(Index), new { type });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> EditBoard(int id)
+        private void ValidateTypeSpecificFields(PersonViewModel model, bool isCreate)
         {
-            return View(await BoardDB.GetBoardMember(_context, id));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EditBoard(Board board)
-        {
-            if (ModelState.IsValid)
+            if (model.Type == PersonType.Staff)
             {
-                await BoardDB.EditBoardMember(_context, board);
-                return RedirectToAction(nameof(IndexBoard));
+                if (string.IsNullOrWhiteSpace(model.Email))
+                    ModelState.AddModelError(nameof(PersonViewModel.Email), "Email is required for staff members.");
+                if (isCreate && model.PhotoFile == null)
+                    ModelState.AddModelError(nameof(PersonViewModel.PhotoFile), "Please upload a photo.");
             }
-            return View(board);
+            if (model.Type == PersonType.Board && string.IsNullOrWhiteSpace(model.MembershipStart))
+                ModelState.AddModelError(nameof(PersonViewModel.MembershipStart), "Membership start year is required.");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> DeleteBoard(int id)
-        {
-            return View(await BoardDB.GetBoardMember(_context, id));
-        }
-
-        [HttpPost, ActionName("DeleteBoard")]
-        public async Task<IActionResult> ConfirmDeleteBoard(int id)
-        {
-            Board? board = await BoardDB.GetBoardMember(_context, id);
-            if (board == null)
-            {
-                return NotFound();
-            }
-
-            await BoardDB.Delete(_context, board);
-            return RedirectToAction(nameof(IndexBoard));
-        }
-
-        // ---- Steering Committee ----
-
-        public async Task<IActionResult> IndexSteeringCommittee()
-        {
-            return View(await SteeringCommitteeDB.GetAllSteeringCommittee(_context));
-        }
-
-        [HttpGet]
-        public IActionResult CreateSteeringCommittee()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateSteeringCommittee(SteeringCommittee steeringCommittee)
-        {
-            if (ModelState.IsValid)
-            {
-                await SteeringCommitteeDB.Create(_context, steeringCommittee);
-                return RedirectToAction(nameof(IndexSteeringCommittee));
-            }
-            return View(steeringCommittee);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> EditSteeringCommittee(int id)
-        {
-            return View(await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EditSteeringCommittee(SteeringCommittee steeringCommittee)
-        {
-            if (ModelState.IsValid)
-            {
-                await SteeringCommitteeDB.EditSteeringCommittee(_context, steeringCommittee);
-                return RedirectToAction(nameof(IndexSteeringCommittee));
-            }
-            return View(steeringCommittee);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> DeleteSteeringCommittee(int id)
-        {
-            return View(await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id));
-        }
-
-        [HttpPost, ActionName("DeleteSteeringCommittee")]
-        public async Task<IActionResult> ConfirmDeleteSteeringCommittee(int id)
-        {
-            SteeringCommittee? steeringCommittee = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id);
-            if (steeringCommittee == null)
-            {
-                return NotFound();
-            }
-
-            await SteeringCommitteeDB.Delete(_context, steeringCommittee);
-            return RedirectToAction(nameof(IndexSteeringCommittee));
-        }
-
-        // ---- Photo helpers ----
-
-        private async Task HandlePhotoUpload(IFormFile? photoFile, Staff staff, int? staffId = null)
+        private async Task HandlePhotoUpload(IFormFile? photoFile, People person, int? personId = null)
         {
             if (photoFile == null || photoFile.Length == 0) return;
 
             try
             {
                 if (!ImageService.IsValidImageFile(photoFile))
-                {
                     throw new InvalidOperationException("Please upload a valid image file (JPEG, PNG, GIF, or BMP).");
-                }
 
-                if (staffId.HasValue && !string.IsNullOrEmpty(staff.ImageUrl))
-                {
-                    await RemoveStaffPhoto(staff);
-                }
+                if (personId.HasValue && !string.IsNullOrEmpty(person.ImageUrl))
+                    await RemovePersonPhoto(person);
 
-                var safeFileName = ImageService.GetSafeImageFileName(photoFile.FileName, staffId ?? 0);
+                var safeFileName = ImageService.GetSafeImageFileName(photoFile.FileName, personId ?? 0);
                 using var resizedImageStream = await _imageService.ResizeImageAsync(photoFile.OpenReadStream());
                 var resizedFormFile = new FormFileFromStream(resizedImageStream, safeFileName, photoFile.ContentType);
-                staff.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName);
+                person.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName);
             }
             catch (Exception ex)
             {
@@ -283,24 +240,22 @@ namespace PC2.Controllers
             }
         }
 
-        private async Task RemoveStaffPhoto(Staff staff)
+        private async Task RemovePersonPhoto(People person)
         {
-            if (string.IsNullOrEmpty(staff.ImageUrl)) return;
+            if (string.IsNullOrEmpty(person.ImageUrl)) return;
 
             try
             {
-                var fileName = staff.ImageUrl.Split('/').LastOrDefault();
+                var fileName = person.ImageUrl.Split('/').LastOrDefault();
                 if (!string.IsNullOrEmpty(fileName))
-                {
                     await _azureBlobUploader.DeleteFileAsync(fileName);
-                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error deleting photo: {ex.Message}");
             }
 
-            staff.ImageUrl = null;
+            person.ImageUrl = null;
         }
     }
 }
