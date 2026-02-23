@@ -21,6 +21,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th></th>
             <th>Name</th>
             <th>Title</th>
             @if (type == PersonType.Staff)
@@ -40,6 +41,19 @@
         @foreach (var item in Model)
         {
             <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.CurrentImageUrl))
+                    {
+                        <img src="@item.CurrentImageUrl" alt="@item.Name"
+                             style="width: 48px; height: 48px; object-fit: cover; border-radius: 4px;" />
+                    }
+                    else
+                    {
+                        <span class="text-muted" style="font-size: 2rem; line-height: 1;">
+                            <i class="bi bi-person-circle"></i>
+                        </span>
+                    }
+                </td>
                 <td>@item.Name</td>
                 <td>@item.Title</td>
                 @if (type == PersonType.Staff)

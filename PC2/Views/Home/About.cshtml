@@ -36,7 +36,7 @@
         }
 
         /* Minimal custom CSS for circular images */
-        .staff-avatar {
+        .person-avatar {
             width: 150px;
             height: 150px;
             object-fit: cover;
@@ -75,7 +75,7 @@
                 <div class="col">
                     <div class="card h-100 text-center border-0 shadow-sm">
                         <div class="card-body d-flex flex-column">
-                            <img src="@staff.ImageUrl" alt="@staff.Name" class="staff-avatar rounded-circle mx-auto mb-3 border" />
+                            <img src="@staff.ImageUrl" alt="@staff.Name" class="person-avatar rounded-circle mx-auto mb-3 border" />
                             <h5 class="card-title mb-2">@staff.Name</h5>
                             @if (!string.IsNullOrEmpty(staff.Title))
                             {
@@ -143,61 +143,121 @@
     }
 
     <h2>Our Board</h2>
-    <div class="row justify-content-center mb-5">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Board Members</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-borderless">
-                            <tbody>
-                                @for (int i = 0; i < Model.Board.Count; i++)
-                                {
-                                    <tr>
-                                        <td class="text-center">
-                                            <p class="mb-1"><strong>@Model.Board[i].Name</strong></p>
-                                            @if (Model.Board[i].Title != null)
-                                            {
-                                                <p class="mb-1 text-muted">@Model.Board[i].Title</p>
-                                            }
-                                            <p class="mb-0 small text-secondary">Member since @Model.Board[i].MembershipStart</p>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+
+    @if (Model.Board.Any(b => !string.IsNullOrEmpty(b.ImageUrl)))
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mb-5">
+            @foreach (var board in Model.Board.Where(b => !string.IsNullOrEmpty(b.ImageUrl)))
+            {
+                <div class="col">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body d-flex flex-column">
+                            <img src="@board.ImageUrl" alt="@board.Name" class="person-avatar rounded-circle mx-auto mb-3 border" />
+                            <h5 class="card-title mb-2">@board.Name</h5>
+                            @if (!string.IsNullOrEmpty(board.Title))
+                            {
+                                <p class="card-text fw-bold text-muted mb-2">@board.Title</p>
+                            }
+                            <p class="card-text small text-secondary mt-auto mb-0">Member since @board.MembershipStart</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
-    </div>
+    }
 
-    @if (Model.SteeringCommittee.Count > 0)
+    @if (Model.Board.Any(b => string.IsNullOrEmpty(b.ImageUrl)))
     {
-        <h2>Our Steering Committee</h2>
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">Steering Committee Members</h5>
+                        <h5 class="mb-0">@(Model.Board.Any(b => !string.IsNullOrEmpty(b.ImageUrl)) ? "Additional Board Members" : "Board Members")</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-borderless">
                                 <tbody>
-                                    @for (int i = 0; i < Model.SteeringCommittee.Count; i++)
+                                    @foreach (var board in Model.Board.Where(b => string.IsNullOrEmpty(b.ImageUrl)))
                                     {
                                         <tr>
                                             <td class="text-center">
-                                                <p class="mb-1"><strong>@Model.SteeringCommittee[i].Name</strong></p>
-                                                <p class="mb-0 text-muted">@Model.SteeringCommittee[i].Title</p>
+                                                <p class="mb-1"><strong>@board.Name</strong></p>
+                                                @if (!string.IsNullOrEmpty(board.Title))
+                                                {
+                                                    <p class="mb-1 text-muted">@board.Title</p>
+                                                }
+                                                <p class="mb-0 small text-secondary">Member since @board.MembershipStart</p>
                                             </td>
                                         </tr>
                                     }
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model.SteeringCommittee.Count > 0)
+    {
+        <h2>Our Steering Committee</h2>
+
+        @if (Model.SteeringCommittee.Any(sc => !string.IsNullOrEmpty(sc.ImageUrl)))
+        {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mb-5">
+                @foreach (var member in Model.SteeringCommittee.Where(sc => !string.IsNullOrEmpty(sc.ImageUrl)))
+                {
+                    <div class="col">
+                        <div class="card h-100 text-center border-0 shadow-sm">
+                            <div class="card-body d-flex flex-column">
+                                <img src="@member.ImageUrl" alt="@member.Name" class="person-avatar rounded-circle mx-auto mb-3 border" />
+                                <h5 class="card-title mb-2">@member.Name</h5>
+                                @if (!string.IsNullOrEmpty(member.Title))
+                                {
+                                    <p class="card-text fw-bold text-muted mb-0">@member.Title</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (Model.SteeringCommittee.Any(sc => string.IsNullOrEmpty(sc.ImageUrl)))
+        {
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">@(Model.SteeringCommittee.Any(sc => !string.IsNullOrEmpty(sc.ImageUrl)) ? "Additional Steering Committee Members" : "Steering Committee Members")</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        @foreach (var member in Model.SteeringCommittee.Where(sc => string.IsNullOrEmpty(sc.ImageUrl)))
+                                        {
+                                            <tr>
+                                                <td class="text-center">
+                                                    <p class="mb-1"><strong>@member.Name</strong></p>
+                                                    @if (!string.IsNullOrEmpty(member.Title))
+                                                    {
+                                                        <p class="mb-0 text-muted">@member.Title</p>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
                         </div>
                     </div>
                 </div>
