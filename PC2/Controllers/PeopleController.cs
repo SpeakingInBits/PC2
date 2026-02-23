@@ -227,7 +227,7 @@ namespace PC2.Controllers
                     await RemovePersonPhoto(person);
 
                 var safeFileName = ImageService.GetSafeImageFileName(photoFile.FileName, personId ?? 0);
-                using var resizedImageStream = await _imageService.ResizeImageAsync(photoFile.OpenReadStream(), 250, 250);
+                using var resizedImageStream = await _imageService.ResizeImageAsync(photoFile.OpenReadStream(), 350, 350);
                 var resizedFormFile = new FormFileFromStream(resizedImageStream, safeFileName, photoFile.ContentType);
                 person.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName);
             }
