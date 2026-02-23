@@ -13,12 +13,14 @@ namespace PC2.Controllers
         private readonly ApplicationDbContext _context;
         private readonly AzureBlobUploader _azureBlobUploader;
         private readonly ImageService _imageService;
+        private readonly ILogger<PeopleController> _logger;
 
-        public PeopleController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader, ImageService imageService)
+        public PeopleController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader, ImageService imageService, ILogger<PeopleController> logger)
         {
             _context = context;
             _azureBlobUploader = azureBlobUploader;
             _imageService = imageService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(PersonType type)
@@ -225,13 +227,13 @@ namespace PC2.Controllers
                     await RemovePersonPhoto(person);
 
                 var safeFileName = ImageService.GetSafeImageFileName(photoFile.FileName, personId ?? 0);
-                using var resizedImageStream = await _imageService.ResizeImageAsync(photoFile.OpenReadStream());
+                using var resizedImageStream = await _imageService.ResizeImageAsync(photoFile.OpenReadStream(), 250, 250);
                 var resizedFormFile = new FormFileFromStream(resizedImageStream, safeFileName, photoFile.ContentType);
                 person.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error handling image upload: {ex.Message}");
+                _logger.LogError(ex, "Error handling image upload.");
             }
         }
 
@@ -247,7 +249,7 @@ namespace PC2.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deleting photo: {ex.Message}");
+                _logger.LogError(ex, "Error deleting photo.");
             }
 
             person.ImageUrl = null;
