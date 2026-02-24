@@ -188,18 +188,21 @@ namespace PC2.Controllers
                 case PersonType.Staff:
                     var staff = await StaffDB.GetStaffMember(_context, id);
                     if (staff == null) return NotFound();
+                    await RemovePersonPhoto(staff);
                     await StaffDB.Delete(_context, staff);
                     break;
 
                 case PersonType.Board:
                     var board = await BoardDB.GetBoardMember(_context, id);
                     if (board == null) return NotFound();
+                    await RemovePersonPhoto(board);
                     await BoardDB.Delete(_context, board);
                     break;
 
                 case PersonType.SteeringCommittee:
                     var sc = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id);
                     if (sc == null) return NotFound();
+                    await RemovePersonPhoto(sc);
                     await SteeringCommitteeDB.Delete(_context, sc);
                     break;
             }
