@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Models;
-using PC2.Services;
 
 namespace PC2.Controllers;
 
