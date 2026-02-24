@@ -59,7 +59,7 @@
                 <div class="col">
                     <div class="card h-100 text-center border-0 shadow-sm">
                         <div class="card-body d-flex flex-column">
-                            <img src="@staff.ImageUrl" alt="@staff.Name" class="person-avatar rounded-circle mx-auto mb-3 border" />
+                            <img src="@staff.ImageUrl" alt="@(string.IsNullOrEmpty(staff.Title) ? staff.Name : staff.Name + ", " + staff.Title)" class="person-avatar rounded-circle mx-auto mb-3 border" />
                             <h5 class="card-title mb-2">@staff.Name</h5>
                             @if (!string.IsNullOrEmpty(staff.Title))
                             {
