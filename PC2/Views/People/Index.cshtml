@@ -44,7 +44,7 @@
                 <td>
                     @if (!string.IsNullOrEmpty(item.CurrentImageUrl))
                     {
-                        <img src="@item.CurrentImageUrl" alt="@item.Name"
+                        <img src="@item.CurrentImageUrl" alt="@($"{item.Name}, {item.Title}")"
                              style="width: 48px; height: 48px; object-fit: cover; border-radius: 4px;" />
                     }
                     else
