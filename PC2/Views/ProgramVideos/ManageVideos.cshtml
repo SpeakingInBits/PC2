@@ -1,0 +1,55 @@
+@model IEnumerable<PC2.Models.ProgramVideo>
+
+@{
+    ViewData["Title"] = "Manage Program Videos";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@{
+    if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+}
+
+<p>
+    <a asp-action="CreateVideo" class="btn btn-primary">Add New Video</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>YouTube Video ID</th>
+            <th>PDF Attachment</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var video in Model)
+        {
+            <tr>
+                <td>@video.Title</td>
+                <td>@video.YouTubeVideoId</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(video.PdfLocation))
+                    {
+                        <a href="@video.PdfLocation" target="_blank">@video.PdfName</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">None</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="EditVideo" asp-route-id="@video.ProgramVideoId">Edit</a> |
+                    <a asp-action="DeleteVideo" asp-route-id="@video.ProgramVideoId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

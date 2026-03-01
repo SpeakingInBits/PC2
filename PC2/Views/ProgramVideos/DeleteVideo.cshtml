@@ -1,0 +1,29 @@
+@model PC2.Models.ProgramVideo
+
+@{
+    ViewData["Title"] = "Delete Program Video";
+}
+
+<h1>Delete "@Model.Title"</h1>
+
+<h3>Are you sure you want to delete "@Model.Title"?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Title</dt>
+        <dd class="col-sm-9">@Model.Title</dd>
+        <dt class="col-sm-3">YouTube Video ID</dt>
+        <dd class="col-sm-9">@Model.YouTubeVideoId</dd>
+        @if (!string.IsNullOrEmpty(Model.PdfLocation))
+        {
+            <dt class="col-sm-3">PDF Attachment</dt>
+            <dd class="col-sm-9"><a href="@Model.PdfLocation" target="_blank">@Model.PdfName</a></dd>
+        }
+    </dl>
+
+    <form asp-action="DeleteVideo">
+        <input type="hidden" asp-for="ProgramVideoId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="ManageVideos">Back to List</a>
+    </form>
+</div>

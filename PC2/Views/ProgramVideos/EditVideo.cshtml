@@ -1,0 +1,76 @@
+@model PC2.Models.ProgramVideo
+
+@{
+    ViewData["Title"] = "Edit Program Video";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="EditVideo" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ProgramVideoId" />
+            <input type="hidden" asp-for="PdfLocation" />
+            <input type="hidden" asp-for="PdfName" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="YouTubeVideoId" class="control-label"></label>
+                <input asp-for="YouTubeVideoId" class="form-control" />
+                <span asp-validation-for="YouTubeVideoId" class="text-danger"></span>
+                <small class="form-text text-muted">Enter only the YouTube video ID (the part after <code>v=</code> in the URL).</small>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">PDF Attachment</label>
+                @if (!string.IsNullOrEmpty(Model.PdfLocation))
+                {
+                    <p>
+                        Current: <a href="@Model.PdfLocation" target="_blank">@Model.PdfName</a>
+                    </p>
+                }
+                <input type="file" name="pdfFile" id="pdfFile" accept=".pdf" onchange="checkFileSize()" class="form-control" />
+                <span id="fileSizeError" class="text-danger"></span>
+                <small class="form-text text-muted">Upload a new PDF to replace the existing attachment, or leave blank to keep the current one.</small>
+            </div>
+
+            <div class="form-group">
+                <input id="submitButton" type="submit" value="Save Changes" class="btn btn-primary" />
+                <a asp-action="ManageVideos" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function checkFileSize() {
+            var fileInput = document.getElementById('pdfFile');
+            var fileSizeError = document.getElementById('fileSizeError');
+            var submitButton = document.getElementById('submitButton');
+            var maxSize = 50 * 1024 * 1024; // 50MB
+
+            if (fileInput.files.length > 0) {
+                var file = fileInput.files[0];
+                if (file.size > maxSize) {
+                    fileSizeError.textContent = "The file size exceeds the 50MB limit.";
+                    submitButton.disabled = true;
+                } else {
+                    fileSizeError.textContent = "";
+                    submitButton.disabled = false;
+                }
+            } else {
+                fileSizeError.textContent = "";
+                submitButton.disabled = false;
+            }
+        }
+    </script>
+}
