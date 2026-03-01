@@ -77,7 +77,7 @@
                 <div id="right-ribbon" class="ribbon"></div>
                 <div class="navbar-collapse collapse d-lg-inline-flex flex-lg-row-reverse" id="navbarSupportedContent">
                     <ul class="navbar-nav flex-grow-1">
-                        @if (User.IsInRole(IdentityHelper.Admin))
+                        @if (User.IsInRole(IdentityHelper.Admin) || User.IsInRole(IdentityHelper.Staff))
                         {
                             <li class="nav-item menu-item">
                                 <a class="nav-link" asp-controller="Agency" asp-action="Index">Agencies</a>
@@ -85,9 +85,12 @@
                             <li class="nav-item menu-item">
                                 <a class="nav-link" asp-controller="About" asp-action="HousingProgramData">Housing Program Data</a>
                             </li>
-                            <li class="nav-item menu-item">
-                                <a class="nav-link" asp-controller="Admin" asp-action="Analytics">Analytics</a>
-                            </li>
+                            @if (User.IsInRole(IdentityHelper.Admin))
+                            {
+                                <li class="nav-item menu-item">
+                                    <a class="nav-link" asp-controller="Admin" asp-action="Analytics">Analytics</a>
+                                </li>
+                            }
                             <li id="Calendar-Index" class="nav-item menu-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="calendarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Calendar and Events
@@ -111,6 +114,12 @@
                                     <li><a class="dropdown-item" asp-controller="About" asp-action="UploadNewsletter">Upload Newsletter</a></li>
                                 </ul>
                             </li>
+                            @if (User.IsInRole(IdentityHelper.Admin))
+                            {
+                                <li class="nav-item menu-item">
+                                    <a class="nav-link" asp-controller="UserManagement" asp-action="Index">Manage Users</a>
+                                </li>
+                            }
                         }
                         else
                         {                    
