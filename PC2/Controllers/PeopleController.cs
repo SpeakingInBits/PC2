@@ -49,46 +49,54 @@ public class PeopleController : Controller
 
         if (ModelState.IsValid)
         {
-            switch (model.Type)
+            try
             {
-                case PersonType.Staff:
-                    var staff = new Staff
-                    {
-                        Name = model.Name,
-                        Title = model.Title,
-                        Phone = model.Phone,
-                        Extension = model.Extension,
-                        Email = model.Email!,
-                        PriorityOrder = model.PriorityOrder
-                    };
-                    await HandlePhotoUpload(model.PhotoFile, staff);
-                    await StaffDB.AddStaff(_context, staff);
-                    break;
+                switch (model.Type)
+                {
+                    case PersonType.Staff:
+                        var staff = new Staff
+                        {
+                            Name = model.Name,
+                            Title = model.Title,
+                            Phone = model.Phone,
+                            Extension = model.Extension,
+                            Email = model.Email!,
+                            PriorityOrder = model.PriorityOrder
+                        };
+                        await HandlePhotoUpload(model.PhotoFile, staff);
+                        await StaffDB.AddStaff(_context, staff);
+                        break;
 
-                case PersonType.Board:
-                    var board = new Board
-                    {
-                        Name = model.Name,
-                        Title = model.Title,
-                        MembershipStart = model.MembershipStart!,
-                        PriorityOrder = model.PriorityOrder
-                    };
-                    await HandlePhotoUpload(model.PhotoFile, board);
-                    await BoardDB.CreateBoardMember(_context, board);
-                    break;
+                    case PersonType.Board:
+                        var board = new Board
+                        {
+                            Name = model.Name,
+                            Title = model.Title,
+                            MembershipStart = model.MembershipStart!,
+                            PriorityOrder = model.PriorityOrder
+                        };
+                        await HandlePhotoUpload(model.PhotoFile, board);
+                        await BoardDB.CreateBoardMember(_context, board);
+                        break;
 
-                case PersonType.SteeringCommittee:
-                    var sc = new SteeringCommittee
-                    {
-                        Name = model.Name,
-                        Title = model.Title,
-                        PriorityOrder = model.PriorityOrder
-                    };
-                    await HandlePhotoUpload(model.PhotoFile, sc);
-                    await SteeringCommitteeDB.Create(_context, sc);
-                    break;
+                    case PersonType.SteeringCommittee:
+                        var sc = new SteeringCommittee
+                        {
+                            Name = model.Name,
+                            Title = model.Title,
+                            PriorityOrder = model.PriorityOrder
+                        };
+                        await HandlePhotoUpload(model.PhotoFile, sc);
+                        await SteeringCommitteeDB.Create(_context, sc);
+                        break;
+                }
+                return RedirectToAction(nameof(Index), new { type = model.Type });
             }
-            return RedirectToAction(nameof(Index), new { type = model.Type });
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating person record.");
+                TempData["Message"] = "There was a problem creating this record. Please try again later.";
+            }
         }
         return View(model);
     }
@@ -118,46 +126,54 @@ public class PeopleController : Controller
 
         if (ModelState.IsValid)
         {
-            switch (model.Type)
+            try
             {
-                case PersonType.Staff:
-                    var staff = await StaffDB.GetStaffMember(_context, model.ID);
-                    if (staff == null) return NotFound();
-                    staff.Name = model.Name;
-                    staff.Title = model.Title;
-                    staff.Phone = model.Phone;
-                    staff.Extension = model.Extension;
-                    staff.Email = model.Email!;
-                    staff.PriorityOrder = model.PriorityOrder;
-                    if (model.RemovePhoto) await RemovePersonPhoto(staff);
-                    else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, staff, model.ID);
-                    await StaffDB.SaveChanges(_context, staff);
-                    break;
+                switch (model.Type)
+                {
+                    case PersonType.Staff:
+                        var staff = await StaffDB.GetStaffMember(_context, model.ID);
+                        if (staff == null) return NotFound();
+                        staff.Name = model.Name;
+                        staff.Title = model.Title;
+                        staff.Phone = model.Phone;
+                        staff.Extension = model.Extension;
+                        staff.Email = model.Email!;
+                        staff.PriorityOrder = model.PriorityOrder;
+                        if (model.RemovePhoto) await RemovePersonPhoto(staff);
+                        else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, staff, model.ID);
+                        await StaffDB.SaveChanges(_context, staff);
+                        break;
 
-                case PersonType.Board:
-                    var board = await BoardDB.GetBoardMember(_context, model.ID);
-                    if (board == null) return NotFound();
-                    board.Name = model.Name;
-                    board.Title = model.Title;
-                    board.MembershipStart = model.MembershipStart!;
-                    board.PriorityOrder = model.PriorityOrder;
-                    if (model.RemovePhoto) await RemovePersonPhoto(board);
-                    else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, board, model.ID);
-                    await BoardDB.EditBoardMember(_context, board);
-                    break;
+                    case PersonType.Board:
+                        var board = await BoardDB.GetBoardMember(_context, model.ID);
+                        if (board == null) return NotFound();
+                        board.Name = model.Name;
+                        board.Title = model.Title;
+                        board.MembershipStart = model.MembershipStart!;
+                        board.PriorityOrder = model.PriorityOrder;
+                        if (model.RemovePhoto) await RemovePersonPhoto(board);
+                        else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, board, model.ID);
+                        await BoardDB.EditBoardMember(_context, board);
+                        break;
 
-                case PersonType.SteeringCommittee:
-                    var sc = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, model.ID);
-                    if (sc == null) return NotFound();
-                    sc.Name = model.Name;
-                    sc.Title = model.Title;
-                    sc.PriorityOrder = model.PriorityOrder;
-                    if (model.RemovePhoto) await RemovePersonPhoto(sc);
-                    else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, sc, model.ID);
-                    await SteeringCommitteeDB.EditSteeringCommittee(_context, sc);
-                    break;
+                    case PersonType.SteeringCommittee:
+                        var sc = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, model.ID);
+                        if (sc == null) return NotFound();
+                        sc.Name = model.Name;
+                        sc.Title = model.Title;
+                        sc.PriorityOrder = model.PriorityOrder;
+                        if (model.RemovePhoto) await RemovePersonPhoto(sc);
+                        else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, sc, model.ID);
+                        await SteeringCommitteeDB.EditSteeringCommittee(_context, sc);
+                        break;
+                }
+                return RedirectToAction(nameof(Index), new { type = model.Type });
             }
-            return RedirectToAction(nameof(Index), new { type = model.Type });
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error editing person record.");
+                TempData["Message"] = "There was a problem saving this record. Please try again later.";
+            }
         }
         return View(model);
     }
@@ -183,29 +199,38 @@ public class PeopleController : Controller
     [HttpPost, ActionName("Delete")]
     public async Task<IActionResult> ConfirmDelete(int id, PersonType type)
     {
-        switch (type)
+        try
         {
-            case PersonType.Staff:
-                var staff = await StaffDB.GetStaffMember(_context, id);
-                if (staff == null) return NotFound();
-                await RemovePersonPhoto(staff);
-                await StaffDB.Delete(_context, staff);
-                break;
+            switch (type)
+            {
+                case PersonType.Staff:
+                    var staff = await StaffDB.GetStaffMember(_context, id);
+                    if (staff == null) return NotFound();
+                    await RemovePersonPhoto(staff);
+                    await StaffDB.Delete(_context, staff);
+                    break;
 
-            case PersonType.Board:
-                var board = await BoardDB.GetBoardMember(_context, id);
-                if (board == null) return NotFound();
-                await RemovePersonPhoto(board);
-                await BoardDB.Delete(_context, board);
-                break;
+                case PersonType.Board:
+                    var board = await BoardDB.GetBoardMember(_context, id);
+                    if (board == null) return NotFound();
+                    await RemovePersonPhoto(board);
+                    await BoardDB.Delete(_context, board);
+                    break;
 
-            case PersonType.SteeringCommittee:
-                var sc = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id);
-                if (sc == null) return NotFound();
-                await RemovePersonPhoto(sc);
-                await SteeringCommitteeDB.Delete(_context, sc);
-                break;
+                case PersonType.SteeringCommittee:
+                    var sc = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id);
+                    if (sc == null) return NotFound();
+                    await RemovePersonPhoto(sc);
+                    await SteeringCommitteeDB.Delete(_context, sc);
+                    break;
+            }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting person record.");
+            TempData["Message"] = "There was a problem deleting this record. Please try again later.";
+        }
+
         return RedirectToAction(nameof(Index), new { type });
     }
 
@@ -221,23 +246,16 @@ public class PeopleController : Controller
     {
         if (photoFile == null || photoFile.Length == 0) return;
 
-        try
-        {
-            if (!ImageService.IsValidImageFile(photoFile))
-                throw new InvalidOperationException("Please upload a valid image file (JPEG, PNG, GIF, or BMP).");
+        if (!ImageService.IsValidImageFile(photoFile))
+            throw new InvalidOperationException("Please upload a valid image file (JPEG, PNG, GIF, or BMP).");
 
-            if (personId.HasValue && !string.IsNullOrEmpty(person.ImageUrl))
-                await RemovePersonPhoto(person);
+        if (personId.HasValue && !string.IsNullOrEmpty(person.ImageUrl))
+            await RemovePersonPhoto(person);
 
-            var safeFileName = ImageService.GetSafeImageFileName(photoFile.FileName, personId ?? 0);
-            using var resizedImageStream = await _imageService.ResizeImageAsync(photoFile.OpenReadStream(), 350, 350);
-            var resizedFormFile = new FormFileFromStream(resizedImageStream, safeFileName, photoFile.ContentType);
-            person.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error handling image upload.");
-        }
+        var safeFileName = ImageService.GetSafeImageFileName(photoFile.FileName, personId ?? 0);
+        using var resizedImageStream = await _imageService.ResizeImageAsync(photoFile.OpenReadStream(), 350, 350);
+        var resizedFormFile = new FormFileFromStream(resizedImageStream, safeFileName, photoFile.ContentType);
+        person.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName);
     }
 
     private async Task RemovePersonPhoto(People person)
@@ -253,6 +271,7 @@ public class PeopleController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting photo.");
+            throw;
         }
 
         person.ImageUrl = null;
