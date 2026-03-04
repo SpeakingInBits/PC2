@@ -51,6 +51,12 @@
         #modalEventTitle {
             overflow-wrap: anywhere;
         }
+
+        /* Word wrap event titles in the month grid */
+        #calendar .fc-daygrid-event .fc-event-title {
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
     </style>
 }
 
@@ -121,14 +127,27 @@
                             failureCallback(error);
                         });
                 },
-                // Custom rendering for the month grid view only
+                // Custom rendering for all views
                 eventContent: function(arg) {
-                    if (arg.view.type !== 'dayGridMonth') return;
-                    const startTime = arg.event.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    const title = arg.event.extendedProps.safeHtml ?? arg.event.title;
+
+                    if (arg.view.type === 'dayGridMonth') {
+                        const startTime = arg.event.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                        return { html: `
+                            <div class="fc-daygrid-event-dot"></div>
+                            <div class="fc-event-time">${startTime}</div>
+                            <div class="fc-event-title">${title}</div>
+                        `};
+                    }
+
+                    if (arg.view.type === 'listMonth') {
+                        return { html: `<span>${title}</span>` };
+                    }
+
+                    // timeGridWeek, timeGridDay
                     return { html: `
-                        <div class="fc-daygrid-event-dot"></div>
-                        <div class="fc-event-time">${startTime}</div>
-                        <div class="fc-event-title">${arg.event.extendedProps.safeHtml}</div>
+                        <div class="fc-event-time">${arg.timeText}</div>
+                        <div class="fc-event-title">${title}</div>
                     `};
                 },
                 eventClick: function(info) {
