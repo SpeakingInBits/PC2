@@ -75,82 +75,82 @@
         </div>
     </div>
 </div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js" 
+        integrity="sha384-B1OFx8Gy9GjPu8UbUyXbGQpzll9ubAUQ9agInFJ8NnD7nYG1u/CLR+Sqr5yifl4q" 
+        crossorigin="anonymous"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js" 
-    integrity="sha384-B1OFx8Gy9GjPu8UbUyXbGQpzll9ubAUQ9agInFJ8NnD7nYG1u/CLR+Sqr5yifl4q" 
-    crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+            var calendarContainer = document.getElementById('calendar');
 
-        var calendarContainer = document.getElementById('calendar');
-
-        var calendar = new FullCalendar.Calendar(calendarContainer, {
-            initialView: 'dayGridMonth',
-            events: function(info, successCallback, failureCallback) {
-                // Fetch events from the controller based on eventType
-                fetch('@Url.Action("GetEvents", "Events")')
-                    .then(function(response) {
-                        return response.json();
-                    })
-                    .then(function(events) {
-                        // Add color differentiation
-                        events.forEach(event => {
-                            event.classNames = [event.isPC2Event ? 'pc2-event' : 'county-event'];
-                            event.safeHtml = event.title;
+            var calendar = new FullCalendar.Calendar(calendarContainer, {
+                initialView: 'dayGridMonth',
+                events: function(info, successCallback, failureCallback) {
+                    // Fetch events from the controller based on eventType
+                    fetch('@Url.Action("GetEvents", "Events")')
+                        .then(function(response) {
+                            return response.json();
+                        })
+                        .then(function(events) {
+                            // Add color differentiation
+                            events.forEach(event => {
+                                event.classNames = [event.isPC2Event ? 'pc2-event' : 'county-event'];
+                                event.safeHtml = event.title;
+                            });
+                            successCallback(events);
+                        })
+                        .catch(function(error) {
+                            console.error('Error fetching events:', error);
+                            failureCallback(error);
                         });
-                        successCallback(events);
-                    })
-                    .catch(function(error) {
-                        console.error('Error fetching events:', error);
-                        failureCallback(error);
-                    });
-            },
+                },
 
-            // Custom rendering for clickable HTML links
-            eventContent: function(arg) {
-                const startTime = arg.event.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-                return { html: `
-                    <div class="fc-daygrid-event-dot"></div>
-                    <div class="fc-event-time">${startTime}</div>
-                    <div class="fc-event-title">${arg.event.extendedProps.safeHtml}</div>
-                `};
-            },
+                // Custom rendering for clickable HTML links
+                eventContent: function(arg) {
+                    const startTime = arg.event.start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    return { html: `
+                        <div class="fc-daygrid-event-dot"></div>
+                        <div class="fc-event-time">${startTime}</div>
+                        <div class="fc-event-title">${arg.event.extendedProps.safeHtml}</div>
+                    `};
+                },
 
-            eventClick: function(info) {
-                var startTime = info.event.start.toLocaleString();
-                var endTime;
+                eventClick: function(info) {
+                    var startTime = info.event.start.toLocaleString();
+                    var endTime;
 
-                if (info.event.end) {
-                    endTime = info.event.end.toLocaleString();
-                } else {
-                    endTime = 'N/A';
+                    if (info.event.end) {
+                        endTime = info.event.end.toLocaleString();
+                    } else {
+                        endTime = 'N/A';
+                    }
+
+                    document.getElementById('modalEventTitle').innerHTML = info.event.title;
+                    document.getElementById('modalEventDate').innerText = startTime;
+                    document.getElementById('modalEventEndTime').innerText = endTime;
+
+                    var myModal = new bootstrap.Modal(document.getElementById('eventModal'));
+                    myModal.show();
+                },
+
+                validRange: function(currentDate) {
+                    // Today's date
+                    const start = new Date(currentDate);
+
+                    // Sets end to 1 year in future based on today's date
+                    const end = new Date(currentDate);
+                    end.setMonth(end.getMonth() + 12);
+
+                    return { start, end };
                 }
+            });
 
-                document.getElementById('modalEventTitle').innerHTML = info.event.title;
-                document.getElementById('modalEventDate').innerText = startTime;
-                document.getElementById('modalEventEndTime').innerText = endTime;
-
-                var myModal = new bootstrap.Modal(document.getElementById('eventModal'));
-                myModal.show();
-            },
-
-            validRange: function(currentDate) {
-                // Today's date
-                const start = new Date(currentDate);
-
-                // Sets end to 1 year in future based on today's date
-                const end = new Date(currentDate);
-                end.setMonth(end.getMonth() + 12);
-
-                return { start, end };
-            }
+            calendar.render();
         });
-
-        calendar.render();
-    });
-</script>
-
+    </script>
+}
 <div class="row">
     <div class="col-md-9">
         <div id="calendar"></div>
