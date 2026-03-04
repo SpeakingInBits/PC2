@@ -6,7 +6,6 @@ using PC2.Models;
 using PC2.Services;
 using System.Globalization;
 using Microsoft.Extensions.Azure;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -23,6 +22,10 @@ builder.Services.AddScoped<PC2.Services.ImageService>();
 
 // Register AnalyticsService for DI
 builder.Services.AddScoped<AnalyticsService>();
+
+// Register ReCaptchaService for DI
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IReCaptchaService, ReCaptchaService>();
 
 // Configure Application Insights - only add if connection string is provided
 var appInsightsConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value;
