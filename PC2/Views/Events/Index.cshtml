@@ -25,10 +25,12 @@
 
         .pc2-event {
             background-color: #d1e7dd !important; /* Light green */
+            color: #212529 !important;
         }
 
         .county-event {
             background-color: #f8d7da !important; /* Light red */
+            color: #212529 !important;
         }
 
         .legend {
@@ -52,10 +54,27 @@
             overflow-wrap: anywhere;
         }
 
+        /* Fix custom event content layout in month grid */
+        #calendar .fc-daygrid-event .fc-event-main {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        #calendar .fc-daygrid-event .fc-daygrid-event-dot {
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        #calendar .fc-daygrid-event .fc-event-time {
+            flex-shrink: 0;
+            margin-right: 2px;
+        }
+
         /* Word wrap event titles in the month grid */
         #calendar .fc-daygrid-event .fc-event-title {
             white-space: normal;
             overflow-wrap: anywhere;
+            min-width: 0;
         }
     </style>
 }
