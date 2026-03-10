@@ -48,7 +48,6 @@
     <Folder Include="wwwroot\images\news\" />
     <Folder Include="wwwroot\images\resource-index\" />
     <Folder Include="wwwroot\images\resource\" />
-    <Folder Include="wwwroot\PDF\DisabilityAwareness\" />
     <Folder Include="wwwroot\PDF\legislative-links\" />
   </ItemGroup>
 
