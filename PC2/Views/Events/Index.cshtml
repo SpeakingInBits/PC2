@@ -157,6 +157,19 @@
                             });
                         });
                     }
+
+                    // Add a Bootstrap tooltip on month view events so the full text is visible on hover
+                    if (info.view.type === 'dayGridMonth') {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = info.event.title;
+                        const plainText = tempDiv.textContent || tempDiv.innerText || '';
+                        new bootstrap.Tooltip(info.el, {
+                            title: plainText,
+                            placement: 'top',
+                            trigger: 'hover',
+                            container: 'body'
+                        });
+                    }
                 },
                 noEventsText: 'No events this month'
             });
