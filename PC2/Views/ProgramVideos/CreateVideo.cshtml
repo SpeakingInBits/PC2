@@ -41,29 +41,8 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/youtube-id-extractor.js"></script>
     <script>
-        function extractYouTubeId(value) {
-            // Matches full YouTube URLs: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID, youtube.com/v/ID
-            var patterns = [
-                /[?&]v=([a-zA-Z0-9_-]{11,})/,
-                /youtu\.be\/([a-zA-Z0-9_-]{11,})/,
-                /\/embed\/([a-zA-Z0-9_-]{11,})/,
-                /\/v\/([a-zA-Z0-9_-]{11,})/
-            ];
-            for (var i = 0; i < patterns.length; i++) {
-                var match = value.match(patterns[i]);
-                if (match) return match[1];
-            }
-            return null;
-        }
-
-        document.getElementById('youTubeVideoId').addEventListener('blur', function () {
-            var extracted = extractYouTubeId(this.value.trim());
-            if (extracted) {
-                this.value = extracted;
-            }
-        });
-
         function checkFileSize() {
             var fileInput = document.getElementById('pdfFile');
             var fileSizeError = document.getElementById('fileSizeError');
