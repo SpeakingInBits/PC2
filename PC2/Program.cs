@@ -18,6 +18,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // Register AzureBlobUploader for DI
 builder.Services.AddSingleton<AzureBlobUploader>();
 
+// Register ImageService for DI
+builder.Services.AddScoped<PC2.Services.ImageService>();
+
 // Register AnalyticsService for DI
 builder.Services.AddScoped<AnalyticsService>();
 
