@@ -85,12 +85,9 @@
                             <li class="nav-item menu-item">
                                 <a class="nav-link" asp-controller="About" asp-action="HousingProgramData">Housing Program Data</a>
                             </li>
-                            @if (User.IsInRole(IdentityHelper.Admin))
-                            {
-                                <li class="nav-item menu-item">
-                                    <a class="nav-link" asp-controller="Admin" asp-action="Analytics">Analytics</a>
-                                </li>
-                            }
+                            <li class="nav-item menu-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Analytics">Analytics</a>
+                            </li>
                             <li id="Calendar-Index" class="nav-item menu-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="calendarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Calendar and Events

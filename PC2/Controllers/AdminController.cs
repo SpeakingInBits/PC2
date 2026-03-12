@@ -7,9 +7,9 @@ using PC2.Services;
 namespace PC2.Controllers;
 
 /// <summary>
-/// Controller for admin-only features including analytics dashboard
+/// Controller for analytics dashboard, accessible by admins and staff.
 /// </summary>
-[Authorize(Roles = IdentityHelper.Admin)]
+[Authorize(Roles = IdentityHelper.AdminOrStaff)]
 public class AdminController : Controller
 {
     private readonly AnalyticsService _analyticsService;
