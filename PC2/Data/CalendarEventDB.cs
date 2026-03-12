@@ -6,7 +6,7 @@ namespace PC2.Data
 {
     public static class CalendarEventDB
     {
-        private static DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+        private static DateOnly Today => DateOnly.FromDateTime(DateTime.Today);
 
         /// <summary>
         /// Retrieve all events for the current day and future dates
@@ -16,9 +16,9 @@ namespace PC2.Data
         public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context)
         {        
             return await (from calEvents in context.CalendarEvents
-                          where calEvents.DateOfEvent >= today
+                          where calEvents.DateOfEvent >= Today
                           orderby calEvents.DateOfEvent ascending, calEvents.StartingTime ascending
-                          select calEvents).ToListAsync();
+                          select calEvents).AsNoTracking().ToListAsync();
         }
 
         /// <summary>
@@ -29,8 +29,8 @@ namespace PC2.Data
         public static async Task<List<CalendarEvent>> GetAllPastEvents(ApplicationDbContext context)
         {
             return await (from calEvents in context.CalendarEvents
-                          where calEvents.DateOfEvent < today
-                          select calEvents).ToListAsync();
+                          where calEvents.DateOfEvent < Today
+                          select calEvents).AsNoTracking().ToListAsync();
         }
 
         /// <summary>
@@ -102,12 +102,9 @@ namespace PC2.Data
         /// <returns></returns>
         public static async Task DeletePastEvents(ApplicationDbContext context)
         {
-            List<CalendarEvent> pastEvents = await GetAllPastEvents(context);
-
-            foreach (CalendarEvent calendarEvent in pastEvents)
-            {
-                await DeleteEvent(context, calendarEvent.CalendarEventID);
-            }
+            await context.CalendarEvents
+                .Where(e => e.DateOfEvent < Today)
+                .ExecuteDeleteAsync();
         }
     }
 }

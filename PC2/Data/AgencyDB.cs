@@ -31,6 +31,7 @@ namespace PC2.Data
                               City = agency.City
                           })
                           .OrderBy(agency  => agency.AgencyName)
+                          .AsNoTracking()
                           .ToListAsync();
         }
 
@@ -50,6 +51,7 @@ namespace PC2.Data
                     minId => minId,
                     (a, minId) => a
                 )
+                .AsNoTracking()
                 .OrderBy(a => a.AgencyName);
 
             return await query.ToListAsync();
@@ -62,6 +64,7 @@ namespace PC2.Data
         {
             return await (from a in context.Agency
                           select a).Include(nameof(Agency.AgencyCategories))
+                          .AsNoTracking()
                           .OrderBy(agency => agency.AgencyName)
                           .ToListAsync();
         }
@@ -84,6 +87,7 @@ namespace PC2.Data
                                     select a)
                                     .OrderBy(a => a.AgencyName)
                                     .Include(nameof(Agency.AgencyCategories))
+                                    .AsNoTracking()
                                     .Skip(pageSize * (pageNum - 1))
                                     .Take(pageSize)
                                     .ToListAsync();
@@ -95,21 +99,12 @@ namespace PC2.Data
         /// </summary>
         public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, int categoryID)
         {
-            List<Agency> agencies = await GetAllAgenciesAsync(context);
-
-            List<Agency> result = new List<Agency>();
-            for (int i = 0; i < agencies.Count; i++)
-            {
-                for (int j = 0; j < agencies[i].AgencyCategories.Count; j++)
-                {
-                    if (agencies[i].AgencyCategories[j].AgencyCategoryId == categoryID)
-                    {
-                        result.Add(agencies[i]);
-                    }
-                }
-            }
-
-            return result;
+            return await context.Agency
+                .AsNoTracking()
+                .Include(nameof(Agency.AgencyCategories))
+                .Where(a => a.AgencyCategories.Any(c => c.AgencyCategoryId == categoryID))
+                .OrderBy(a => a.AgencyName)
+                .ToListAsync();
         }
 
         /// <summary>
@@ -124,6 +119,7 @@ namespace PC2.Data
             return await (from a in context.Agency
                           where a.City != null && a.City == city
                           select a).Include(nameof(Agency.AgencyCategories))
+                          .AsNoTracking()
                           .OrderBy(agency => agency.AgencyName)
                           .ToListAsync();
         }
@@ -145,6 +141,7 @@ namespace PC2.Data
                 .Where(agency => agency.AgencyCategories
                 .Where(cat => cat.AgencyCategoryName == categoryName)
                 .Any())
+                .AsNoTracking()
                 .OrderBy(agency => agency.AgencyName)
                 .ToListAsync();
         }
@@ -207,7 +204,7 @@ namespace PC2.Data
         {
             return await (from a in context.Agency
                           where a.AgencyName == name
-                          select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
+                          select a).Include(nameof(Agency.AgencyCategories)).AsNoTracking().ToListAsync();
         }
 
         public static async Task<List<string>> GetAllCities(ApplicationDbContext context)
@@ -216,6 +213,7 @@ namespace PC2.Data
                 .Where(agency => agency.City != null)
                 .Select(agency => agency.City!)
                 .Distinct()
+                .AsNoTracking()
                 .OrderBy(city => city)
                 .ToListAsync();
         }

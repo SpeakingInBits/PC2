@@ -13,7 +13,7 @@ namespace PC2.Data
         {
             return await (from b in context.BoardMembers
                           orderby b.PriorityOrder ascending, b.Name ascending
-                          select b).ToListAsync();
+                          select b).AsNoTracking().ToListAsync();
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace PC2.Data
         {
             return await (from b in context.BoardMembers
                           orderby b.Name ascending
-                          select b).ToListAsync();
+                          select b).AsNoTracking().ToListAsync();
         }
 
         public static async Task CreateBoardMember(ApplicationDbContext context, Board board)
