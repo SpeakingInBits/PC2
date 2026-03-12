@@ -7,7 +7,7 @@ using PC2.Services;
 
 namespace PC2.Controllers;
 
-[Authorize(Roles = IdentityHelper.Admin)]
+[Authorize(Roles = IdentityHelper.AdminOrStaff)]
 public class PeopleController : Controller
 {
     private readonly ApplicationDbContext _context;

@@ -93,7 +93,7 @@ app.MapRazorPages();
 
 #if DEBUG
 var serviceProvider = app.Services.GetRequiredService<IServiceProvider>().CreateScope();
-IdentityHelper.CreateRoles(serviceProvider.ServiceProvider, IdentityHelper.Admin)
+IdentityHelper.CreateRoles(serviceProvider.ServiceProvider, IdentityHelper.Admin, IdentityHelper.Staff)
               .Wait();
 IdentityHelper.CreateDefaultAdmin(serviceProvider.ServiceProvider, IdentityHelper.Admin)
               .Wait();

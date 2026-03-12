@@ -77,7 +77,7 @@
                 <div id="right-ribbon" class="ribbon"></div>
                 <div class="navbar-collapse collapse d-lg-inline-flex flex-lg-row-reverse" id="navbarSupportedContent">
                     <ul class="navbar-nav flex-grow-1">
-                        @if (User.IsInRole(IdentityHelper.Admin))
+                        @if (User.IsInRole(IdentityHelper.Admin) || User.IsInRole(IdentityHelper.Staff))
                         {
                             <li class="nav-item menu-item">
                                 <a class="nav-link" asp-controller="Agency" asp-action="Index">Agencies</a>
@@ -112,6 +112,12 @@
                                     <li><a class="dropdown-item" asp-controller="ProgramVideos" asp-action="ManageVideos">Program Videos</a></li>
                                 </ul>
                             </li>
+                            @if (User.IsInRole(IdentityHelper.Admin))
+                            {
+                                <li class="nav-item menu-item">
+                                    <a class="nav-link" asp-controller="UserManagement" asp-action="Index">Manage Users</a>
+                                </li>
+                            }
                         }
                         else
                         {                    
