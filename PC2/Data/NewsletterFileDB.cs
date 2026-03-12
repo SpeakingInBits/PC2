@@ -14,13 +14,13 @@ public class NewsletterFileDB
     public static async Task <List<NewsletterFile>> GetAllAsync(ApplicationDbContext context)
     {
         return await (from nf in context.NewsletterFile
-                      select nf).ToListAsync();
+                      select nf).AsNoTracking().ToListAsync();
     }
     
     public static async Task<List<string>> GetAllNamesAsync(ApplicationDbContext context)
     {
         return await (from nf in context.NewsletterFile
-                      select nf.Name).ToListAsync();
+                      select nf.Name).AsNoTracking().ToListAsync();
     }
 
     public static async Task DeleteAsync(ApplicationDbContext context, int id)

@@ -2,9 +2,7 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Azure;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace PC2.Models
@@ -15,12 +13,18 @@ namespace PC2.Models
     public class AzureBlobUploader
     {
         private readonly string _containerName;
-        private readonly IConfiguration _configuration;
+        private readonly BlobServiceClient _blobServiceClient;
 
         public AzureBlobUploader(IConfiguration configuration)
         {
             _containerName = configuration["AzureBlob:ContainerName"];
-            _configuration = configuration;
+            var blobServiceUri = configuration["AzureBlob:BlobServiceUri"];
+
+#if DEBUG
+            _blobServiceClient = new BlobServiceClient(blobServiceUri);
+#else
+            _blobServiceClient = new BlobServiceClient(new Uri(blobServiceUri), new DefaultAzureCredential());
+#endif
         }
 
         /// <summary>
@@ -34,14 +38,12 @@ namespace PC2.Models
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is null or empty.");
 
-            BlobServiceClient blobServiceClient = CreateBlobServiceClient();
-            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
+            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
             var blobClient = containerClient.GetBlobClient(blobName);
 
-            // UploadFileAsync - caller owns the stream lifetime
-            var stream = file.OpenReadStream();
+            using var stream = file.OpenReadStream();
             await blobClient.UploadAsync(stream, overwrite: true);
 
             return blobClient.Uri.ToString();
@@ -54,24 +56,13 @@ namespace PC2.Models
         /// <returns>True if the blob was deleted, false if it did not exist.</returns>
         public async Task<bool> DeleteFileAsync(string blobName)
         {
-            // Decode the blob name to match the expected format in Azure Blob Storage
             blobName = Uri.UnescapeDataString(blobName);
 
-            BlobServiceClient blobServiceClient = CreateBlobServiceClient(); 
-            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
+            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             var blobClient = containerClient.GetBlobClient(blobName);
 
             var response = await blobClient.DeleteIfExistsAsync();
             return response.Value;
-        }
-
-        private BlobServiceClient CreateBlobServiceClient()
-        {
-#if DEBUG
-            return new BlobServiceClient(_configuration["AzureBlob:BlobServiceUri"]);
-#else
-            return new BlobServiceClient(new Uri(_configuration["AzureBlob:BlobServiceUri"]), new DefaultAzureCredential());
-#endif
         }
     }
 }

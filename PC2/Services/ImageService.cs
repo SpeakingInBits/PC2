@@ -49,8 +49,8 @@ namespace PC2.Services
                 image.Mutate(x => x.Resize(new ResizeOptions
                 {
                     Size = new Size(newWidth, newHeight),
-                    Mode = ResizeMode.Max, // Ensure it fits within max dimensions
-                    Sampler = KnownResamplers.Lanczos3 // High quality resampling (more CPU intensive)
+                    Mode = ResizeMode.Max,
+                    Sampler = KnownResamplers.Bicubic
                 }));
 
                 // Save to memory stream

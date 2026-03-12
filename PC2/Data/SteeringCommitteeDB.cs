@@ -13,7 +13,7 @@ namespace PC2.Data
         {
             return await (from s in context.SteeringCommittee
                           orderby s.PriorityOrder ascending, s.Name ascending
-                          select s).ToListAsync();
+                          select s).AsNoTracking().ToListAsync();
         }
 
         public static async Task Create(ApplicationDbContext context, SteeringCommittee steeringCommittee)
