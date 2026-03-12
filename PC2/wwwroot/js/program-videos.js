@@ -13,6 +13,27 @@ function extractYouTubeId(value) {
     return null;
 }
 
+function checkFileSize() {
+    var fileInput = document.getElementById('pdfFile');
+    var fileSizeError = document.getElementById('fileSizeError');
+    var submitButton = document.getElementById('submitButton');
+    var maxSize = 50 * 1024 * 1024; // 50MB
+
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+        if (file.size > maxSize) {
+            fileSizeError.textContent = "The file size exceeds the 50MB limit.";
+            submitButton.disabled = true;
+        } else {
+            fileSizeError.textContent = "";
+            submitButton.disabled = false;
+        }
+    } else {
+        fileSizeError.textContent = "";
+        submitButton.disabled = false;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     var input = document.getElementById('youTubeVideoId');
     if (input) {
