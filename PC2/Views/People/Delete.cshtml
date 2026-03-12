@@ -1,0 +1,55 @@
+@model PC2.Models.ViewModels.PersonViewModel
+@using PC2.Models
+
+@{
+    ViewData["Title"] = Model.Type switch
+    {
+        PersonType.Staff => "Delete Staff Member",
+        PersonType.Board => "Delete Board Member",
+        PersonType.SteeringCommittee => "Delete Steering Committee Member",
+        _ => "Delete Member"
+    };
+}
+
+<h1>Delete @Model.Name</h1>
+
+<h3>Are you sure you want to delete @Model.Name?</h3>
+<div>
+    <hr />
+
+    @if (!string.IsNullOrEmpty(Model.CurrentImageUrl))
+    {
+        <div class="mb-3 text-center">
+            <img src="@Model.CurrentImageUrl" alt="@Model.Name" class="img-thumbnail"
+                 style="max-width: 200px; max-height: 200px;" />
+        </div>
+    }
+
+    <dl class="row">
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+        <dt class="col-sm-2">Title</dt>
+        <dd class="col-sm-10">@Model.Title</dd>
+
+        @if (Model.Type == PersonType.Staff)
+        {
+            <dt class="col-sm-2">Phone</dt>
+            <dd class="col-sm-10">@Model.Phone</dd>
+            <dt class="col-sm-2">Email</dt>
+            <dd class="col-sm-10">@Model.Email</dd>
+        }
+
+        @if (Model.Type == PersonType.Board)
+        {
+            <dt class="col-sm-2">Member Since</dt>
+            <dd class="col-sm-10">@Model.MembershipStart</dd>
+        }
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="ID" />
+        <input type="hidden" asp-for="Type" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index" asp-route-type="@Model.Type.ToString()" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>
