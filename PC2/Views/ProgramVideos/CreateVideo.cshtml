@@ -1,0 +1,45 @@
+@model PC2.Models.ProgramVideo
+
+@{
+    ViewData["Title"] = "Add Program Video";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="CreateVideo" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="YouTubeVideoId" class="control-label"></label>
+                <input asp-for="YouTubeVideoId" class="form-control" id="youTubeVideoId" placeholder="e.g. tRadgduogZg or a full YouTube URL" />
+                <span asp-validation-for="YouTubeVideoId" class="text-danger"></span>
+                <small class="form-text text-muted">Enter the YouTube video ID or paste a full YouTube URL — the ID will be extracted automatically.</small>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">PDF Attachment (optional)</label>
+                <input type="file" name="pdfFile" id="pdfFile" accept=".pdf" onchange="checkFileSize()" class="form-control" />
+                <span id="fileSizeError" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input id="submitButton" type="submit" value="Add Video" class="btn btn-primary" />
+                <a asp-action="ManageVideos" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/program-videos.js"></script>
+}
