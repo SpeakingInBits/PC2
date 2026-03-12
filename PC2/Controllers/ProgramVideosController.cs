@@ -5,6 +5,7 @@ using PC2.Models;
 
 namespace PC2.Controllers
 {
+    [Authorize(Roles = IdentityHelper.Admin)]
     public class ProgramVideosController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,27 +17,25 @@ namespace PC2.Controllers
             _azureBlobUploader = azureBlobUploader;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             List<ProgramVideo> videos = await ProgramVideoDB.GetAllAsync(_context);
             return View(videos);
         }
 
-        [Authorize(Roles = IdentityHelper.Admin)]
         public async Task<IActionResult> ManageVideos()
         {
             List<ProgramVideo> videos = await ProgramVideoDB.GetAllAsync(_context);
             return View(videos);
         }
 
-        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpGet]
         public IActionResult CreateVideo()
         {
             return View();
         }
 
-        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpPost]
         public async Task<IActionResult> CreateVideo(ProgramVideo programVideo, IFormFile? pdfFile)
         {
@@ -69,7 +68,6 @@ namespace PC2.Controllers
             return View(programVideo);
         }
 
-        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpGet]
         public async Task<IActionResult> EditVideo(int id)
         {
@@ -81,7 +79,6 @@ namespace PC2.Controllers
             return View(video);
         }
 
-        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpPost]
         public async Task<IActionResult> EditVideo(ProgramVideo programVideo, IFormFile? pdfFile)
         {
@@ -113,7 +110,6 @@ namespace PC2.Controllers
             return View(programVideo);
         }
 
-        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpGet]
         public async Task<IActionResult> DeleteVideo(int id)
         {
@@ -125,7 +121,6 @@ namespace PC2.Controllers
             return View(video);
         }
 
-        [Authorize(Roles = IdentityHelper.Admin)]
         [HttpPost]
         [ActionName("DeleteVideo")]
         public async Task<IActionResult> ConfirmDeleteVideo(int id)

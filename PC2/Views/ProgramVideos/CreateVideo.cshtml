@@ -20,9 +20,9 @@
 
             <div class="form-group mb-3">
                 <label asp-for="YouTubeVideoId" class="control-label"></label>
-                <input asp-for="YouTubeVideoId" class="form-control" placeholder="e.g. tRadgduogZg" />
+                <input asp-for="YouTubeVideoId" class="form-control" id="youTubeVideoId" placeholder="e.g. tRadgduogZg or a full YouTube URL" />
                 <span asp-validation-for="YouTubeVideoId" class="text-danger"></span>
-                <small class="form-text text-muted">Enter only the YouTube video ID (the part after <code>v=</code> in the URL).</small>
+                <small class="form-text text-muted">Enter the YouTube video ID or paste a full YouTube URL — the ID will be extracted automatically.</small>
             </div>
 
             <div class="form-group mb-3">
@@ -42,6 +42,28 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
+        function extractYouTubeId(value) {
+            // Matches full YouTube URLs: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID, youtube.com/v/ID
+            var patterns = [
+                /[?&]v=([a-zA-Z0-9_-]{11,})/,
+                /youtu\.be\/([a-zA-Z0-9_-]{11,})/,
+                /\/embed\/([a-zA-Z0-9_-]{11,})/,
+                /\/v\/([a-zA-Z0-9_-]{11,})/
+            ];
+            for (var i = 0; i < patterns.length; i++) {
+                var match = value.match(patterns[i]);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        document.getElementById('youTubeVideoId').addEventListener('blur', function () {
+            var extracted = extractYouTubeId(this.value.trim());
+            if (extracted) {
+                this.value = extracted;
+            }
+        });
+
         function checkFileSize() {
             var fileInput = document.getElementById('pdfFile');
             var fileSizeError = document.getElementById('fileSizeError');
