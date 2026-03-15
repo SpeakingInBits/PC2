@@ -60,4 +60,26 @@ public class AppSettingsConfigTests
         var value = _config.GetSection("AzureBlob")["BlobServiceUri"];
         Assert.IsFalse(string.IsNullOrWhiteSpace(value), "AzureBlob:BlobServiceUri is missing or empty in appsettings.json");
     }
+
+    [TestMethod]
+    public void GoogleReCaptcha_SiteKey_IsPresent()
+    {
+        var value = _config["GoogleReCaptcha:SiteKey"];
+        Assert.IsNotNull(value, "GoogleReCaptcha:SiteKey is missing in appsettings.json");
+    }
+
+    [TestMethod]
+    public void GoogleReCaptcha_SecretKey_IsPresent()
+    {
+        var value = _config["GoogleReCaptcha:SecretKey"];
+        Assert.IsNotNull(value, "GoogleReCaptcha:SecretKey is missing in appsettings.json");
+    }
+
+    [TestMethod]
+    public void GoogleReCaptcha_MinimumScore_IsPresentAndValid()
+    {
+        var value = _config["GoogleReCaptcha:MinimumScore"];
+        Assert.IsNotNull(value, "GoogleReCaptcha:MinimumScore is missing in appsettings.json");
+        Assert.IsTrue(float.TryParse(value, out _), "GoogleReCaptcha:MinimumScore must be a valid number in appsettings.json");
+    }
 }
