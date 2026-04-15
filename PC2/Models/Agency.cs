@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 namespace PC2.Models
 {
     /// <summary>
-    /// Represents a agency as a object
+    /// Represents an agency as an object
     /// </summary>
     public class Agency
     {
@@ -41,12 +41,12 @@ namespace PC2.Models
         public string? Address2 {  get; set;}
 
         /// <summary>
-        /// The city the agency's is located
+        /// The city where the agency is located
         /// </summary>
         public string? City {  get; set;}
 
         /// <summary>
-        /// The state the agency is located
+        /// The state where the agency is located
         /// </summary>
         public string? State {  get; set;}
 
@@ -76,7 +76,7 @@ namespace PC2.Models
         public string? TTY {  get; set;}
 
         /// <summary>
-        /// The agency's telecommunications device for the deaf's number
+        /// The agency's Telecommunications Device for the Deaf (TDD) number
         /// </summary>
         public string? TDD {  get; set;}
 
@@ -107,9 +107,9 @@ namespace PC2.Models
 
         public List<AgencyCategory> AgencyCategories { get; set; } = new List<AgencyCategory>();
         /// <summary>
-        /// Creates a formated string to print from the Phone field
+        /// Creates a formatted string to print from the Phone field
         /// </summary>
-        /// <returns>A formated phone number string to be displayed</returns>
+        /// <returns>A formatted phone number string to be displayed</returns>
         public string PhoneToString()
         {
             Regex regex = new Regex(@"^\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}[\s]?$");
@@ -123,9 +123,9 @@ namespace PC2.Models
             }
         }
         /// <summary>
-        /// Creates a formated string to print from the CrisisHelpHotline field
+        /// Creates a formatted string to print from the CrisisHelpHotline field
         /// </summary>
-        /// <returns>A formated CrisisHelpHotline phone number to be displayed</returns>
+        /// <returns>A formatted CrisisHelpHotline phone number to be displayed</returns>
         public string CrisisToString()
         {
             Regex regex = new Regex(@"^\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$");
@@ -155,12 +155,12 @@ namespace PC2.Models
         public string AgencyName { get; set; } = null!;
 
         /// <summary>
-        /// The agency's contact information
+        /// The agency's second name
         /// </summary>
         public string? AgencyName2 { get; set; }
 
         /// <summary>
-        /// The city the agency's is located
+        /// The city where the agency is located
         /// </summary>
         public string? City { get; set; }
     }
