@@ -228,21 +228,11 @@ else
                         @if (Model.Agencies[i].Email != null)
                         {
                             @foreach (string singleEmail in Model.Agencies[i].Email.Split(' ', StringSplitOptions.RemoveEmptyEntries))
-                            int emailStart = 0;
-
-                            @*separate multiple emails*@
-                            @for (int j = 0; j < email.Length; j++)
                             {
                                 <a href="mailto:@singleEmail.Trim()">@singleEmail.Trim()</a>
                                     <br>
-                                    emailStart = j;
                                 }
                             }
-                            // display link as final email
-                            string finalEmail = email.Substring(emailStart, email.Length - emailStart);
-
-                            <a href="mailto:@finalEmail.Trim()">@finalEmail</a>
-                        }
                         </div>
 
                     <div class="col-md-1 col-2">
