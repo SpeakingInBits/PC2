@@ -1,0 +1,126 @@
+@model PC2.Models.Agency
+
+@*
+    Partial view that renders the detail fields for a single Agency inside the modal body.
+    Each field is rendered explicitly (no reflection) so the output is easy to follow and maintain.
+*@
+
+<dl class="row">
+
+    @if (Model.AgencyName2 != null)
+    {
+        <dt>AgencyName2</dt>
+        <dd>@Model.AgencyName2</dd>
+    }
+
+    @if (Model.Contact != null)
+    {
+        <dt>Contact</dt>
+        <dd>@Model.Contact</dd>
+    }
+
+    @if (Model.Address1 != null)
+    {
+        <dt>@(Model.Address2 == null ? "Address" : "Address1")</dt>
+        <dd>@Model.Address1</dd>
+    }
+
+    @if (Model.Address2 != null)
+    {
+        <dt>Address2</dt>
+        <dd>@Model.Address2</dd>
+    }
+
+    @if (Model.City != null)
+    {
+        <dt>City</dt>
+        <dd>@Model.City</dd>
+    }
+
+    @if (Model.State != null)
+    {
+        <dt>State</dt>
+        <dd>@Model.State</dd>
+    }
+
+    @if (Model.Zip != null)
+    {
+        <dt>Zip</dt>
+        <dd>@Model.Zip</dd>
+    }
+
+    @if (Model.MailingAddress != null)
+    {
+        <dt>MailingAddress</dt>
+        <dd>@Model.MailingAddress</dd>
+    }
+
+    @if (Model.Phone != null)
+    {
+        <dt>Phone</dt>
+        <dd>@Html.Raw(PC2.Models.RendererHelper.RenderPhone(Model.Phone))</dd>
+    }
+
+    @if (Model.TollFree != null)
+    {
+        <dt>TollFree</dt>
+        <dd>@Model.TollFree</dd>
+    }
+
+    @if (Model.TTY != null)
+    {
+        <dt>TTY</dt>
+        <dd>@Model.TTY</dd>
+    }
+
+    @if (Model.TDD != null)
+    {
+        <dt>TDD</dt>
+        <dd>@Model.TDD</dd>
+    }
+
+    @if (Model.CrisisHelpHotline != null)
+    {
+        <dt>CrisisHelpHotline</dt>
+        <dd>@Model.CrisisHelpHotline</dd>
+    }
+
+    @if (Model.Fax != null)
+    {
+        <dt>Fax</dt>
+        <dd>@Model.Fax</dd>
+    }
+
+    @if (Model.Email != null)
+    {
+        <dt>Email</dt>
+        <dd>
+            @foreach (string email in Model.Email.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            {
+                <a href="mailto:@email.Trim()">@email</a>
+                <br>
+            }
+        </dd>
+    }
+
+    @if (Model.Website != null)
+    {
+        @foreach (string website in Model.Website.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+        {
+            string url = website.Trim();
+            if (!url.StartsWith("https://") && !url.StartsWith("http://"))
+            {
+                url = "https://" + url;
+            }
+            <dt>Website</dt>
+            <dd><a href="@url">@url</a></dd>
+        }
+    }
+
+    @if (Model.Description != null)
+    {
+        <dt>Description</dt>
+        <dd>@Model.Description</dd>
+    }
+
+</dl>
