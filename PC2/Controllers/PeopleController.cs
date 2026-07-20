@@ -37,9 +37,11 @@ public class PeopleController : Controller
     }
 
     [HttpGet]
-    public IActionResult Create(PersonType type)
+    public IActionResult Create(PersonType? type = null)
     {
-        return View(new PersonViewModel { Type = type });
+        // If no type is provided, default to Staff so the form displays
+        var selectedType = type ?? PersonType.Staff;
+        return View(new PersonViewModel { Type = selectedType });
     }
 
     [HttpPost]

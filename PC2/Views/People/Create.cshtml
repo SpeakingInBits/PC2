@@ -17,7 +17,19 @@
     <div class="col-md-6">
         <form asp-action="Create" enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Type" />
+
+            <!-- Member Type Selector -->
+            <div class="form-group mb-3">
+                <label for="typeSelector" class="control-label">Member Type</label>
+                <select id="typeSelector" class="form-control">
+                    <option value="">-- Select Member Type --</option>
+                    <option value="0">Staff</option>
+                    <option value="1">Board</option>
+                    <option value="2">Steering Committee</option>
+                </select>
+            </div>
+
+            <input type="hidden" asp-for="Type" id="typeInput" />
 
             <div class="form-group mb-3">
                 <label asp-for="Name" class="control-label"></label>
@@ -121,6 +133,13 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
+        // Initialize the type selector dropdown
+        document.addEventListener('DOMContentLoaded', function () {
+            const typeSelector = document.getElementById('typeSelector');
+            const currentType = @((int)Model.Type);
+            typeSelector.value = currentType;
+        });
+
         document.getElementById('photoFile').addEventListener('change', function () {
             const preview = document.getElementById('photoPreview');
             const file = this.files[0];
@@ -134,6 +153,22 @@
             } else {
                 preview.src = '';
                 preview.style.display = 'none';
+            }
+        });
+
+        // Handle member type selector changes
+        document.getElementById('typeSelector').addEventListener('change', function () {
+            const selectedValue = this.value;
+            if (selectedValue) {
+                // Map numeric values to PersonType enum names
+                const typeMap = {
+                    '0': 'Staff',
+                    '1': 'Board',
+                    '2': 'SteeringCommittee'
+                };
+                const selectedType = typeMap[selectedValue];
+                // Reload the page with the selected type to show/hide appropriate fields
+                window.location.href = '@Url.Action("Create", "People")?type=' + selectedType;
             }
         });
     </script>
