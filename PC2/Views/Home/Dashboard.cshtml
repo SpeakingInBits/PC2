@@ -1,0 +1,171 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+@section Head
+{
+    <style>
+        #content {
+            color: rgb(20, 100, 47);
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .dashboard-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .dashboard-card h3 {
+            color: rgb(91, 118, 35);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .dashboard-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dashboard-card li {
+            margin-bottom: 0.75rem;
+        }
+
+        .dashboard-card a {
+            color: #0066cc;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .dashboard-card a:hover {
+            color: #0052a3;
+            text-decoration: underline;
+        }
+
+        .dashboard-card .nav-link-icon {
+            margin-right: 0.5rem;
+        }
+
+        @@media only screen and (max-width: 768px) {
+            .dashboard-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+}
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <p>Manage and organize all PC2 data and content</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Agencies Management -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-building"></i> Agencies</h3>
+            <ul>
+                <li><a href="@Url.Action("Index", "Agency")">View Agencies</a></li>
+                <li><a href="@Url.Action("Create", "Agency")">Add New Agency</a></li>
+            </ul>
+        </div>
+
+        <!-- Housing Program Data -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-house"></i> Housing Program</h3>
+            <ul>
+                <li><a href="@Url.Action("HousingProgramData", "About")">Housing Program Data</a></li>
+            </ul>
+        </div>
+
+        <!-- Analytics -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-graph-up"></i> Analytics</h3>
+            <ul>
+                <li><a href="@Url.Action("Analytics", "Admin")">View Analytics Dashboard</a></li>
+            </ul>
+        </div>
+
+        <!-- Calendar and Events -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-calendar-event"></i> Calendar & Events</h3>
+            <ul>
+                <li><a href="@Url.Action("Index", "Calendar")">View Calendar</a></li>
+                <li><a href="@Url.Action("Create", "Calendar")">Create Event</a></li>
+            </ul>
+        </div>
+
+        <!-- Members Management -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-people"></i> Members</h3>
+            <ul>
+                <li><a href="@Url.Action("Index", "People", new { type = "Staff" })">View Staff</a></li>
+                <li><a href="@Url.Action("Create", "People", new { type = "Staff" })">Add Staff Member</a></li>
+                <li><a href="@Url.Action("Index", "People", new { type = "Board" })">View Board</a></li>
+                <li><a href="@Url.Action("Create", "People", new { type = "Board" })">Add Board Member</a></li>
+                <li><a href="@Url.Action("Index", "People", new { type = "SteeringCommittee" })">View Steering Committee</a></li>
+                <li><a href="@Url.Action("Create", "People", new { type = "SteeringCommittee" })">Add Committee Member</a></li>
+            </ul>
+        </div>
+
+        <!-- Newsletter & Videos -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-file-text"></i> Content</h3>
+            <ul>
+                <li><a href="@Url.Action("UploadNewsletter", "About")">Upload Newsletter</a></li>
+                <li><a href="@Url.Action("ManageVideos", "ProgramVideos")">Manage Program Videos</a></li>
+            </ul>
+        </div>
+
+        <!-- User Management (Admin Only) -->
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="dashboard-card">
+                <h3><i class="bi bi-shield-lock"></i> User Management</h3>
+                <ul>
+                    <li><a href="@Url.Action("Index", "UserManagement")">Manage Users</a></li>
+                </ul>
+            </div>
+        }
+    </div>
+</div>
