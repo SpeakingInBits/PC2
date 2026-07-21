@@ -25,11 +25,6 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        // Redirect admin/staff users to admin dashboard
-        if (User.IsInRole(IdentityHelper.Admin) || User.IsInRole(IdentityHelper.Staff))
-        {
-            return RedirectToAction("Dashboard");
-        }
         return View();
     }
 
