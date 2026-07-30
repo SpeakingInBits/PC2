@@ -1,0 +1,36 @@
+@model PC2.Models.JobOpportunity
+
+@{
+    ViewData["Title"] = "Delete Job Opportunity";
+}
+
+<h1>Delete "@Model.Title"</h1>
+
+<h3>Are you sure you want to delete "@Model.Title"?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Title</dt>
+        <dd class="col-sm-9">@Model.Title</dd>
+        <dt class="col-sm-3">Description</dt>
+        <dd class="col-sm-9" style="white-space: pre-line">@Model.Description</dd>
+        @if (Model.ClosingDate != null)
+        {
+            <dt class="col-sm-3">Closing Date</dt>
+            <dd class="col-sm-9">@Model.ClosingDate.Value.ToString("MMMM d, yyyy")</dd>
+        }
+        @if (!string.IsNullOrEmpty(Model.AttachmentLocation))
+        {
+            <dt class="col-sm-3">Attachment</dt>
+            <dd class="col-sm-9"><a href="@Model.AttachmentLocation" target="_blank">@Model.AttachmentName</a></dd>
+        }
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">@(Model.IsOpen ? "Open" : "Closed")</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="JobOpportunityId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Manage">Back to List</a>
+    </form>
+</div>

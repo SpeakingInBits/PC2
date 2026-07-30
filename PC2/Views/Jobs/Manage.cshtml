@@ -1,0 +1,87 @@
+@model IEnumerable<PC2.Models.JobOpportunity>
+
+@{
+    ViewData["Title"] = "Manage Job Opportunities";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@{
+    if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Job</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Closing Date</th>
+            <th>Attachment</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var job in Model)
+        {
+            <tr>
+                <td>@job.Title</td>
+                <td>
+                    @if (job.ClosingDate != null)
+                    {
+                        @job.ClosingDate.Value.ToString("MMMM d, yyyy")
+                    }
+                    else
+                    {
+                        <span class="text-muted">None</span>
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(job.AttachmentLocation))
+                    {
+                        <a href="@job.AttachmentLocation" target="_blank">@job.AttachmentName</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">None</span>
+                    }
+                </td>
+                <td>
+                    @if (job.IsOpen)
+                    {
+                        <span class="badge bg-success">Open</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Closed</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@job.JobOpportunityId" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@job.JobOpportunityId" class="btn btn-sm btn-outline-danger">Delete</a>
+                    @if (job.IsOpen)
+                    {
+                        <form asp-action="Close" asp-route-id="@job.JobOpportunityId" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Close</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Reopen" asp-route-id="@job.JobOpportunityId" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-success">Reopen</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
