@@ -29,9 +29,9 @@
                 <label for="type" class="form-label">Member Type</label>
                 <select class="form-control" id="type" name="type">
                     <option value="">-- All Types --</option>
-                    <option value="0" selected="@(selectedType == PersonType.Staff)">Staff</option>
-                    <option value="1" selected="@(selectedType == PersonType.Board)">Board</option>
-                    <option value="2" selected="@(selectedType == PersonType.SteeringCommittee)">Steering Committee</option>
+                    <option value="@nameof(PersonType.Staff)" selected="@(selectedType == PersonType.Staff)">Staff</option>
+                    <option value="@nameof(PersonType.Board)" selected="@(selectedType == PersonType.Board)">Board</option>
+                    <option value="@nameof(PersonType.SteeringCommittee)" selected="@(selectedType == PersonType.SteeringCommittee)">Steering Committee</option>
                 </select>
             </div>
 
@@ -101,6 +101,10 @@
                                     @if (!string.IsNullOrEmpty(item.Phone))
                                     {
                                         <div>@item.Phone</div>
+                                    }
+                                    @if (item.Extension.HasValue)
+                                    {
+                                        <div>Ext. @item.Extension</div>
                                     }
                                     @if (!string.IsNullOrEmpty(item.Email))
                                     {

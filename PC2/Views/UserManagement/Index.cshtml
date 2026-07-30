@@ -42,8 +42,8 @@
             @foreach (var user in Model)
             {
                 <tr>
-                    <td class="align-content-center text-center">@user.Email</td>
-                    <td class="align-content-center text-center">
+                    <td class="align-middle text-center">@user.Email</td>
+                    <td class="align-middle text-center">
                         @if (user.IsAdmin)
                         {
                             <span class="badge bg-danger">Admin</span>
@@ -57,7 +57,7 @@
                             <span class="badge bg-light text-dark">No Role</span>
                         }
                     </td>
-                    <td class="align-content-center text-center">
+                    <td class="align-middle text-center">
                         @if (user.IsStaff && !user.IsAdmin)
                         {
                             <form asp-action="Promote" method="post" class="d-inline">

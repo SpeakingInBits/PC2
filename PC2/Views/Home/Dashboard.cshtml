@@ -1,3 +1,4 @@
+@using PC2.Data
 @{
     ViewData["Title"] = "Admin Dashboard";
 }
@@ -156,6 +157,14 @@
             </div>
         </div>
 
+        <!-- Job Opportunities -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-briefcase"></i> Job Opportunities</h3>
+            <div class="dashboard-card-buttons">
+                <a href="@Url.Action("Manage", "Jobs")" class="dashboard-btn">Manage Job Opportunities</a>
+            </div>
+        </div>
+
         <!-- Calendar and Events -->
         <div class="dashboard-card">
             <h3><i class="bi bi-calendar-event"></i> Calendar & Events</h3>
@@ -184,7 +193,7 @@
         </div>
 
         <!-- User Management (Admin Only) -->
-        @if (User.IsInRole("Admin"))
+        @if (User.IsInRole(IdentityHelper.Admin))
         {
             <div class="dashboard-card">
                 <h3><i class="bi bi-shield-lock"></i> User Management</h3>

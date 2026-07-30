@@ -11,23 +11,27 @@
     };
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 id="pageTitle">@ViewData["Title"]</h1>
 <hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label for="typeSelector" class="control-label">Member Type</label>
+            <select id="typeSelector" class="form-control">
+                <option value="@nameof(PersonType.Staff)" selected="@(Model.Type == PersonType.Staff)">Staff</option>
+                <option value="@nameof(PersonType.Board)" selected="@(Model.Type == PersonType.Board)">Board</option>
+                <option value="@nameof(PersonType.SteeringCommittee)" selected="@(Model.Type == PersonType.SteeringCommittee)">Steering Committee</option>
+            </select>
+            <small class="form-text text-muted">The form fields below adjust to match the selected member type.</small>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Create" enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <!-- Member Type Selector -->
-            <div class="form-group mb-3">
-                <label for="typeSelector" class="control-label">Member Type</label>
-                <select id="typeSelector" class="form-control">
-                    <option value="">-- Select Member Type --</option>
-                    <option value="0">Staff</option>
-                    <option value="1">Board</option>
-                    <option value="2">Steering Committee</option>
-                </select>
-            </div>
 
             <input type="hidden" asp-for="Type" id="typeInput" />
 
@@ -43,39 +47,37 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
-            @if (Model.Type == PersonType.Staff)
-            {
+            <div id="staffFields" style="@(Model.Type == PersonType.Staff ? null : "display:none")">
                 <div class="row">
                     <div class="col-md-8">
                         <div class="form-group mb-3">
                             <label asp-for="Phone" class="control-label"></label>
-                            <input asp-for="Phone" class="form-control" />
+                            <input asp-for="Phone" class="form-control" disabled="@(Model.Type == PersonType.Staff ? null : "disabled")" />
                             <span asp-validation-for="Phone" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group mb-3">
                             <label asp-for="Extension" class="control-label"></label>
-                            <input asp-for="Extension" class="form-control" />
+                            <input asp-for="Extension" class="form-control" disabled="@(Model.Type == PersonType.Staff ? null : "disabled")" />
                             <span asp-validation-for="Extension" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
                 <div class="form-group mb-3">
                     <label asp-for="Email" class="control-label"></label>
-                    <input asp-for="Email" class="form-control" type="email" />
+                    <input asp-for="Email" class="form-control" type="email" disabled="@(Model.Type == PersonType.Staff ? null : "disabled")" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-            }
+            </div>
 
-            @if (Model.Type == PersonType.Board)
-            {
+            <div id="boardFields" style="@(Model.Type == PersonType.Board ? null : "display:none")">
                 <div class="form-group mb-3">
                     <label asp-for="MembershipStart" class="control-label"></label>
-                    <input asp-for="MembershipStart" class="form-control" />
+                    <input asp-for="MembershipStart" class="form-control" disabled="@(Model.Type == PersonType.Board ? null : "disabled")" />
                     <span asp-validation-for="MembershipStart" class="text-danger"></span>
                 </div>
-            }
+            </div>
 
             <div class="card mb-3">
                 <div class="card-header">
@@ -95,36 +97,29 @@
                 </div>
             </div>
 
-            @if (Model.Type != PersonType.SteeringCommittee)
-            {
-                <div class="form-group mb-3">
-                    <label asp-for="PriorityOrder" class="control-label"></label>
-                    @if (Model.Type == PersonType.Staff)
-                    {
-                        <select asp-for="PriorityOrder" class="form-control">
-                            <option value="1">Director</option>
-                            <option value="10">Other</option>
-                        </select>
-                    }
-                    else
-                    {
-                        <select asp-for="PriorityOrder" class="form-control">
-                            <option value="1">Board Chair</option>
-                            <option value="5">Treasurer</option>
-                            <option value="10">Other</option>
-                        </select>
-                    }
-                    <span asp-validation-for="PriorityOrder" class="text-danger"></span>
-                </div>
-            }
-            else
-            {
-                <input type="hidden" name="PriorityOrder" value="1" />
-            }
+            <div id="prioritySection" class="form-group mb-3" style="@(Model.Type == PersonType.SteeringCommittee ? "display:none" : null)">
+                <label asp-for="PriorityOrder" class="control-label"></label>
+                <select id="staffPriority" name="PriorityOrder" class="form-control"
+                        style="@(Model.Type == PersonType.Staff ? null : "display:none")"
+                        disabled="@(Model.Type == PersonType.Staff ? null : "disabled")">
+                    <option value="1" selected="@(Model.PriorityOrder == 1)">Director</option>
+                    <option value="10" selected="@(Model.PriorityOrder != 1)">Other</option>
+                </select>
+                <select id="boardPriority" name="PriorityOrder" class="form-control"
+                        style="@(Model.Type == PersonType.Board ? null : "display:none")"
+                        disabled="@(Model.Type == PersonType.Board ? null : "disabled")">
+                    <option value="1" selected="@(Model.PriorityOrder == 1)">Board Chair</option>
+                    <option value="5" selected="@(Model.PriorityOrder == 5)">Treasurer</option>
+                    <option value="10" selected="@(Model.PriorityOrder != 1 && Model.PriorityOrder != 5)">Other</option>
+                </select>
+                <span asp-validation-for="PriorityOrder" class="text-danger"></span>
+            </div>
+            <input type="hidden" id="scPriority" name="PriorityOrder" value="1"
+                   disabled="@(Model.Type == PersonType.SteeringCommittee ? null : "disabled")" />
 
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
-                <a asp-action="Index" asp-route-type="@Model.Type.ToString()" class="btn btn-secondary">Cancel</a>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
@@ -133,13 +128,6 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        // Initialize the type selector dropdown
-        document.addEventListener('DOMContentLoaded', function () {
-            const typeSelector = document.getElementById('typeSelector');
-            const currentType = @((int)Model.Type);
-            typeSelector.value = currentType;
-        });
-
         document.getElementById('photoFile').addEventListener('change', function () {
             const preview = document.getElementById('photoPreview');
             const file = this.files[0];
@@ -156,20 +144,34 @@
             }
         });
 
-        // Handle member type selector changes
-        document.getElementById('typeSelector').addEventListener('change', function () {
-            const selectedValue = this.value;
-            if (selectedValue) {
-                // Map numeric values to PersonType enum names
-                const typeMap = {
-                    '0': 'Staff',
-                    '1': 'Board',
-                    '2': 'SteeringCommittee'
-                };
-                const selectedType = typeMap[selectedValue];
-                // Reload the page with the selected type to show/hide appropriate fields
-                window.location.href = '@Url.Action("Create", "People")?type=' + selectedType;
+        // Show/hide type-specific sections without reloading the page.
+        // Hidden inputs are disabled so they are not submitted with the form.
+        function setSection(id, active) {
+            const section = document.getElementById(id);
+            section.style.display = active ? '' : 'none';
+            if (section.matches('input, select')) {
+                section.disabled = !active;
             }
+            section.querySelectorAll('input, select').forEach(ctrl => ctrl.disabled = !active);
+        }
+
+        const pageTitles = {
+            'Staff': 'Create Staff Member',
+            'Board': 'Create Board Member',
+            'SteeringCommittee': 'Create Steering Committee Member'
+        };
+
+        document.getElementById('typeSelector').addEventListener('change', function () {
+            const type = this.value;
+            setSection('staffFields', type === 'Staff');
+            setSection('boardFields', type === 'Board');
+            setSection('staffPriority', type === 'Staff');
+            setSection('boardPriority', type === 'Board');
+            document.getElementById('prioritySection').style.display = type === 'SteeringCommittee' ? 'none' : '';
+            document.getElementById('scPriority').disabled = type !== 'SteeringCommittee';
+            document.getElementById('typeInput').value = type;
+            document.getElementById('pageTitle').textContent = pageTitles[type];
+            document.title = pageTitles[type] + ' - PC2Online';
         });
     </script>
 }
