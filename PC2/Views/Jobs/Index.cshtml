@@ -1,0 +1,36 @@
+@model List<JobOpportunityViewModel>
+
+@{
+    ViewData["Title"] = "Job Opportunities";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        There are no job openings at this time. Please check back later!
+    </div>
+}
+else
+{
+    @foreach (var jobViewModel in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h3 class="card-title">@jobViewModel.Job.Title</h3>
+                @if (jobViewModel.Job.ClosingDate != null)
+                {
+                    <h6 class="card-subtitle mb-2 text-muted">Applications close @jobViewModel.Job.ClosingDate.Value.ToString("MMMM d, yyyy")</h6>
+                }
+                <p class="card-text" style="white-space: pre-line">@Html.Raw(jobViewModel.SanitizedDescription)</p>
+                @if (!string.IsNullOrEmpty(jobViewModel.Job.AttachmentLocation))
+                {
+                    <a href="@jobViewModel.Job.AttachmentLocation" target="_blank" class="card-link">
+                        <i class="bi bi-file-earmark-pdf"></i> @jobViewModel.Job.AttachmentName
+                    </a>
+                }
+            </div>
+        </div>
+    }
+}
