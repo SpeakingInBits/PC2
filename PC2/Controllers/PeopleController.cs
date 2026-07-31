@@ -23,23 +23,37 @@ public class PeopleController : Controller
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(PersonType type)
+    public async Task<IActionResult> Index(PersonType? type = null, string? searchTerm = null)
     {
-        ViewData["PersonType"] = type;
         IEnumerable<PersonViewModel> people = type switch
         {
             PersonType.Staff => (await StaffDB.GetAllStaffForEditing(_context)).Select(PersonViewModel.FromStaff),
             PersonType.Board => (await BoardDB.GetAllBoardMembersForEditing(_context)).Select(PersonViewModel.FromBoard),
             PersonType.SteeringCommittee => (await SteeringCommitteeDB.GetAllSteeringCommittee(_context)).Select(PersonViewModel.FromSteeringCommittee),
+            null => (await StaffDB.GetAllStaffForEditing(_context)).Select(PersonViewModel.FromStaff)
+                .Concat((await BoardDB.GetAllBoardMembersForEditing(_context)).Select(PersonViewModel.FromBoard))
+                .Concat((await SteeringCommitteeDB.GetAllSteeringCommittee(_context)).Select(PersonViewModel.FromSteeringCommittee)),
             _ => []
         };
-        return View(people);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            people = people.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Store filter values in ViewData for the view
+        ViewData["SelectedType"] = type;
+        ViewData["SearchTerm"] = searchTerm;
+
+        return View(people.ToList());
     }
 
     [HttpGet]
-    public IActionResult Create(PersonType type)
+    public IActionResult Create(PersonType? type = null)
     {
-        return View(new PersonViewModel { Type = type });
+        // If no type is provided, default to Staff so the form displays
+        var selectedType = type ?? PersonType.Staff;
+        return View(new PersonViewModel { Type = selectedType });
     }
 
     [HttpPost]

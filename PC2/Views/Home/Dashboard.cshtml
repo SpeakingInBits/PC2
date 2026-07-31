@@ -1,0 +1,206 @@
+@using PC2.Data
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+@section Head
+{
+    <style>
+        #content {
+            color: rgb(20, 100, 47);
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .dashboard-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .dashboard-card h3 {
+            color: rgb(91, 118, 35);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            text-decoration: none;
+        }
+
+        .dashboard-card-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .dashboard-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: rgb(91, 118, 35);
+            color: #ffffff !important;
+            text-decoration: none !important;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: center;
+            transition: background-color 0.2s, transform 0.1s;
+            font-weight: 500;
+        }
+
+        .dashboard-btn:hover {
+            background-color: rgb(71, 98, 25);
+            transform: translateY(-2px);
+            color: #ffffff !important;
+            text-decoration: none !important;
+        }
+
+        .dashboard-btn:visited {
+            color: #ffffff !important;
+            text-decoration: none !important;
+        }
+
+        .dashboard-btn:active {
+            transform: translateY(0);
+            color: #ffffff !important;
+            text-decoration: none !important;
+        }
+
+        .dashboard-btn:focus {
+            color: #ffffff !important;
+            text-decoration: none !important;
+            outline: 2px solid rgb(91, 118, 35);
+            outline-offset: 2px;
+        }
+
+        .dashboard-btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .dashboard-btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        @@media only screen and (max-width: 768px) {
+            .dashboard-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+}
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <p>Manage and organize all PC2 data and content</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Agencies Management -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-building"></i> Agencies</h3>
+            <div class="dashboard-card-buttons">
+                <a href="@Url.Action("Index", "Agency")" class="dashboard-btn">View Agencies</a>
+                <a href="@Url.Action("Create", "Agency")" class="dashboard-btn">Add New Agency</a>
+            </div>
+        </div>
+
+        <!-- Housing Program Data -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-house"></i> Housing Program</h3>
+            <div class="dashboard-card-buttons">
+                <a href="@Url.Action("HousingProgramData", "About")" class="dashboard-btn">Housing Program Data</a>
+            </div>
+        </div>
+
+        <!-- Analytics -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-graph-up"></i> Analytics</h3>
+            <div class="dashboard-card-buttons">
+                <a href="@Url.Action("Analytics", "Admin")" class="dashboard-btn">View Analytics Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Job Opportunities -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-briefcase"></i> Job Opportunities</h3>
+            <div class="dashboard-card-buttons">
+                <a href="@Url.Action("Manage", "Jobs")" class="dashboard-btn">Manage Job Opportunities</a>
+            </div>
+        </div>
+
+        <!-- Calendar and Events -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-calendar-event"></i> Calendar & Events</h3>
+            <div class="dashboard-card-buttons">
+                <a href="@Url.Action("Index", "Calendar")" class="dashboard-btn">View Calendar</a>
+                <a href="@Url.Action("Create", "Calendar")" class="dashboard-btn">Create Event</a>
+            </div>
+        </div>
+
+        <!-- Members Management -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-people"></i> Members</h3>
+            <div class="dashboard-card-buttons">
+                <a href="@Url.Action("Index", "People")" class="dashboard-btn">View Members</a>
+                <a href="@Url.Action("Create", "People")" class="dashboard-btn">Add New Member</a>
+            </div>
+        </div>
+
+        <!-- Newsletter & Videos -->
+        <div class="dashboard-card">
+            <h3><i class="bi bi-file-text"></i> Content</h3>
+            <div class="dashboard-card-buttons">
+                <a href="@Url.Action("UploadNewsletter", "About")" class="dashboard-btn">Upload Newsletter</a>
+                <a href="@Url.Action("ManageVideos", "ProgramVideos")" class="dashboard-btn">Manage Program Videos</a>
+            </div>
+        </div>
+
+        <!-- User Management (Admin Only) -->
+        @if (User.IsInRole(IdentityHelper.Admin))
+        {
+            <div class="dashboard-card">
+                <h3><i class="bi bi-shield-lock"></i> User Management</h3>
+                <div class="dashboard-card-buttons">
+                    <a href="@Url.Action("Index", "UserManagement")" class="dashboard-btn">Manage Users</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
