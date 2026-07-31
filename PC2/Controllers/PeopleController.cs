@@ -25,31 +25,27 @@ public class PeopleController : Controller
 
     public async Task<IActionResult> Index(PersonType? type = null, string? searchTerm = null)
     {
-        // Get all people from all types
-        var staff = (await StaffDB.GetAllStaffForEditing(_context)).Select(PersonViewModel.FromStaff).ToList();
-        var board = (await BoardDB.GetAllBoardMembersForEditing(_context)).Select(PersonViewModel.FromBoard).ToList();
-        var steeringCommittee = (await SteeringCommitteeDB.GetAllSteeringCommittee(_context)).Select(PersonViewModel.FromSteeringCommittee).ToList();
-
-        // Combine all people
-        var allPeople = staff.Concat(board).Concat(steeringCommittee).ToList();
-
-        // Filter by type if specified
-        if (type.HasValue)
+        IEnumerable<PersonViewModel> people = type switch
         {
-            allPeople = allPeople.Where(p => p.Type == type.Value).ToList();
-        }
+            PersonType.Staff => (await StaffDB.GetAllStaffForEditing(_context)).Select(PersonViewModel.FromStaff),
+            PersonType.Board => (await BoardDB.GetAllBoardMembersForEditing(_context)).Select(PersonViewModel.FromBoard),
+            PersonType.SteeringCommittee => (await SteeringCommitteeDB.GetAllSteeringCommittee(_context)).Select(PersonViewModel.FromSteeringCommittee),
+            null => (await StaffDB.GetAllStaffForEditing(_context)).Select(PersonViewModel.FromStaff)
+                .Concat((await BoardDB.GetAllBoardMembersForEditing(_context)).Select(PersonViewModel.FromBoard))
+                .Concat((await SteeringCommitteeDB.GetAllSteeringCommittee(_context)).Select(PersonViewModel.FromSteeringCommittee)),
+            _ => []
+        };
 
-        // Filter by search term if specified
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            allPeople = allPeople.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            people = people.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
         }
 
         // Store filter values in ViewData for the view
         ViewData["SelectedType"] = type;
         ViewData["SearchTerm"] = searchTerm;
 
-        return View(allPeople);
+        return View(people.ToList());
     }
 
     [HttpGet]
