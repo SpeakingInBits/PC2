@@ -452,6 +452,34 @@ namespace PC2.Data.Migrations
                     b.ToTable("ProgramVideos");
                 });
 
+            modelBuilder.Entity("PC2.Models.ResourceLinksModel", b =>
+                {
+                    b.Property<int>("ResourceID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResourceID"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstLetter")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1)");
+
+                    b.Property<string>("LinkText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LinkURL")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ResourceID");
+
+                    b.ToTable("ResourceLinks");
+                });
+
             modelBuilder.Entity("PC2.Models.Board", b =>
                 {
                     b.HasBaseType("PC2.Models.People");
