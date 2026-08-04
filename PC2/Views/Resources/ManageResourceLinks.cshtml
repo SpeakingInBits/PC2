@@ -17,7 +17,7 @@ Add New Resource Link button opens Create form
 
 <div class="row mb-3">
 	<div class="col-md-12">
-		<a href="@Url.Action("Create", "Resources")" class="btn btn-primary">
+		<a href="@Url.Action("Create", "Resources")" class="btn btn-primary btn-style-match">
 			<i class="fas fa-plus"></i> Add New Resource Link
 		</a>
 	</div>
@@ -27,18 +27,18 @@ Add New Resource Link button opens Create form
 {
 	<div class="table-responsive">
 		<table class="table table-striped table-hover">
-			<thead class="table-dark">
+			<thead class="table-style-match">
 				<tr>
 					<th>Link Text</th>
 					<th>URL</th>
-					<th>Description</th>
+					<th class="limit-description-width">Description</th>
 					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
 				@foreach (var resource in Model.OrderBy(r => r.LinkText))
 				{
-					<tr>
+					<tr class="vertical-align">
 						<td>@resource.LinkText</td>
 						<td>
 							<a href="@resource.LinkURL" target="_blank" rel="noopener noreferrer">
@@ -48,14 +48,14 @@ Add New Resource Link button opens Create form
 						<td>
 							@if (!string.IsNullOrEmpty(resource.Description))
 							{
-								@(resource.Description.Length > 50 ? resource.Description.Substring(0, 50) + "..." : resource.Description)
+								@(resource.Description.Length < 100 ? resource.Description.Substring(0, 100) + "..." : resource.Description)
 							}
 						</td>
-						<td>
-							<a href="@Url.Action("Edit", "Resources", new { id = resource.ResourceID })" class="btn btn-sm btn-warning">
+						<td class="uniform-row">
+							<a href="@Url.Action("Edit", "Resources", new { id = resource.ResourceID })" class="btn btn-sm btn-warning btn-style-match">
 								<i class="fas fa-edit"></i> Edit
 							</a>
-							<a href="@Url.Action("Delete", "Resources", new { id = resource.ResourceID })" class="btn btn-sm btn-danger">
+							<a href="@Url.Action("Delete", "Resources", new { id = resource.ResourceID })" class="btn btn-sm btn-danger btn-style-match">
 								<i class="fas fa-trash"></i> Delete
 							</a>
 						</td>

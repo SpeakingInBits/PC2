@@ -34,7 +34,8 @@ namespace PC2.Controllers
             {
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, categoryID);
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
-                TrackResourceGuideTelemetry("Manual/Category", resourceGuide.Category.AgencyCategoryName);
+                TrackResourceGuideTelemetry("Manual/Category", 
+                    resourceGuide.Category.AgencyCategoryName);
             }
 
             await AgencyDB.GetDataForDataLists(_context, resourceGuide);

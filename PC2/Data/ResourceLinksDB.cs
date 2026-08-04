@@ -40,12 +40,6 @@ namespace PC2.Data
         /// <param name="resourceLink">The resource to add.</param>
         public static async Task AddResourceLink(ApplicationDbContext context, ResourceLinksModel resourceLink)
         {
-            // Automatic FirstLetter calculation based on LinkText
-            // This ensures alphabetical grouping/sorting works correctly without manual entry
-            resourceLink.FirstLetter = string.IsNullOrEmpty(resourceLink.LinkText) 
-                ? ' ' 
-                : char.ToUpper(resourceLink.LinkText[0]);
-
             context.ResourceLinks.Add(resourceLink);
             await context.SaveChangesAsync();
         }
@@ -57,12 +51,6 @@ namespace PC2.Data
         /// <param name="resourceLink">The resource with updated values (must have valid ResourceID).</param>
         public static async Task UpdateResourceLink(ApplicationDbContext context, ResourceLinksModel resourceLink)
         {
-            // Recalculate FirstLetter in case LinkText has changed
-            // This maintains alphabetical integrity even if the resource name changes significantly
-            resourceLink.FirstLetter = string.IsNullOrEmpty(resourceLink.LinkText) 
-                ? ' ' 
-                : char.ToUpper(resourceLink.LinkText[0]);
-
             context.Entry(resourceLink).State = EntityState.Modified;
             await context.SaveChangesAsync();
         }

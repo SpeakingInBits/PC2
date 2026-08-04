@@ -31,12 +31,6 @@ public class ResourceLinksModel
     /// Optional description displayed below the link.
     /// Example: "Information about Medicare enrollment and benefits"
     /// </summary>
+    [MaxLength(100)]
     public string? Description { get; set; }
-
-    /// <summary>
-    /// First character of LinkText (auto-calculated). Used for alphabetical grouping.
-    /// Example: LinkText "Medicare Resources" -> FirstLetter 'M'
-    /// Auto-set by AddResourceLink() and UpdateResourceLink() methods.
-    /// </summary>
-    public char FirstLetter { get; set; }
 }
