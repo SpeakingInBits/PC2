@@ -210,19 +210,9 @@ namespace PC2.Controllers
         /// </remarks>
         [Authorize(Roles = IdentityHelper.AdminOrStaff)]
         [HttpPost]
-        public IActionResult Create(ResourceLinksModel model)
+        public IActionResult Create()
         {
-            if (!model.IsValidUrl())
-            {
-                ModelState.AddModelError(nameof(model.LinkURL),
-                    "URL must start with http://, https://, or ~/");
-                return View(model);
-            }
-
-            _context.ResourceLinks.Add(model);
-            _context.SaveChanges();
-
-            return RedirectToAction("ManageResourceLinks");
+            return View("CreateResourceLink", new ResourceLinksModel());
         }
 
         /// <summary>
