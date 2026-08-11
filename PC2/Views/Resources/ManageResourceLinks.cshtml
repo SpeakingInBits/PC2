@@ -48,7 +48,7 @@ Add New Resource Link button opens Create form
 						<td>
 							@if (!string.IsNullOrEmpty(resource.Description))
 							{
-								@(resource.Description.Length < 100 ? resource.Description.Substring(0, 100) + "..." : resource.Description)
+								@(resource.Description.Length > 100 ? resource.Description.Substring(0, 100) + "..." : resource.Description)
 							}
 						</td>
 						<td class="uniform-row">

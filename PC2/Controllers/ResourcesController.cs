@@ -205,8 +205,8 @@ namespace PC2.Controllers
         /// When user fills out and submits the form, POST Create(ResourceLinksModel) is called
         /// to validate and save the new resource.
         /// 
-        /// Note: FirstLetter is NOT shown in the form - it's automatically calculated
-        /// by ResourceLinksDB.AddResourceLink() based on the first character of LinkText
+        /// Note: Alphabetical sorting/grouping is derived from
+        /// LinkText (no separate FirstLetter column is stored).
         /// </remarks>
         [Authorize(Roles = IdentityHelper.AdminOrStaff)]
         [HttpGet]
@@ -227,7 +227,7 @@ namespace PC2.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Add to database with auto-calculated FirstLetter
+                // Add to database
                 await ResourceLinksDB.AddResourceLink(_context, resourceLink);
                 // Redirect to management page to show the newly added resource
                 return RedirectToAction(nameof(ManageResourceLinks));

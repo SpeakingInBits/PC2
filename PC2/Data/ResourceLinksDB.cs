@@ -4,7 +4,7 @@ using PC2.Models;
 namespace PC2.Data
 {
     /// <summary>
-    /// Data access layer for resource links. Provides CRUD operations with automatic FirstLetter management.
+    /// Data access layer for resource links. Provides CRUD operations.
     /// </summary>
     public static class ResourceLinksDB
     {

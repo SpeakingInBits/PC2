@@ -5,7 +5,6 @@ namespace PC2.Models;
 /// <summary>
 /// Represents a resource link displayed on the /Resources/ResourceLinks page.
 /// Resources point to external websites (https://...) or internal files (~/).
-/// FirstLetter is auto-calculated from LinkText for alphabetical grouping.
 /// </summary>
 public class ResourceLinksModel
 {
@@ -16,8 +15,8 @@ public class ResourceLinksModel
     public int ResourceID { get; set; }
 
     /// <summary>
-    /// Display text for the clickable link (required). Used for alphabetical sorting.
-    /// Example: "Medicare Resources", "Autism Services"
+    /// URL/path for the resource (required).
+    /// Examples: \"https://example.com\", \"~/PDF/ResourceLinks/Reduced-Cost-Service-Guide-May-2023.pdf\"
     /// </summary>
     public string LinkURL { get; set; } = string.Empty;
 

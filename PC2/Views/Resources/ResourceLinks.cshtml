@@ -5,14 +5,11 @@
 
     // Only compute grouping if model exists and has items
     var groupedByLetter = (Model != null && Model.Count > 0)
-        ? Model.GroupBy(r => r.LinkText.ElementAt(0).ToString())
+        ? Model.Where(r => !string.IsNullOrWhiteSpace(r.LinkText))
+               .GroupBy(r => r.LinkText.Trim().Substring(0, 1).ToUpperInvariant())
                .OrderBy(g => g.Key)
         : null;
 }
-
-<head>
-    <link rel="stylesheet" href="~/css/site.css" />
-</head>
 
 <div class="d-flex justify-content-center">
     <img src="~/images/resource-links/links1.jpg" />
@@ -25,12 +22,11 @@
 
 <div class="divider"></div>
 
-@if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+@if (User.IsInRole(PC2.Data.IdentityHelper.Admin) || User.IsInRole(PC2.Data.IdentityHelper.Staff))
 {
     <div class="mb-3">
-        <a href="@Url.Action("ManageResourceLinks", "Resources")" class="btn btn-primary btn-sm">
-            <i class="fas fa-cog"></i> Manage Resource Links
-        </a>
+        <a href="@Url.Action("ManageResourceLinks", "Resources")" class= "btn btn-primary btn-sm">            
+            <i class="fas fa-cog"></i> Manage Resource Links</a>
     </div>
 }
 
