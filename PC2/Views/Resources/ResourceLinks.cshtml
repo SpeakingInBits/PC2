@@ -2,6 +2,12 @@
 
 @{
     ViewData["Title"] = "Resource Links";
+
+    // Only compute grouping if model exists and has items
+    var groupedByLetter = (Model != null && Model.Count > 0)
+        ? Model.GroupBy(r => r.LinkText.ElementAt(0).ToString())
+               .OrderBy(g => g.Key)
+        : null;
 }
 
 <head>
@@ -31,30 +37,23 @@
 <p class="text-center">Please click on the links below to access the Internet resource listed:</p>
 <br />
 
-@if (Model?.Count > 0)
+@if (groupedByLetter != null)
 {
-    <!-- Group resources by first letter and sort alphabetically -->
-    var groupedByLetter = Model.GroupBy(r => r.LinkText.ElementAt<Char>(0).ToString()).OrderBy(g => g.Key);
-
     <div class="container">
         <ul style="list-style: none; padding: 0;">
             @foreach (var letterGroup in groupedByLetter)
             {
-                <!-- Letter section header -->
                 <li style="margin-top: 20px; margin-bottom: 10px;">
                     <h5 style="border-bottom: 2px solid #333; padding-bottom: 5px;">@letterGroup.Key</h5>
                 </li>
 
-                <!-- Resources starting with this letter, sorted alphabetically by LinkText -->
                 @foreach (var resource in letterGroup.OrderBy(r => r.LinkText))
                 {
                     <li style="margin-left: 20px; margin-bottom: 15px;">
                         <a href="@resource.LinkURL" target="_blank" rel="noopener noreferrer">@resource.LinkText</a>
                         @if (!string.IsNullOrEmpty(resource.Description))
                         {
-                            <p style="margin-top: 5px; margin-bottom: 0; font-size: 0.95em; color: #666;">
-                                @resource.Description
-                            </p>
+                            <p style="margin-top: 5px; margin-bottom: 0; font-size: 0.95em; color: #666;">@resource.Description</p>
                         }
                     </li>
                 }
@@ -62,12 +61,12 @@
         </ul>
     </div>
 }
-
 else
 {
     <div class="alert alert-info text-center">
         No resource links are currently available.
     </div>
 }
+
 
 <p class="text-center">Did we miss a resource you know about? Let us know at <a href="mailto:info@pc2online.org">info@pc2online.org</a></p>
