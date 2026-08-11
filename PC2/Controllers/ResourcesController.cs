@@ -209,10 +209,20 @@ namespace PC2.Controllers
         /// LinkText (no separate FirstLetter column is stored).
         /// </remarks>
         [Authorize(Roles = IdentityHelper.AdminOrStaff)]
-        [HttpGet]
-        public IActionResult Create()
+        [HttpPost]
+        public IActionResult Create(ResourceLinksModel model)
         {
-            return View("CreateResourceLink", new ResourceLinksModel());
+            if (!model.IsValidUrl())
+            {
+                ModelState.AddModelError(nameof(model.LinkURL),
+                    "URL must start with http://, https://, or ~/");
+                return View(model);
+            }
+
+            _context.ResourceLinks.Add(model);
+            _context.SaveChanges();
+
+            return RedirectToAction("ManageResourceLinks");
         }
 
         /// <summary>
