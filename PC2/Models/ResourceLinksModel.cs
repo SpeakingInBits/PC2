@@ -21,6 +21,28 @@ public class ResourceLinksModel
     public string LinkURL { get; set; } = string.Empty;
 
     /// <summary>
+    /// This method checks if the LinkURL is a valid URL or file path.
+    /// It allows HTTP, HTTPS, and application-local paths (starting with "~/").
+    /// </summary>
+    /// <returns>Resturns true if the URL is a file path, an HTTP or an HTTPS</returns>
+    public bool IsValidUrl()
+    {
+        if (string.IsNullOrWhiteSpace(LinkURL))
+            return false;
+
+        // Allow HTTP/HTTPS
+        if (LinkURL.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            LinkURL.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        // Allow application-local paths
+        if (LinkURL.StartsWith("~/"))
+            return true;
+
+        return false;
+    }
+
+    /// <summary>
     /// Display text for the clickable link (required). Used for alphabetical sorting.
     /// Example: "Medicare Resources", "Autism Services"
     /// </summary>

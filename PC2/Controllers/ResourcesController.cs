@@ -223,18 +223,19 @@ namespace PC2.Controllers
         [Authorize(Roles = IdentityHelper.AdminOrStaff)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ResourceLinksModel resourceLink)
+        public IActionResult Create(ResourceLinksModel model)
         {
-            if (ModelState.IsValid)
+            if (!model.IsValidUrl())
             {
-                // Add to database
-                await ResourceLinksDB.AddResourceLink(_context, resourceLink);
-                // Redirect to management page to show the newly added resource
-                return RedirectToAction(nameof(ManageResourceLinks));
+                ModelState.AddModelError(nameof(model.LinkURL),
+                    "URL must start with http://, https://, or ~/");
+                return View(model);
             }
 
-            // If validation failed, redisplay the form with error messages
-            return View("CreateResourceLink", resourceLink);
+            _context.ResourceLinks.Add(model);
+            _context.SaveChanges();
+
+            return RedirectToAction("ManageResourceLinks");
         }
 
         /// <summary>
