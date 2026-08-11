@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PC2.Data;
 
@@ -11,9 +12,11 @@ using PC2.Data;
 namespace PC2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260727192330_AddJobOpportunity")]
+    partial class AddJobOpportunity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -380,12 +383,6 @@ namespace PC2.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JobOpportunityId"));
 
-                    b.Property<string>("AttachmentLocation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AttachmentName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("ClosingDate")
                         .HasColumnType("date");
 
@@ -486,31 +483,6 @@ namespace PC2.Data.Migrations
                     b.HasKey("ProgramVideoId");
 
                     b.ToTable("ProgramVideos");
-                });
-
-            modelBuilder.Entity("PC2.Models.ResourceLinksModel", b =>
-                {
-                    b.Property<int>("ResourceID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ResourceID"));
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("LinkText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LinkURL")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ResourceID");
-
-                    b.ToTable("ResourceLinks");
                 });
 
             modelBuilder.Entity("PC2.Models.Board", b =>

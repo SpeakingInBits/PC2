@@ -2,75 +2,139 @@
 @using PC2.Models
 
 @{
-    var type = (PersonType)ViewData["PersonType"]!;
-    ViewData["Title"] = type switch
-    {
-        PersonType.Staff => "Staff Members",
-        PersonType.Board => "Board Members",
-        PersonType.SteeringCommittee => "Steering Committee Members",
-        _ => "Members"
-    };
+    var selectedType = (PersonType?)ViewData["SelectedType"];
+    var searchTerm = (string?)ViewData["SearchTerm"];
+    ViewData["Title"] = "View Members";
 }
 
 <h1>@ViewData["Title"]</h1>
 
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Search and Filter Members</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-6">
+                <label for="searchTerm" class="form-label">Search by Name</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="searchTerm" 
+                       name="searchTerm" 
+                       placeholder="Enter member name..." 
+                       value="@searchTerm" />
+            </div>
+
+            <div class="col-md-6">
+                <label for="type" class="form-label">Member Type</label>
+                <select class="form-control" id="type" name="type">
+                    <option value="">-- All Types --</option>
+                    <option value="@nameof(PersonType.Staff)" selected="@(selectedType == PersonType.Staff)">Staff</option>
+                    <option value="@nameof(PersonType.Board)" selected="@(selectedType == PersonType.Board)">Board</option>
+                    <option value="@nameof(PersonType.SteeringCommittee)" selected="@(selectedType == PersonType.SteeringCommittee)">Steering Committee</option>
+                </select>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 <p>
-    <a asp-action="Create" asp-route-type="@type.ToString()" class="btn btn-primary">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Add New Member</a>
 </p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Title</th>
-            @if (type == PersonType.Staff)
-            {
-                <th>Phone</th>
-                <th>Extension</th>
-                <th>Email</th>
-            }
-            @if (type == PersonType.Board)
-            {
-                <th>Membership Start</th>
-            }
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @if (!string.IsNullOrEmpty(item.CurrentImageUrl))
-                    {
-                        <img src="@item.CurrentImageUrl" alt="@($"{item.Name}, {item.Title}")"
-                             style="width: 48px; height: 48px; object-fit: cover; border-radius: 4px;" />
-                    }
-                    else
-                    {
-                        <span class="text-muted" style="font-size: 2rem; line-height: 1;">
-                            <i class="bi bi-person-circle"></i>
-                        </span>
-                    }
-                </td>
-                <td>@item.Name</td>
-                <td>@item.Title</td>
-                @if (type == PersonType.Staff)
-                {
-                    <td>@item.Phone</td>
-                    <td>@item.Extension</td>
-                    <td>@item.Email</td>
-                }
-                @if (type == PersonType.Board)
-                {
-                    <td>Member since @item.MembershipStart</td>
-                }
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID" asp-route-type="@item.Type.ToString()">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID" asp-route-type="@item.Type.ToString()">Delete</a>
-                </td>
+                <th></th>
+                <th>Name</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Details</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.CurrentImageUrl))
+                        {
+                            <img src="@item.CurrentImageUrl" alt="@($"{item.Name}, {item.Title}")"
+                                 style="width: 48px; height: 48px; object-fit: cover; border-radius: 4px;" />
+                        }
+                        else
+                        {
+                            <span class="text-muted" style="font-size: 2rem; line-height: 1;">
+                                <i class="bi bi-person-circle"></i>
+                            </span>
+                        }
+                    </td>
+                    <td>@item.Name</td>
+                    <td>@item.Title</td>
+                    <td>
+                        @switch(item.Type)
+                        {
+                            case PersonType.Staff:
+                                <span class="badge bg-primary">Staff</span>
+                                break;
+                            case PersonType.Board:
+                                <span class="badge bg-info">Board</span>
+                                break;
+                            case PersonType.SteeringCommittee:
+                                <span class="badge bg-secondary">Steering Committee</span>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        @switch(item.Type)
+                        {
+                            case PersonType.Staff:
+                                <small>
+                                    @if (!string.IsNullOrEmpty(item.Phone))
+                                    {
+                                        <div>@item.Phone</div>
+                                    }
+                                    @if (item.Extension.HasValue)
+                                    {
+                                        <div>Ext. @item.Extension</div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(item.Email))
+                                    {
+                                        <div>@item.Email</div>
+                                    }
+                                </small>
+                                break;
+                            case PersonType.Board:
+                                <small>
+                                    @if (!string.IsNullOrEmpty(item.MembershipStart))
+                                    {
+                                        <div>Since @item.MembershipStart</div>
+                                    }
+                                </small>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ID" asp-route-type="@item.Type.ToString()" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.ID" asp-route-type="@item.Type.ToString()" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        <p>No members found matching your search criteria.</p>
+        <a asp-action="Index" class="btn btn-sm btn-outline-primary">View All Members</a>
+    </div>
+}
