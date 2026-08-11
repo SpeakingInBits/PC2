@@ -77,10 +77,61 @@
                 <div id="right-ribbon" class="ribbon"></div>
                 <div class="navbar-collapse collapse d-lg-inline-flex flex-lg-row-reverse" id="navbarSupportedContent">
                     <ul class="navbar-nav flex-grow-1">
+                        <li id="Home-Index" class="nav-item menu-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li id="ProgramVideos-Index" class="nav-item menu-item">
+                            <a class="nav-link" asp-controller="ProgramVideos" asp-action="Index">Program Videos</a>
+                        </li>
+                        <li id="NewsToKnow-Index" class="nav-item menu-item">
+                            <a class="nav-link" asp-area="" asp-controller="NewsToKnow" asp-action="Index">News</a>
+                        </li>
+                        <li id="Events-Index" class="nav-item menu-item">
+                            <a class="nav-link" asp-controller="Events" asp-action="Index">Events</a>
+                        </li>
+                        <li id="Resources-Index" class="nav-item menu-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Resources
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="resourcesDropdown">
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="Index">Resources</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceLinks">Resource Links</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="AgeSpecificIssues">Age-Specific Issues</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Legislative Links and Events</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="EmergencyPreparedness">Emergency Preparedness</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="VirtualCloset">Virtual Closet</a></li>
+                            </ul>
+                        </li>
+                        <li id="Resource-Guide-Index" class="nav-item menu-item">
+                            <a class="nav-link" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a>
+                        </li>
+                        <li id="Newsletters-Index" class="nav-item menu-item">
+                            <a class="nav-link" asp-controller="Resources" asp-action="FocusNewsletters">Focus Newsletters</a>
+                        </li>
+                        <li id="housing-program" class="nav-item menu-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="housingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Other Program Services
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="housingDropdown">
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="HousingProgram">PC2's Housing Program</a></li>
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="PersonCenteredPlanning">Person Centered Planning</a></li>
+                            </ul>
+                        </li>
+                        <li id="about-menu" class="nav-item menu-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                About Us
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="About">About Us</a></li>
+                                <li><a class="dropdown-item" asp-controller="Jobs" asp-action="Index">Job Opportunities</a></li>
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="ContactPage">Contact Us</a></li>
+                            </ul>
+                        </li>
                         @if (User.IsInRole(IdentityHelper.Admin) || User.IsInRole(IdentityHelper.Staff))
                         {
                             <li class="nav-item menu-item">
-                                <a class="nav-link" asp-controller="Agency" asp-action="Index">Agencies</a>
+                                <a class="nav-link" asp-controller="Home" asp-action="Dashboard">Admin Pages</a>
                             </li>
                             <li class="nav-item menu-item">
                                 <a class="nav-link" asp-controller="About" asp-action="HousingProgramData">Housing Program Data</a>
@@ -100,21 +151,6 @@
                                     <li><a class="dropdown-item" asp-controller="Calendar" asp-action="Create">Create Event</a></li>
                                 </ul>
                             </li>
-                            <li class="nav-item menu-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="membersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Members
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="membersDropdown">
-                                    <li><a class="dropdown-item" asp-controller="People" asp-action="Index" asp-route-type="Staff">View Staff</a></li>
-                                    <li><a class="dropdown-item" asp-controller="People" asp-action="Create" asp-route-type="Staff">Create Staff Member</a></li>
-                                    <li><a class="dropdown-item" asp-controller="People" asp-action="Index" asp-route-type="Board">View Board</a></li>
-                                    <li><a class="dropdown-item" asp-controller="People" asp-action="Create" asp-route-type="Board">Create Board Member</a></li>
-                                    <li><a class="dropdown-item" asp-controller="People" asp-action="Index" asp-route-type="SteeringCommittee">View Steering Committee</a></li>
-                                    <li><a class="dropdown-item" asp-controller="People" asp-action="Create" asp-route-type="SteeringCommittee">Create Steering Committee Member</a></li>
-                                    <li><a class="dropdown-item" asp-controller="About" asp-action="UploadNewsletter">Upload Newsletter</a></li>
-                                    <li><a class="dropdown-item" asp-controller="ProgramVideos" asp-action="ManageVideos">Program Videos</a></li>
-                                </ul>
-                            </li>
                             @if (User.IsInRole(IdentityHelper.Admin))
                             {
                                 <li class="nav-item menu-item">
@@ -122,59 +158,6 @@
                                 </li>
                             }
                         }
-                        else
-                        {                    
-                            <li id="Home-Index" class="nav-item menu-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li id="ProgramVideos-Index" class="nav-item menu-item">
-                                <a class="nav-link" asp-controller="ProgramVideos" asp-action="Index">Program Videos</a>
-                            </li>
-                            <li id="NewsToKnow-Index" class="nav-item menu-item">
-                                <a class="nav-link" asp-area="" asp-controller="NewsToKnow" asp-action="Index">News</a>
-                            </li>
-                            <li id="Events-Index" class="nav-item menu-item">
-                                <a class="nav-link" asp-controller="Events" asp-action="Index">Events</a>           
-                            </li>
-                            <li id="Resources-Index" class="nav-item menu-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Resources
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="resourcesDropdown">
-                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="Index">Resources</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceLinks">Resource Links</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="AgeSpecificIssues">Age-Specific Issues</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Legislative Links and Events</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="EmergencyPreparedness">Emergency Preparedness</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Resources" asp-action="VirtualCloset">Virtual Closet</a></li>
-                                </ul>
-                            </li>
-                            <li id="Resource-Guide-Index" class="nav-item menu-item">
-                                <a class="nav-link" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a>
-                            </li>
-                            <li id="Newsletters-Index" class="nav-item menu-item">
-                                <a class="nav-link" asp-controller="Resources" asp-action="FocusNewsletters">Focus Newsletters</a>
-                            </li>
-                            <li id="housing-program" class="nav-item menu-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="housingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Other Program Services
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="housingDropdown">
-                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="HousingProgram">PC2's Housing Program</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="PersonCenteredPlanning">Person Centered Planning</a></li>
-                                </ul>
-                            </li>
-                            <li id="about-menu" class="nav-item menu-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    About Us
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="About">About Us</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="ContactPage">Contact Us</a></li>
-                                </ul>
-                            </li>
-                        }   
                     </ul>
                 </div>
             </div>
