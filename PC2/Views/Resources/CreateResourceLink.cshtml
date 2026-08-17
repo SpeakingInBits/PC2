@@ -1,0 +1,74 @@
+@model ResourceLinksModel
+
+@{
+	ViewData["Title"] = "Create Resource Link";
+}
+
+@* 
+CreateResourceLink.cshtml - Form to add new resource link
+Form Fields: LinkText (req), LinkURL (req), Description (opt)
+FirstLetter auto-calculated from LinkText first character (not in form)
+*@
+
+<section class="content-header">
+	<h1>@ViewData["Title"]</h1>
+	<div class="divider"></div>
+</section>
+
+<div class="row">
+	<div class="col-md-8">
+		<form asp-action="Create" asp-controller="Resources" method="post" class="needs-validation" novalidate>
+			<div class="form-group mb-3">
+				<label asp-for="LinkText" class="form-label">Link Text <span class="text-danger">*</span></label>
+				<input asp-for="LinkText" class="form-control" placeholder="e.g., Medicare Resources" required />
+				<span asp-validation-for="LinkText" class="text-danger"></span>
+				<small class="form-text text-muted">The display text for the link that appears in the Resource Links page.</small>
+			</div>
+
+			<div class="form-group mb-3">
+				<label asp-for="LinkURL" class="form-label">Link URL <span class="text-danger">*</span></label>
+				<input asp-for="LinkURL" class="form-control" placeholder="https://example.com or ~/PDF/path.pdf" required />
+				<span asp-validation-for="LinkURL" class="text-danger"></span>
+				<small class="form-text text-muted">External URLs should start with http:// or https://. Internal PDFs should start with ~/</small>
+			</div>
+
+			<div class="form-group mb-3">
+				<label asp-for="Description" class="form-label">Description (Optional)</label>
+				<textarea asp-for="Description" class="form-control" rows="3" placeholder="Additional information about this resource..."></textarea>
+				<span asp-validation-for="Description" class="text-danger"></span>
+				<small class="form-text text-muted">Optional description that appears below the link.</small>
+			</div>
+
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">
+					<i class="fas fa-save"></i> Create Resource Link
+				</button>
+				<a href="@Url.Action("ManageResourceLinks", "Resources")" class="btn btn-secondary">
+					<i class="fas fa-times"></i> Cancel
+				</a>
+			</div>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	<script>
+		// Bootstrap form validation
+		(function () {
+			'use strict';
+			window.addEventListener('load', function () {
+				var forms = document.querySelectorAll('.needs-validation');
+				var validation = Array.prototype.filter.call(forms, function (form) {
+					form.addEventListener('submit', function (event) {
+						if (form.checkValidity() === false) {
+							event.preventDefault();
+							event.stopPropagation();
+						}
+						form.classList.add('was-validated');
+					}, false);
+				});
+			}, false);
+		})();
+	</script>
+}
