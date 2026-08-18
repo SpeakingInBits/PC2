@@ -55,5 +55,87 @@ namespace PC2.Controllers
 
             return Json(fullCalendarEvents);
         }
+        
+
+        public IActionResult Create()
+        {
+            return View(new CalendarCreateEventViewModel());
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CalendarCreateEventViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Build RRULE from UI fields
+            string? rrule = BuildRRule(
+                model.Frequency,
+                model.Interval,
+                model.EndType,
+                model.Count,
+                model.Until,
+                model.Ordinal,
+                model.Weekday
+            );
+
+            // Convert to your CalendarEvent model
+            CalendarEvent evt = new CalendarEvent
+            {
+                DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent),
+                StartingTime = TimeOnly.Parse(model.StartingTime),
+                EndingTime = TimeOnly.Parse(model.EndingTime),
+                EventDescription = model.Description,
+                PC2Event = model.IsPc2Event,
+                CountyEvent = model.IsCountyEvent,
+
+                // NEW — store recurrence rule
+                RRule = rrule
+            };
+
+            _context.CalendarEvents.Add(evt);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        private string? BuildRRule
+        (
+        string? freq,
+        int? interval,
+        string? endType,
+        int? count,
+        DateTime? until,
+        int? ordinal,
+        string? weekday
+        )
+        {
+            if (string.IsNullOrWhiteSpace(freq))
+                return null;
+
+            var parts = new List<string> { $"FREQ={freq}" };
+
+            if (interval.HasValue && interval.Value > 1)
+                parts.Add($"INTERVAL={interval.Value}");
+
+            if (endType == "COUNT" && count.HasValue)
+                parts.Add($"COUNT={count.Value}");
+            else if (endType == "UNTIL" && until.HasValue)
+                parts.Add($"UNTIL={until.Value.ToUniversalTime():yyyyMMdd'T'HHmmss'Z'}");
+
+            if (!string.IsNullOrWhiteSpace(weekday))
+            {
+                if (ordinal.HasValue)
+                    parts.Add($"BYDAY={ordinal}{weekday}");
+                else
+                    parts.Add($"BYDAY={weekday}");
+            }
+
+            return string.Join(";", parts);
+        }
     }
 }

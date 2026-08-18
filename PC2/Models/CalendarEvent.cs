@@ -40,6 +40,11 @@ public class CalendarEvent : IComparable<CalendarEvent>
     /// </summary>
     public bool CountyEvent {  get; set; }
 
+    /// <summary>
+    /// RFC 5545 Recurrence Rule (e.g., FREQ=MONTHLY;BYDAY=2MO)
+    /// </summary>
+    public string? RRule { get; set; }
+
     // Convert DateOnly and TimeOnly to DateTime
     public DateTime StartingDateTime
     {
@@ -61,6 +66,8 @@ public class CalendarEvent : IComparable<CalendarEvent>
     {
         return this.DateOfEvent.CompareTo(other.DateOfEvent);
     }
+
+
 }
 
 public class CalendarCreateEventViewModel : IValidatableObject
@@ -103,6 +110,49 @@ public class CalendarCreateEventViewModel : IValidatableObject
     /// Is the event a county sponsored event
     /// </summary>
     public bool IsCountyEvent { get; set; }
+
+
+    #region Recurrence Rule (RRULE) Properties
+    // ===============================
+    // Recurrence (RRULE) UI Fields
+    // ===============================
+
+    /// <summary>
+    /// Frequency of recurrence: DAILY, WEEKLY, MONTHLY, YEARLY
+    /// </summary>
+    public string? Frequency { get; set; }
+
+    /// <summary>
+    /// Interval between recurrences (e.g., every 2 weeks)
+    /// </summary>
+    public int? Interval { get; set; }
+
+    /// <summary>
+    /// End condition: NEVER, COUNT, UNTIL
+    /// </summary>
+    public string? EndType { get; set; }
+
+    /// <summary>
+    /// Number of occurrences (only used when EndType == COUNT)
+    /// </summary>
+    public int? Count { get; set; }
+
+    /// <summary>
+    /// End date (only used when EndType == UNTIL)
+    /// </summary>
+    [DataType(DataType.Date)]
+    public DateTime? Until { get; set; }
+
+    /// <summary>
+    /// Ordinal day (e.g., 1st, 2nd, 3rd, last)
+    /// </summary>
+    public int? Ordinal { get; set; }
+
+    /// <summary>
+    /// Day of week (MO, TU, WE, TH, FR, SA, SU)
+    /// </summary>
+    public string? Weekday { get; set; }
+    #endregion Recurrence Rule (RRULE) Properties
 
     /// <summary>
     /// Validates the current object based on a set of predefined rules.
