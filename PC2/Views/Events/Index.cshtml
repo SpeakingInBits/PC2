@@ -62,26 +62,7 @@
 
 <br />
 
-<!-- Modal popup -->
-<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <h5 id="modalEventTitle" style="font-weight: normal;"></h5>
-                <p><strong>Start Time:</strong> <span id="modalEventDate"></span></p>
-                <p><strong>End Time:</strong> <span id="modalEventEndTime"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Day Click Modal -->
+<!-- Unified Events Modal -->
 <div class="modal fade" id="dayEventsModal" tabindex="-1" aria-labelledby="dayEventsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -89,7 +70,6 @@
                 <h5 class="modal-title" id="dayEventsModalLabel">Events on This Day</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
             <!-- Scrollable list of events -->
             <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
                 <ul id="dayEventsList" class="list-group"></ul>
@@ -101,6 +81,10 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"
         integrity="sha384-B1OFx8Gy9GjPu8UbUyXbGQpzll9ubAUQ9agInFJ8NnD7nYG1u/CLR+Sqr5yifl4q"
         crossorigin="anonymous"></script>
+
+    <script>
+        const hardcodedEvents = @Html.Raw(Json.Serialize(Model.CalendarEvents));
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -154,8 +138,7 @@
                     });
 
                     const list = document.getElementById('dayEventsList');
-                    list.innerHTML = ""; // Clear previous entries
-
+                    list.innerHTML = "";
                     if (eventsOnDay.length === 0) {
                         const li = document.createElement('li');
                         li.classList.add('list-group-item');
@@ -166,31 +149,16 @@
                             const li = document.createElement('li');
                             li.classList.add('list-group-item');
 
-                            const container = document.createElement('div');
-                            container.classList.add('d-flex', 'justify-content-between', 'align-items-center');
+                            li.innerHTML = `
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>${ev.title}</strong><br>
+                                        ${ev.startTime} - ${ev.endTime}
+                                    </div>
+                                    <a href="/Events/Edit/${ev.extendedProps.id}" class="btn btn-warning btn-sm">Edit</a>
+                                </div>
+                            `;
 
-                            const infoDiv = document.createElement('div');
-                            const titleEl = document.createElement('strong');
-                            titleEl.innerHTML = ev.title; // allow HTML from Linkify
-
-                            const timeEl = document.createElement('div');
-                            timeEl.textContent =
-                                ev.start.toLocaleTimeString() +
-                                (ev.end ? " - " + ev.end.toLocaleTimeString() : "");
-
-                            infoDiv.appendChild(titleEl);
-                            infoDiv.appendChild(document.createElement('br'));
-                            infoDiv.appendChild(timeEl);
-
-                            const editBtn = document.createElement('a');
-                            editBtn.classList.add('btn', 'btn-warning', 'btn-sm');
-                            editBtn.textContent = "Edit";
-                            editBtn.href = '/Events/Edit/' + ev.extendedProps.eventid;
-
-                            container.appendChild(infoDiv);
-                            container.appendChild(editBtn);
-
-                            li.appendChild(container);
                             list.appendChild(li);
                         });
                     }
@@ -199,14 +167,26 @@
                 },
 
                 eventClick: function (info) {
-                    var startTime = info.event.start.toLocaleString();
-                    var endTime = info.event.end ? info.event.end.toLocaleString() : 'N/A';
+                    const list = document.getElementById('dayEventsList');
+                    list.innerHTML = "";
+                    const ev = info.event;
+                    const li = document.createElement('li');
+                    li.classList.add('list-group-item');
 
-                    document.getElementById('modalEventTitle').innerHTML = info.event.title;
-                    document.getElementById('modalEventDate').innerText = startTime;
-                    document.getElementById('modalEventEndTime').innerText = endTime;
-
-                    new bootstrap.Modal(document.getElementById('eventModal')).show();
+                    li.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${ev.title}</strong><br>
+                                ${ev.start.toLocaleTimeString()}${
+                                    ev.end ? " - " + ev.end.toLocaleTimeString() : ""
+                                }
+                            </div>
+                            <a href="/Events/Edit/${ev.extendedProps.id}" class="btn btn-warning btn-sm">Edit</a>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                    // Use the SAME modal
+                    new bootstrap.Modal(document.getElementById('dayEventsModal')).show();
                 },
 
                 validRange: function (currentDate) {
