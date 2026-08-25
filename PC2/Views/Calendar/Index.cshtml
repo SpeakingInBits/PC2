@@ -72,7 +72,7 @@
                 @for (int currentDate = 0; currentDate < eventDateGroups.Count; currentDate++)
                 {
                     <tr>
-                        <td class="agenda-date" class="active" rowspan="@eventDateGroups[currentDate].Count">
+                        <td class="agenda-date active" rowspan="@eventDateGroups[currentDate].Count">
                             <div class="dayofmonth">@eventDateGroups[currentDate][0].Event.DateOfEvent.Day</div>
                             <div class="dayofweek">@eventDateGroups[currentDate][0].Event.DateOfEvent.DayOfWeek</div>
                             <div class="shortdate text-muted">@eventDateGroups[currentDate][0].Event.DateOfEvent.ToString("MMMM"),&nbsp;@eventDateGroups[currentDate][0].Event.DateOfEvent.Year</div>

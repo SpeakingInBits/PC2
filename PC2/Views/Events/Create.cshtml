@@ -1,0 +1,123 @@
+﻿@model CalendarCreateEventViewModel
+@{
+    ViewData["Title"] = "Create Event";
+}
+
+<div class="justify-content-center">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <form id="create" class="form" asp-action="Create" method="post">
+
+            <!-- BASIC EVENT FIELDS -->
+            <div class="form-group">
+                <label class="control-label">Set date for event</label>
+                <input asp-for="DateOfEvent" class="form-control" type="date" />
+                <span asp-validation-for="DateOfEvent" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Set a starting time</label>
+                <input asp-for="StartingTime" class="form-control" type="time" />
+                <span asp-validation-for="StartingTime" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Set an ending time</label>
+                <input asp-for="EndingTime" class="form-control" type="time" />
+                <span asp-validation-for="EndingTime" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Describe the event</label>
+                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <!-- EVENT TYPE -->
+            <div class="form-group">
+                <div class="checkbox">
+                    <input asp-for="IsPc2Event" type="checkbox" />
+                    <label>PC2 Event</label>
+
+                    <input asp-for="IsCountyEvent" type="checkbox" />
+                    <label>County Event</label>
+                </div>
+                <span asp-validation-for="IsCountyEvent" class="text-danger"></span>
+            </div>
+
+            <hr />
+            <h4>Recurrence (Optional)</h4>
+
+            <!-- FREQUENCY -->
+            <div class="form-group">
+                <label>Frequency</label>
+                <select asp-for="Frequency" class="form-control">
+                    <option value="">None (No Recurrence)</option>
+                    <option value="DAILY">Daily</option>
+                    <option value="WEEKLY">Weekly</option>
+                    <option value="MONTHLY">Monthly</option>
+                    <option value="YEARLY">Yearly</option>
+                </select>
+            </div>
+
+            <!-- INTERVAL -->
+            <div class="form-group">
+                <label>Interval (Every X days/weeks/months)</label>
+                <input asp-for="Interval" class="form-control" type="number" min="1" />
+            </div>
+
+            <!-- END TYPE -->
+            <div class="form-group">
+                <label>End Type</label>
+                <select asp-for="EndType" class="form-control">
+                    <option value="NEVER">Never</option>
+                    <option value="COUNT">After X Occurrences</option>
+                    <option value="UNTIL">Until Date</option>
+                </select>
+            </div>
+
+            <!-- COUNT -->
+            <div class="form-group">
+                <label>Count (Only if EndType = COUNT)</label>
+                <input asp-for="Count" class="form-control" type="number" min="1" />
+            </div>
+
+            <!-- UNTIL -->
+            <div class="form-group">
+                <label>Until Date (Only if EndType = UNTIL)</label>
+                <input asp-for="Until" class="form-control" type="date" />
+            </div>
+
+            <!-- ORDINAL -->
+            <div class="form-group">
+                <label>Ordinal (1, 2, 3, 4, -1 for last)</label>
+                <input asp-for="Ordinal" class="form-control" type="number" />
+            </div>
+
+            <!-- WEEKDAY -->
+            <div class="form-group">
+                <label>Weekday</label>
+                <select asp-for="Weekday" class="form-control">
+                    <option value="">None</option>
+                    <option value="MO">Monday</option>
+                    <option value="TU">Tuesday</option>
+                    <option value="WE">Wednesday</option>
+                    <option value="TH">Thursday</option>
+                    <option value="FR">Friday</option>
+                    <option value="SA">Saturday</option>
+                    <option value="SU">Sunday</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <input id="submit" type="submit" value="Create Event" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+</div>

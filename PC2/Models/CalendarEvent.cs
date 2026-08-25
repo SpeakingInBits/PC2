@@ -66,8 +66,6 @@ public class CalendarEvent : IComparable<CalendarEvent>
     {
         return this.DateOfEvent.CompareTo(other.DateOfEvent);
     }
-
-
 }
 
 public class CalendarCreateEventViewModel : IValidatableObject

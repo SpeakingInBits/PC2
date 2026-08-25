@@ -23,6 +23,10 @@
             max-height: 875px;
         }
 
+        .No-UndL {
+            text-decoration: none !important;
+        }
+
         .pc2-event {
             background-color: #d1e7dd !important; /* Light green */
             color: #212529 !important;
@@ -77,18 +81,35 @@
         </div>
     </div>
 </div>
+<!-- Day Click Modal -->
+<div class="modal fade" id="dayEventsModal" tabindex="-1" aria-labelledby="dayEventsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dayEventsModalLabel">Events on This Day</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Scrollable list of events -->
+            <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                <ul id="dayEventsList" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"
         integrity="sha384-B1OFx8Gy9GjPu8UbUyXbGQpzll9ubAUQ9agInFJ8NnD7nYG1u/CLR+Sqr5yifl4q"
         crossorigin="anonymous"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
 
             const isMobile = window.innerWidth < 768;
 
             var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                 initialView: isMobile ? 'listMonth' : 'dayGridMonth',
+
                 headerToolbar: isMobile ? {
                     left: 'prev,next',
                     center: 'title',
@@ -98,29 +119,86 @@
                     center: 'title',
                     right: 'dayGridMonth,listMonth'
                 },
+
                 buttonText: {
-                    today:  'Today',
-                    month:  'Month',
-                    list:   'List'
+                    today: 'Today',
+                    month: 'Month',
+                    list: 'List'
                 },
-                events: function(info, successCallback, failureCallback) {
+
+                events: function (info, successCallback, failureCallback) {
                     fetch('@Url.Action("GetEvents", "Events")')
-                        .then(function(response) {
-                            return response.json();
-                        })
-                        .then(function(events) {
-                            // Add color differentiation
+                        .then(response => response.json())
+                        .then(events => {
+
                             events.forEach(event => {
                                 event.classNames = [event.isPC2Event ? 'pc2-event' : 'county-event'];
                             });
+
                             successCallback(events);
                         })
-                        .catch(function(error) {
+                        .catch(error => {
                             console.error('Error fetching events:', error);
                             failureCallback(error);
                         });
                 },
-                eventClick: function(info) {
+
+                dateClick: function (info) {
+                    const clickedDate = info.dateStr; // YYYY-MM-DD
+
+                    const allEvents = calendar.getEvents();
+
+                    const eventsOnDay = allEvents.filter(ev => {
+                        const eventDate = ev.start.toISOString().split('T')[0];
+                        return eventDate === clickedDate;
+                    });
+
+                    const list = document.getElementById('dayEventsList');
+                    list.innerHTML = ""; // Clear previous entries
+
+                    if (eventsOnDay.length === 0) {
+                        const li = document.createElement('li');
+                        li.classList.add('list-group-item');
+                        li.textContent = "No events on this day.";
+                        list.appendChild(li);
+                    } else {
+                        eventsOnDay.forEach(ev => {
+                            const li = document.createElement('li');
+                            li.classList.add('list-group-item');
+
+                            const container = document.createElement('div');
+                            container.classList.add('d-flex', 'justify-content-between', 'align-items-center');
+
+                            const infoDiv = document.createElement('div');
+                            const titleEl = document.createElement('strong');
+                            titleEl.innerHTML = ev.title; // allow HTML from Linkify
+
+                            const timeEl = document.createElement('div');
+                            timeEl.textContent =
+                                ev.start.toLocaleTimeString() +
+                                (ev.end ? " - " + ev.end.toLocaleTimeString() : "");
+
+                            infoDiv.appendChild(titleEl);
+                            infoDiv.appendChild(document.createElement('br'));
+                            infoDiv.appendChild(timeEl);
+
+                            const editBtn = document.createElement('a');
+                            editBtn.classList.add('btn', 'btn-warning', 'btn-sm');
+                            editBtn.textContent = "Edit";
+                            editBtn.href = '/Events/Edit/' + ev.extendedProps.eventid;
+
+                            container.appendChild(infoDiv);
+                            container.appendChild(editBtn);
+
+                            li.appendChild(container);
+                            list.appendChild(li);
+                        });
+                    }
+
+                    new bootstrap.Modal(document.getElementById('dayEventsModal')).show();
+                },
+
+                eventClick: function (info) {
                     var startTime = info.event.start.toLocaleString();
                     var endTime = info.event.end ? info.event.end.toLocaleString() : 'N/A';
 
@@ -130,39 +208,34 @@
 
                     new bootstrap.Modal(document.getElementById('eventModal')).show();
                 },
-                validRange: function(currentDate) {
-                    // Today's date
-                    const start = new Date(currentDate);
 
-                    // Sets end to 1 year in future based on today's date
+                validRange: function (currentDate) {
+                    const start = new Date(currentDate);
                     const end = new Date(currentDate);
                     end.setMonth(end.getMonth() + 12);
-
                     return { start, end };
                 },
-                eventDidMount: function(info) {
-                    // Render HTML in event titles instead of escaped text.
-                    // List view: write to the <td> directly to avoid nesting <a> inside FullCalendar's own <a>.
-                    // Other views: write to the .fc-event-title element.
+
+                eventDidMount: function (info) {
                     const titleEl = info.view.type === 'listMonth'
                         ? info.el.querySelector('.fc-list-event-title')
                         : info.el.querySelector('.fc-event-title');
 
                     if (titleEl) {
                         titleEl.innerHTML = info.event.title;
-                        // Prevent inner link navigation so clicks bubble to eventClick and open the modal
-                        titleEl.querySelectorAll('a').forEach(function(a) {
-                            a.addEventListener('click', function(e) {
+
+                        titleEl.querySelectorAll('a').forEach(function (a) {
+                            a.addEventListener('click', function (e) {
                                 e.preventDefault();
                             });
                         });
                     }
 
-                    // Add a Bootstrap tooltip on month view events so the full text is visible on hover
                     if (info.view.type === 'dayGridMonth') {
                         const tempDiv = document.createElement('div');
                         tempDiv.innerHTML = info.event.title;
                         const plainText = tempDiv.textContent || tempDiv.innerText || '';
+
                         new bootstrap.Tooltip(info.el, {
                             title: plainText,
                             placement: 'top',
@@ -171,6 +244,7 @@
                         });
                     }
                 },
+
                 noEventsText: 'No events this month'
             });
 
@@ -180,6 +254,12 @@
 }
 <div class="row">
     <div class="col-12">
+        <!-- Create Event Button -->
+        <div class="text-end mb-3">
+            <a class="btn btn-primary No-UndL" asp-controller="Events" asp-action="Create">
+                + Create Event
+            </a>
+        </div>
         <div id="calendar"></div>
     </div>
 </div>
