@@ -6,6 +6,7 @@ using PC2.Models;
 using PC2.Services;
 using System.Globalization;
 using Microsoft.Extensions.Azure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

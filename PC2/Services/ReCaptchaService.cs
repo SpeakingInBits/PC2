@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 namespace PC2.Services;
@@ -8,8 +9,9 @@ public interface IReCaptchaService
     /// Verifies a Google reCAPTCHA v3 token with Google's API.
     /// </summary>
     /// <param name="token">The reCAPTCHA token from the client-side submission.</param>
-    /// <returns>True if the token is valid and the score meets the minimum threshold; otherwise false.</returns>
-    Task<bool> VerifyAsync(string token);
+    /// <param name="expectedAction">The action name the token was generated for (the value passed to getReCaptchaToken on the client).</param>
+    /// <returns>True if the token is valid, was generated for <paramref name="expectedAction"/>, and the score meets the minimum threshold; otherwise false.</returns>
+    Task<bool> VerifyAsync(string token, string expectedAction);
 }
 
 public class ReCaptchaService : IReCaptchaService
@@ -27,12 +29,12 @@ public class ReCaptchaService : IReCaptchaService
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _secretKey = configuration["GoogleReCaptcha:SecretKey"] ?? string.Empty;
-        _minimumScore = float.TryParse(configuration["GoogleReCaptcha:MinimumScore"], out float score)
+        _minimumScore = float.TryParse(configuration["GoogleReCaptcha:MinimumScore"], NumberStyles.Float, CultureInfo.InvariantCulture, out float score)
             ? score
             : DefaultMinimumScore;
     }
 
-    public async Task<bool> VerifyAsync(string token)
+    public async Task<bool> VerifyAsync(string token, string expectedAction)
     {
         if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(_secretKey))
         {
@@ -67,6 +69,13 @@ public class ReCaptchaService : IReCaptchaService
             {
                 _logger.LogWarning("reCAPTCHA verification failed. Error codes: {ErrorCodes}",
                     result.ErrorCodes != null ? string.Join(", ", result.ErrorCodes) : "none");
+                return false;
+            }
+
+            if (!string.Equals(result.Action, expectedAction, StringComparison.Ordinal))
+            {
+                _logger.LogWarning("reCAPTCHA action mismatch. Expected {ExpectedAction} but received {Action}.",
+                    expectedAction, result.Action);
                 return false;
             }
 
