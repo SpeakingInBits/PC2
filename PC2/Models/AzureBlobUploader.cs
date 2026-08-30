@@ -40,10 +40,9 @@ namespace PC2.Models
 
             var blobClient = containerClient.GetBlobClient(blobName);
 
-            using (var stream = file.OpenReadStream())
-            {
-                await blobClient.UploadAsync(stream, overwrite: true);
-            }
+            // UploadFileAsync - caller owns the stream lifetime
+            var stream = file.OpenReadStream();
+            await blobClient.UploadAsync(stream, overwrite: true);
 
             return blobClient.Uri.ToString();
         }

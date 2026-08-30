@@ -25,6 +25,12 @@ namespace PC2.Models
         /// is a higher priority
         /// </summary>
         public byte PriorityOrder { get; set; }
+
+        /// <summary>
+        /// URL to the person's photo/image.
+        /// </summary>
+        [DataType(DataType.Url)]
+        public string? ImageUrl { get; set; }
     }
 
     /// <summary>
@@ -90,5 +96,12 @@ namespace PC2.Models
         /// The start date of the board membership.
         /// </summary>
         public string MembershipStart { get; set; }
+    }
+
+    public enum PersonType
+    {
+        Staff,
+        Board,
+        SteeringCommittee
     }
 }

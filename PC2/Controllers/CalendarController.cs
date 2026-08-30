@@ -5,7 +5,7 @@ using PC2.Models;
 
 namespace PC2.Controllers;
 
-[Authorize(Roles = IdentityHelper.Admin)]
+[Authorize(Roles = IdentityHelper.AdminOrStaff)]
 public class CalendarController : Controller
 {
     private readonly ApplicationDbContext _context;

@@ -17,6 +17,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // Register AzureBlobUploader for DI
 builder.Services.AddSingleton<AzureBlobUploader>();
 
+// Register ImageService for DI
+builder.Services.AddScoped<PC2.Services.ImageService>();
+
 // Register AnalyticsService for DI
 builder.Services.AddScoped<AnalyticsService>();
 
@@ -93,7 +96,7 @@ app.MapRazorPages();
 
 #if DEBUG
 var serviceProvider = app.Services.GetRequiredService<IServiceProvider>().CreateScope();
-IdentityHelper.CreateRoles(serviceProvider.ServiceProvider, IdentityHelper.Admin)
+IdentityHelper.CreateRoles(serviceProvider.ServiceProvider, IdentityHelper.Admin, IdentityHelper.Staff)
               .Wait();
 IdentityHelper.CreateDefaultAdmin(serviceProvider.ServiceProvider, IdentityHelper.Admin)
               .Wait();

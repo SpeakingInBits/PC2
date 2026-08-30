@@ -1,4 +1,6 @@
-﻿@section head {
+﻿@model IEnumerable<PC2.Models.ProgramVideo>
+
+@section head {
     <style>
         h2 {
             text-align: center;
@@ -7,6 +9,9 @@
             display: block;
             margin-left: auto;
             margin-right: auto;
+        }
+        .video-section {
+            margin-bottom: 2rem;
         }
     </style>
 }
@@ -23,91 +28,74 @@
 </div>
 
 <div class="divider"></div>
-<div>
-    <div class="flex-column justify-content-center">
-        <h1>Estate Planning</h1>
-    </div>
 
-    <div class="player" id="player"></div>
-    <br />
-    <br />
-    <div class="flex-column justify-content-center">
-        <h1>Guardianships</h1>
-    </div>
-    <div class="player" id="player2"></div>
-    <br />
-    <br />
-    <div class="flex-column justify-content-center">
-        <h1>Special Needs Trusts &amp; Able Accounts</h1>
-    </div>
-    <div class="player" id="player3"></div>
-</div>
-    <script>
-      // 2. This code loads the IFrame Player API code asynchronously.
-      var tag = document.createElement('script');
-
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      // 3. This function creates an <iframe> (and YouTube player)
-      //    after the API code downloads.
-      var player;
-      function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', {
-          height: '390',
-          width: '640',
-          videoId: 'tRadgduogZg',
-          playerVars: {
-            'playsinline': 1
-          },
-          events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-          }
-        });
-        player = new YT.Player('player2', {
-          height: '390',
-          width: '640',
-            videoId: 'qUq_26jU2kU',
-          playerVars: {
-            'playsinline': 1
-          },
-          events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-          }
-        });
-        player = new YT.Player('player3', {
-          height: '390',
-          width: '640',
-          videoId: 'giIjClhjU-8',
-          playerVars: {
-            'playsinline': 1
-          },
-          events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-          }
-        });
-      }
-
-      // 4. The API will call this function when the video player is ready.
-      function onPlayerReady(event) {
-        //event.target.playVideo();
-      }
-
-      // 5. The API calls this function when the player's state changes.
-      //    The function indicates that when playing a video (state=1),
-      //    the player should play for six seconds and then stop.
-      var done = false;
-      function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING && !done) {
-          //setTimeout(stopVideo, 6000);
-          done = true;
+@if (Model != null && Model.Any())
+{
+    <div id="video-list">
+        @foreach (var video in Model)
+        {
+            <div class="video-section">
+                <div class="flex-column justify-content-center">
+                    <h1>@video.Title</h1>
+                </div>
+                <div class="player" id="player-@video.ProgramVideoId"></div>
+                @if (!string.IsNullOrEmpty(video.PdfLocation))
+                {
+                    <div class="row g-4 mt-1">
+                        <div class="col-12 col-lg-8">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex align-items-center mb-3 min-width-0">
+                                        <i class="bi bi-file-earmark-pdf text-danger me-3 fs-1" aria-hidden="true"></i>
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title mb-1 text-primary">@video.PdfName</h5>
+                                            <small class="text-muted">PDF Handout</small>
+                                        </div>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <a href="@video.PdfLocation"
+                                           target="_blank"
+                                           class="btn btn-primary text-white w-100 d-flex align-items-center justify-content-center"
+                                           aria-label="Download @video.PdfName PDF">
+                                            <i class="bi bi-download me-2" aria-hidden="true"></i>
+                                            Download PDF
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <br />
+            </div>
         }
-      }
-      function stopVideo() {
-        player.stopVideo();
-      }
+    </div>
+
+    <script>
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var videoIds = [
+            @Html.Raw(string.Join(",\n            ", Model.Select(v => $"{{ id: {v.ProgramVideoId}, youtubeId: '{v.YouTubeVideoId}' }}")))
+        ];
+
+        function onYouTubeIframeAPIReady() {
+            videoIds.forEach(function (video) {
+                new YT.Player('player-' + video.id, {
+                    height: '390',
+                    width: '640',
+                    videoId: video.youtubeId,
+                    playerVars: {
+                        'playsinline': 1
+                    }
+                });
+            });
+        }
     </script>
+}
+else
+{
+    <p>No videos are currently available.</p>
+}

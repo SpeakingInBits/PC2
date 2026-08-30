@@ -17,7 +17,7 @@ namespace PC2.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -372,6 +372,39 @@ namespace PC2.Data.Migrations
                     b.ToTable("HousingProgram");
                 });
 
+            modelBuilder.Entity("PC2.Models.JobOpportunity", b =>
+                {
+                    b.Property<int>("JobOpportunityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JobOpportunityId"));
+
+                    b.Property<string>("AttachmentLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AttachmentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ClosingDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("JobOpportunityId");
+
+                    b.ToTable("JobOpportunities");
+                });
+
             modelBuilder.Entity("PC2.Models.NewsletterFile", b =>
                 {
                     b.Property<int>("NewsletterId")
@@ -406,6 +439,9 @@ namespace PC2.Data.Migrations
                         .HasMaxLength(21)
                         .HasColumnType("nvarchar(21)");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -423,6 +459,33 @@ namespace PC2.Data.Migrations
                     b.HasDiscriminator().HasValue("People");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("PC2.Models.ProgramVideo", b =>
+                {
+                    b.Property<int>("ProgramVideoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProgramVideoId"));
+
+                    b.Property<string>("PdfLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PdfName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("YouTubeVideoId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProgramVideoId");
+
+                    b.ToTable("ProgramVideos");
                 });
 
             modelBuilder.Entity("PC2.Models.Board", b =>

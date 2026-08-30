@@ -227,27 +227,12 @@ else
 
                         @if (Model.Agencies[i].Email != null)
                         {
-                            string email = Model.Agencies[i].Email;
-                            int emailStart = 0;
-
-                            @*separate multiple emails*@
-                            @for (int j = 0; j < email.Length; j++)
+                            @foreach (string singleEmail in Model.Agencies[i].Email.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                             {
-                                // if the email contains a space
-                                if (email[j] == ' ')
-                                {
-                                    // display all characters from emailStart to current index as link
-                                    string singleEmail = email.Substring(emailStart, j - emailStart);
-                                    <a href="mailto:@singleEmail">@singleEmail</a>
+                                <a href="mailto:@singleEmail.Trim()">@singleEmail.Trim()</a>
                                     <br>
-                                    emailStart = j;
                                 }
                             }
-                            // display link as final email
-                            string finalEmail = email.Substring(emailStart, email.Length - emailStart);
-
-                            <a href="mailto:@finalEmail.Trim()">@finalEmail</a>
-                        }
                         </div>
 
                     <div class="col-md-1 col-2">
@@ -263,85 +248,7 @@ else
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <dl class="row">
-                                                @*For each property in class agency*@
-                                                @foreach(var prop in typeof(Agency).GetProperties())
-                                                {
-
-                                                    if (prop.GetValue(Model.Agencies[i]) != null)
-                                                    {
-                                                        // handles email links
-                                                        if (prop.Name == "Email")
-                                                        {
-                                                            <dt>@prop.Name</dt>
-                                                            string emailData = prop.GetValue(Model.Agencies[i]).ToString();
-                                                            @*separate multiple emails*@
-                                                            <dd>
-                                                                @{
-                                                                    if (emailData != null)
-                                                                    {
-                                                                        string[] emails = emailData.Split(' ');
-                                                                        foreach(string email in emails)
-                                                                        {
-                                                                            <a href="mailto:@email.Trim()">
-                                                                                @email
-                                                                            </a>
-                                                                            <br>
-                                                                        }
-                                                                    }
-                                                                }
-                                                            </dd>
-                                                        }
-                                                        // handles phone links
-                                                        else if (prop.Name == "Phone")
-                                                        {
-                                                            <dt>@prop.Name</dt>
-                                                            <dd>
-                                                                @Html.Raw(PC2.Models.RendererHelper.RenderPhone(prop.GetValue(Model.Agencies[i])?.ToString()))
-                                                            </dd>
-                                                        }
-
-                                                        // handles website links
-                                                        else if (prop.Name == "Website")
-                                                        {
-                                                            <dt>@prop.Name</dt>
-                                                            string websiteString = prop.GetValue(Model.Agencies[i]).ToString();
-
-                                                            if (websiteString != null)
-                                                            {
-                                                                string[] websites = websiteString.Split(' ');
-                                                                foreach(string website in websites)
-                                                                {
-                                                                    string url = website.Trim();
-                                                                    // if the url is empty, skip it. This is to handle extra spaces in the data
-                                                                    if (url == string.Empty)
-                                                                    {
-                                                                        continue;
-                                                                    }
-                                                                    if (!url.StartsWith("https://") && !url.StartsWith("http://"))
-                                                                    {
-                                                                        url = "https://" + url;
-                                                                    }
-                                                                    <dd><a href="@url">@url</a></dd>
-                                                                }
-                                                            }
-                                                        }
-                                                        // excludes certain columns and displays the rest
-                                                        else if (prop.Name != "AgencyCategories" && prop.Name != "AgencyId" && prop.Name != "AgencyName")
-                                                        {
-                                                            if (prop.Name == "Address1" && Model.Agencies[i].Address2 == null)
-                                                            {
-                                                                <dt>Address</dt>
-                                                            }
-                                                            else
-                                                            {
-                                                                <dt>@prop.Name</dt>
-                                                            }
-                                                            <dd>@prop.GetValue(Model.Agencies[i])</dd>
-                                                        }
-                                                    }
-                                                }
-                                            </dl>
+                                            @await Html.PartialAsync("_AgencyDetails", Model.Agencies[i])
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

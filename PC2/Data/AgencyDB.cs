@@ -95,21 +95,11 @@ namespace PC2.Data
         /// </summary>
         public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, int categoryID)
         {
-            List<Agency> agencies = await GetAllAgenciesAsync(context);
-
-            List<Agency> result = new List<Agency>();
-            for (int i = 0; i < agencies.Count; i++)
-            {
-                for (int j = 0; j < agencies[i].AgencyCategories.Count; j++)
-                {
-                    if (agencies[i].AgencyCategories[j].AgencyCategoryId == categoryID)
-                    {
-                        result.Add(agencies[i]);
-                    }
-                }
-            }
-
-            return result;
+            return await context.Agency
+                .Include(nameof(Agency.AgencyCategories))
+                .Where(agency => agency.AgencyCategories.Any(cat => cat.AgencyCategoryId == categoryID))
+                .OrderBy(agency => agency.AgencyName)
+                .ToListAsync();
         }
 
         /// <summary>

@@ -28,6 +28,12 @@ public class HomeController : Controller
         return View();
     }
 
+    [Authorize(Roles = IdentityHelper.AdminOrStaff)]
+    public IActionResult Dashboard()
+    {
+        return View();
+    }
+
     public async Task<IActionResult> About()
     {
         AboutUsViewModel aboutUs = new AboutUsViewModel();
