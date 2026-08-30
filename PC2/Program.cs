@@ -24,6 +24,10 @@ builder.Services.AddScoped<PC2.Services.ImageService>();
 // Register AnalyticsService for DI
 builder.Services.AddScoped<AnalyticsService>();
 
+// Register ReCaptchaService for DI
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IReCaptchaService, ReCaptchaService>();
+
 // Configure Application Insights - only add if connection string is provided
 var appInsightsConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value;
 builder.Services.AddApplicationInsightsTelemetry(options =>

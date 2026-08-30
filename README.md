@@ -29,6 +29,16 @@ is hosted on Azure SQL Database.
 ### Azure Blob Storage
 Azurite emulator is included as a dependency and runs automatically in Visual Studio. See [Azurite documentation](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio) for details.
 
+### Google reCAPTCHA
+Google reCAPTCHA v3 is used for spam protection on forms. To configure it for local development:
+1. Register a site at [Google reCAPTCHA Admin Console](https://www.google.com/recaptcha/admin) using **reCAPTCHA v3** and `localhost` as an allowed domain.
+2. Store your keys in [user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets) for the `PC2` project:
+   ```
+   dotnet user-secrets set "GoogleReCaptcha:SiteKey" "<your-site-key>"
+   dotnet user-secrets set "GoogleReCaptcha:SecretKey" "<your-secret-key>"
+   ```
+3. For production, set these values in Azure App Service application settings or Key Vault.
+
 ## Admin Credentials
 - Username: `admin@pc2online.org`
 - Password: `Password01#`

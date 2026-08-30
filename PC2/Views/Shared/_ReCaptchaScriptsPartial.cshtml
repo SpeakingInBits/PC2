@@ -1,0 +1,24 @@
+@inject IConfiguration Configuration
+@{
+    var siteKey = Configuration["GoogleReCaptcha:SiteKey"];
+    // The committed appsettings.json holds a "Set in secrets" placeholder; real site keys never contain spaces,
+    // so treat any value with whitespace as unconfigured to avoid rendering a broken script tag in dev.
+    var isConfigured = !string.IsNullOrWhiteSpace(siteKey) && !siteKey.Any(char.IsWhiteSpace);
+}
+
+@if (isConfigured)
+{
+    <script src="https://www.google.com/recaptcha/api.js?render=@siteKey"></script>
+    <script>
+        function getReCaptchaToken(action) {
+            if (typeof grecaptcha === 'undefined') {
+                return Promise.reject(new Error('reCAPTCHA failed to load'));
+            }
+            return new Promise(function (resolve, reject) {
+                grecaptcha.ready(function () {
+                    grecaptcha.execute('@siteKey', { action: action }).then(resolve, reject);
+                });
+            });
+        }
+    </script>
+}
