@@ -40,11 +40,12 @@ namespace PC2.Data
         public virtual DbSet<SteeringCommittee> SteeringCommittee { get; set; }
         public virtual DbSet<People> People { get; set; }
         public virtual DbSet<NewsletterFile> NewsletterFile { get; set; }
-    
+
         public virtual DbSet<HousingProgram> HousingProgram { get; set; }
-    
+
         public virtual DbSet<ProgramVideo> ProgramVideos { get; set; }
 
+        public virtual DbSet<ResourceLinksModel> ResourceLinks { get; set; }
         public virtual DbSet<JobOpportunity> JobOpportunities { get; set; }
     }
 

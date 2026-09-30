@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PC2.Data;
 
@@ -11,9 +12,11 @@ using PC2.Data;
 namespace PC2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260811174259_RemoveFirstLetterFromResourceLinkManagement")]
+    partial class RemoveFirstLetterFromResourceLinkManagement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -370,39 +373,6 @@ namespace PC2.Data.Migrations
                     b.HasKey("HouseHoldSize");
 
                     b.ToTable("HousingProgram");
-                });
-
-            modelBuilder.Entity("PC2.Models.JobOpportunity", b =>
-                {
-                    b.Property<int>("JobOpportunityId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JobOpportunityId"));
-
-                    b.Property<string>("AttachmentLocation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AttachmentName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ClosingDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsClosed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("JobOpportunityId");
-
-                    b.ToTable("JobOpportunities");
                 });
 
             modelBuilder.Entity("PC2.Models.NewsletterFile", b =>

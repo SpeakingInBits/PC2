@@ -1,4 +1,5 @@
 ﻿using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PC2.Data;
 using PC2.Models;
@@ -33,7 +34,8 @@ namespace PC2.Controllers
             {
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, categoryID);
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
-                TrackResourceGuideTelemetry("Manual/Category", resourceGuide.Category.AgencyCategoryName);
+                TrackResourceGuideTelemetry("Manual/Category", 
+                    resourceGuide.Category.AgencyCategoryName);
             }
 
             await AgencyDB.GetDataForDataLists(_context, resourceGuide);
@@ -117,9 +119,10 @@ namespace PC2.Controllers
             return View();
         }
 
-        public IActionResult ResourceLinks()
+        public async Task<IActionResult> ResourceLinks()
         {
-            return View();
+            var resourceLinks = await ResourceLinksDB.GetAllResourceLinks(_context);
+            return View(resourceLinks);
         }
 
         public IActionResult AgeSpecificIssues()
@@ -169,6 +172,180 @@ namespace PC2.Controllers
 
             return Ok();
         }
+
+        #region Resource Links Management
+
+        /// <summary>
+        /// Displays admin management page listing all resource links (admin/staff only).
+        /// </summary>
+        [Authorize(Roles = IdentityHelper.AdminOrStaff)]
+        public async Task<IActionResult> ManageResourceLinks()
+        {
+            var resourceLinks = await ResourceLinksDB.GetAllResourceLinks(_context);
+            return View(resourceLinks);
+        }
+
+        /// <summary>
+        /// Displays an empty form for creating a new resource link (admin/staff only).
+        /// </summary>
+        /// <returns>
+        /// A view displaying the CreateResourceLink form with empty input fields.
+        /// The view name is "CreateResourceLink".
+        /// </returns>
+        /// <remarks>
+        /// HTTP Method: GET
+        /// Authorization: Only users with Admin or Staff role can access this action.
+        /// 
+        /// Form Contents:
+        /// - LinkText (required): Display name for the resource
+        /// - LinkURL (required): URL or path to resource (external https:// or internal ~/)
+        /// - Description (optional): Additional information about the resource
+        /// 
+        /// Form Submission:
+        /// When user fills out and submits the form, POST Create(ResourceLinksModel) is called
+        /// to validate and save the new resource.
+        /// 
+        /// Note: Alphabetical sorting/grouping is derived from
+        /// LinkText (no separate FirstLetter column is stored).
+        /// </remarks>
+        [Authorize(Roles = IdentityHelper.AdminOrStaff)]
+        [HttpPost]
+        public IActionResult Create()
+        {
+            return View("CreateResourceLink", new ResourceLinksModel());
+        }
+
+        /// <summary>
+        /// Handles POST to create new resource. Saves if valid, redisplays form if validation fails.
+        /// </summary>
+        /// <param name="resourceLink">Form data from CreateResourceLink view.</param>
+        /// <returns>Redirect to ManageResourceLinks on success; form view on validation error.</returns>
+        [Authorize(Roles = IdentityHelper.AdminOrStaff)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(ResourceLinksModel model)
+        {
+            if (!model.IsValidUrl())
+            {
+                ModelState.AddModelError(nameof(model.LinkURL),
+                    "URL must start with http://, https://, or ~/");
+                return View(model);
+            }
+
+            _context.ResourceLinks.Add(model);
+            _context.SaveChanges();
+
+            return RedirectToAction("ManageResourceLinks");
+        }
+
+        /// <summary>
+        /// Displays Edit form pre-populated with existing resource data (admin/staff only).
+        /// </summary>
+        /// <param name="id">The ResourceID to edit.</param>
+        /// <returns>Edit form view if found; 404 if not found.</returns>
+        [Authorize(Roles = IdentityHelper.AdminOrStaff)]
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            // Retrieve the resource from database
+            var resourceLink = await ResourceLinksDB.GetResourceLink(_context, id);
+
+            // Return 404 if resource not found or ID is invalid
+            if (resourceLink == null)
+            {
+                return NotFound();
+            }
+
+            // Display form pre-populated with current resource data
+            return View("EditResourceLink", resourceLink);
+        }
+
+        /// <summary>
+        /// Handles POST to update resource. Validates ID match, saves if valid.
+        /// </summary>
+        /// <param name="id">URL ID parameter.</param>
+        /// <param name="resourceLink">Form data with updated values.</param>
+        /// <returns>Redirect to ManageResourceLinks on success; form on error; 400 if ID mismatch.</returns>
+        [Authorize(Roles = IdentityHelper.AdminOrStaff)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, ResourceLinksModel resourceLink)
+        {
+            // Security validation: URL ID must match form's ResourceID
+            // Prevents tampering where URL points to one resource but form is for another
+            if (id != resourceLink.ResourceID)
+            {
+                return BadRequest();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Update the resource in database with auto-recalculated FirstLetter
+                    await ResourceLinksDB.UpdateResourceLink(_context, resourceLink);
+                    // Redirect to management page to show updated list
+                    return RedirectToAction(nameof(ManageResourceLinks));
+                }
+                catch (Exception)
+                {
+                    // Generic error handling for unexpected database issues
+                    return StatusCode(500, "An error occurred while updating the resource link.");
+                }
+            }
+
+            // If validation failed, redisplay the form with error messages
+            return View("EditResourceLink", resourceLink);
+        }
+
+        /// <summary>
+        /// Displays confirmation page before deleting resource (admin/staff only).
+        /// </summary>
+        /// <param name="id">The ResourceID to delete.</param>
+        /// <returns>Confirmation view if found; 404 if not found.</returns>
+        [Authorize(Roles = IdentityHelper.AdminOrStaff)]
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // Retrieve the resource to show its details in confirmation form
+            var resourceLink = await ResourceLinksDB.GetResourceLink(_context, id);
+
+            // Return 404 if resource not found
+            if (resourceLink == null)
+            {
+                return NotFound();
+            }
+
+            // Display confirmation view with resource details
+            return View("DeleteResourceLink", resourceLink);
+        }
+
+        /// <summary>
+        /// Handles POST to permanently delete resource. Calls DeleteResourceLinkById.
+        /// </summary>
+        /// <param name="id">The ResourceID to delete.</param>
+        /// <param name="resourceLink">Form model (unused, for model binding).</param>
+        /// <returns>Redirect to ManageResourceLinks on success or error.</returns>
+        [Authorize(Roles = IdentityHelper.AdminOrStaff)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id, ResourceLinksModel resourceLink)
+        {
+            try
+            {
+                // Delete the resource by ID (null-safe operation)
+                await ResourceLinksDB.DeleteResourceLinkById(_context, id);
+                // Redirect to management page to show updated list without deleted resource
+                return RedirectToAction(nameof(ManageResourceLinks));
+            }
+            catch (Exception)
+            {
+                // Generic error handling for unexpected database issues
+                return StatusCode(500, "An error occurred while deleting the resource link.");
+            }
+        }
+
+        #endregion
     }
 
     /// <summary>

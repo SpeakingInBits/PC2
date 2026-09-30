@@ -7,6 +7,23 @@ a.navbar-brand {
     word-break: break-all;
 }
 
+.table-style-match {
+    background-color: #124223;
+    color: white !important;
+}
+
+.btn-style-match {
+    text-decoration: none !important;
+}
+
+.vertical-align {
+    vertical-align: middle !important;
+}
+
+.fill-container-w {
+    width: max-content !important;
+}
+
 .name {
     color: rgba(18, 66, 35, 1) !important;
     text-decoration: none;
