@@ -23,7 +23,9 @@ is hosted on Azure SQL Database.
 1. Clone the repository.
 2. Open the solution in Visual Studio.
 3. Run `update-database` in the Package Manager Console for the `PC2` project.
-4. Execute `PC2-TestData.sql` (found in the Solution Items folder) against localdb.
+4. Execute `PC2-TestData.sql` (found in the Solution Items folder) against localdb. It adds agencies, calendar events, members,
+   job opportunities, and Resource Guide feedback. If you seeded your database before job opportunities and feedback were added,
+   select and run just those two sections at the bottom of the script; they skip themselves if the tables already have data.
 5. Run the website to create default roles and admin login.
 
 ### Azure Blob Storage
@@ -53,6 +55,16 @@ Settings are in the `FeedbackDigest` section of `appsettings.json`:
 
 In production, enable **Always On** for the App Service so the background service keeps running. If the app is asleep at the scheduled time,
 the email is sent the next time the app checks (every 15 minutes while running). Run a single instance; scaling out could send duplicate emails.
+
+#### Testing emails in development
+`appsettings.Development.json` sets `"EmailSender": "File"`, so in development emails are saved as HTML files in `PC2/DevEmails/`
+(ignored by git) instead of being sent. Open a file in a browser to see the email. No SendGrid key is needed and nothing is delivered.
+
+- **Send the digest manually:** sign in as an admin, go to the Admin Dashboard > Resource Guide Feedback, and click **Email New Feedback Now**.
+- **Test the weekly schedule:** set `FeedbackDigest:Enabled` to `true` in `appsettings.Development.json` (or user secrets) and run the app.
+  The seed data includes new feedback from over a week ago, so the digest is due and is saved within a few seconds of startup.
+  Re-run the feedback section of `PC2-TestData.sql` after deleting all rows from `Feedback` and then `FeedbackDigests` to reset it.
+- **Send real email from development:** set `EmailSender` to `SendGrid` in user secrets and configure the SendGrid settings.
 
 ## Admin Credentials
 - Username: `admin@pc2online.org`

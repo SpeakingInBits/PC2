@@ -42,6 +42,13 @@ public class AppSettingsConfigTests
     }
 
     [TestMethod]
+    public void EmailSender_IsSendGrid()
+    {
+        // "File" only belongs in appsettings.Development.json; in production it would silently stop all email
+        Assert.AreEqual("SendGrid", _config["EmailSender"], "EmailSender must be SendGrid in appsettings.json");
+    }
+
+    [TestMethod]
     public void DefaultConnection_IsPresentAndNotEmpty()
     {
         var value = _config.GetSection("ConnectionStrings")["DefaultConnection"];

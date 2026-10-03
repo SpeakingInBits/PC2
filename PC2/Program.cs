@@ -55,8 +55,15 @@ builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOpti
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
-// email provider
-builder.Services.AddTransient<IEmailSender, EmailSenderSendGrid>();
+// email provider. "File" saves emails to disk instead of sending them (used in development)
+if (builder.Configuration.GetSection("EmailSender").Value == "File")
+{
+    builder.Services.AddTransient<IEmailSender, FileEmailSender>();
+}
+else
+{
+    builder.Services.AddTransient<IEmailSender, EmailSenderSendGrid>();
+}
 
 // Weekly Resource Guide feedback digest email
 builder.Services.AddOptions<FeedbackDigestOptions>()

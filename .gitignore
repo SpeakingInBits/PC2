@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Emails saved by FileEmailSender during development
+PC2/DevEmails/
