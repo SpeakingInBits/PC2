@@ -1,7 +1,25 @@
-using System.Globalization;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Options;
 
 namespace PC2.Services;
+
+/// <summary>
+/// The outcome of verifying a reCAPTCHA token.
+/// </summary>
+public enum ReCaptchaVerificationResult
+{
+    /// <summary>The token is valid, matches the expected action, and meets the minimum score.</summary>
+    Passed,
+
+    /// <summary>The token is missing, invalid, for a different action, or scored below the minimum.</summary>
+    Failed,
+
+    /// <summary>
+    /// Verification could not be performed (reCAPTCHA is not configured, or Google could not be reached).
+    /// Callers decide whether to accept, flag, or reject the submission.
+    /// </summary>
+    Unavailable
+}
 
 public interface IReCaptchaService
 {
@@ -10,88 +28,94 @@ public interface IReCaptchaService
     /// </summary>
     /// <param name="token">The reCAPTCHA token from the client-side submission.</param>
     /// <param name="expectedAction">The action name the token was generated for (the value passed to getReCaptchaToken on the client).</param>
-    /// <returns>True if the token is valid, was generated for <paramref name="expectedAction"/>, and the score meets the minimum threshold; otherwise false.</returns>
-    Task<bool> VerifyAsync(string token, string expectedAction);
+    /// <param name="cancellationToken">Cancels the request to Google, e.g. when the client disconnects.</param>
+    Task<ReCaptchaVerificationResult> VerifyAsync(string token, string expectedAction, CancellationToken cancellationToken = default);
 }
 
 public class ReCaptchaService : IReCaptchaService
 {
     private const string VerifyUrl = "https://www.google.com/recaptcha/api/siteverify";
-    private const float DefaultMinimumScore = 0.5f;
 
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly HttpClient _httpClient;
+    private readonly ReCaptchaOptions _options;
     private readonly ILogger<ReCaptchaService> _logger;
-    private readonly string _secretKey;
-    private readonly float _minimumScore;
 
-    public ReCaptchaService(IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<ReCaptchaService> logger)
+    public ReCaptchaService(HttpClient httpClient, IOptions<ReCaptchaOptions> options, ILogger<ReCaptchaService> logger)
     {
-        _httpClientFactory = httpClientFactory;
+        _httpClient = httpClient;
+        _options = options.Value;
         _logger = logger;
-        _secretKey = configuration["GoogleReCaptcha:SecretKey"] ?? string.Empty;
-        _minimumScore = float.TryParse(configuration["GoogleReCaptcha:MinimumScore"], NumberStyles.Float, CultureInfo.InvariantCulture, out float score)
-            ? score
-            : DefaultMinimumScore;
     }
 
-    public async Task<bool> VerifyAsync(string token, string expectedAction)
+    public async Task<ReCaptchaVerificationResult> VerifyAsync(string token, string expectedAction, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(_secretKey))
+        if (!_options.IsSecretKeyConfigured)
         {
-            _logger.LogWarning("reCAPTCHA verification skipped: token or secret key is missing.");
-            return false;
+            _logger.LogError("reCAPTCHA verification skipped: GoogleReCaptcha:SecretKey is not configured.");
+            return ReCaptchaVerificationResult.Unavailable;
+        }
+
+        if (string.IsNullOrEmpty(token))
+        {
+            _logger.LogWarning("reCAPTCHA verification failed: no token was submitted.");
+            return ReCaptchaVerificationResult.Failed;
         }
 
         try
         {
-            var client = _httpClientFactory.CreateClient();
-            var response = await client.PostAsync(VerifyUrl,
+            using var response = await _httpClient.PostAsync(VerifyUrl,
                 new FormUrlEncodedContent(new[]
                 {
-                    new KeyValuePair<string, string>("secret", _secretKey),
+                    new KeyValuePair<string, string>("secret", _options.SecretKey!),
                     new KeyValuePair<string, string>("response", token)
-                }));
+                }), cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning("reCAPTCHA verification request failed with HTTP status {StatusCode}.", response.StatusCode);
-                return false;
+                return ReCaptchaVerificationResult.Unavailable;
             }
 
-            var result = await response.Content.ReadFromJsonAsync<ReCaptchaResponse>();
+            var result = await response.Content.ReadFromJsonAsync<ReCaptchaResponse>(cancellationToken);
             if (result is null)
             {
                 _logger.LogWarning("reCAPTCHA verification returned a null response.");
-                return false;
+                return ReCaptchaVerificationResult.Unavailable;
             }
 
             if (!result.Success)
             {
                 _logger.LogWarning("reCAPTCHA verification failed. Error codes: {ErrorCodes}",
                     result.ErrorCodes != null ? string.Join(", ", result.ErrorCodes) : "none");
-                return false;
+                return ReCaptchaVerificationResult.Failed;
             }
 
             if (!string.Equals(result.Action, expectedAction, StringComparison.Ordinal))
             {
                 _logger.LogWarning("reCAPTCHA action mismatch. Expected {ExpectedAction} but received {Action}.",
                     expectedAction, result.Action);
-                return false;
+                return ReCaptchaVerificationResult.Failed;
             }
 
-            if (result.Score < _minimumScore)
+            if (result.Score < _options.MinimumScore)
             {
                 _logger.LogWarning("reCAPTCHA score {Score} is below the minimum threshold of {MinimumScore}.",
-                    result.Score, _minimumScore);
-                return false;
+                    result.Score, _options.MinimumScore);
+                return ReCaptchaVerificationResult.Failed;
             }
 
-            return true;
+            return ReCaptchaVerificationResult.Passed;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The caller (e.g. a disconnected client) gave up; let the cancellation propagate.
+            throw;
         }
         catch (Exception ex)
         {
+            // Includes HttpClient timeouts, which surface as TaskCanceledException.
             _logger.LogError(ex, "An error occurred while verifying reCAPTCHA token.");
-            return false;
+            return ReCaptchaVerificationResult.Unavailable;
         }
     }
 }
@@ -102,7 +126,7 @@ internal class ReCaptchaResponse
     public bool Success { get; set; }
 
     [JsonPropertyName("score")]
-    public float Score { get; set; }
+    public double Score { get; set; }
 
     [JsonPropertyName("action")]
     public string? Action { get; set; }

@@ -25,8 +25,15 @@ builder.Services.AddScoped<PC2.Services.ImageService>();
 builder.Services.AddScoped<AnalyticsService>();
 
 // Register ReCaptchaService for DI
-builder.Services.AddHttpClient();
-builder.Services.AddScoped<IReCaptchaService, ReCaptchaService>();
+builder.Services.AddOptions<ReCaptchaOptions>()
+    .Bind(builder.Configuration.GetSection(ReCaptchaOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+builder.Services.AddHttpClient<IReCaptchaService, ReCaptchaService>(client =>
+{
+    // Fail fast if Google is slow so form submissions don't hang for the 100 second default
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
 
 // Configure Application Insights - only add if connection string is provided
 var appInsightsConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value;
