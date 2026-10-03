@@ -10,25 +10,26 @@
 <div class="row">
     <div class="col-md-6">
         <form asp-action="CreateVideo" enctype="multipart/form-data" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
 
             <div class="form-group mb-3">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
+                <label asp-for="Title" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="Title" class="form-control" aria-required="true" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="YouTubeVideoId" class="control-label"></label>
-                <input asp-for="YouTubeVideoId" class="form-control" id="youTubeVideoId" placeholder="e.g. tRadgduogZg or a full YouTube URL" />
+                <label for="youTubeVideoId" class="control-label">@Html.DisplayNameFor(model => model.YouTubeVideoId)</label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="YouTubeVideoId" class="form-control" id="youTubeVideoId" placeholder="e.g. tRadgduogZg or a full YouTube URL" aria-required="true" aria-describedby="youTubeVideoIdHelp" />
                 <span asp-validation-for="YouTubeVideoId" class="text-danger"></span>
-                <small class="form-text text-muted">Enter the YouTube video ID or paste a full YouTube URL — the ID will be extracted automatically.</small>
+                <small class="form-text text-muted" id="youTubeVideoIdHelp">Enter the YouTube video ID or paste a full YouTube URL — the ID will be extracted automatically.</small>
             </div>
 
             <div class="form-group mb-3">
-                <label class="control-label">PDF Attachment (optional)</label>
-                <input type="file" name="pdfFile" id="pdfFile" accept=".pdf" onchange="checkFileSize()" class="form-control" />
-                <span id="fileSizeError" class="text-danger"></span>
+                <label for="pdfFile" class="control-label">PDF Attachment (optional)</label>
+                <input type="file" name="pdfFile" id="pdfFile" accept=".pdf" onchange="checkFileSize()" class="form-control" aria-describedby="fileSizeError" />
+                <span id="fileSizeError" class="text-danger" role="alert"></span>
             </div>
 
             <div class="form-group">

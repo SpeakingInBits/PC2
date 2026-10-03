@@ -59,6 +59,12 @@ public class AboutController : Controller
     {
         if (userFile != null)
         {
+            if (!PdfFileValidator.IsPdf(userFile))
+            {
+                TempData["Message"] = $"Error uploading file: {userFile.FileName} is not a PDF. Only PDF files can be uploaded.";
+                return View(await NewsletterFileDB.GetAllAsync(_context));
+            }
+
             try
             {
                 string filePath = await _azureBlobUploader.UploadFileAsync(userFile, userFile.FileName);

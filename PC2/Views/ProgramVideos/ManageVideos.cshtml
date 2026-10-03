@@ -7,10 +7,11 @@
 <h1>@ViewData["Title"]</h1>
 
 @{
-    if (TempData["Message"] != null)
+    if (TempData["Message"] is string message)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Message"]
+        bool isError = message.StartsWith("Error");
+        <div class="alert @(isError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="@(isError ? "alert" : "status")">
+            @message
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
@@ -23,10 +24,10 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>YouTube Video ID</th>
-            <th>PDF Attachment</th>
-            <th></th>
+            <th scope="col">Title</th>
+            <th scope="col">YouTube Video ID</th>
+            <th scope="col">PDF Attachment</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
         </tr>
     </thead>
     <tbody>
@@ -46,8 +47,8 @@
                     }
                 </td>
                 <td>
-                    <a asp-action="EditVideo" asp-route-id="@video.ProgramVideoId">Edit</a> |
-                    <a asp-action="DeleteVideo" asp-route-id="@video.ProgramVideoId">Delete</a>
+                    <a asp-action="EditVideo" asp-route-id="@video.ProgramVideoId">Edit<span class="visually-hidden"> @video.Title</span></a> |
+                    <a asp-action="DeleteVideo" asp-route-id="@video.ProgramVideoId">Delete<span class="visually-hidden"> @video.Title</span></a>
                 </td>
             </tr>
         }

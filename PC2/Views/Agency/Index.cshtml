@@ -12,8 +12,10 @@
 <br />
 
 <p>
-    <input type="text" id="agency-filter" placeholder="Filter Results" onkeyup="filterTable();" />
+    <label for="agency-filter" class="visually-hidden">Filter agencies by name</label>
+    <input type="text" id="agency-filter" placeholder="Filter Results" oninput="filterTable();" />
 </p>
+<p id="agency-filter-status" class="visually-hidden" role="status"></p>
 <br />
 
 @section Scripts{
@@ -25,16 +27,23 @@
         function filterTable() {
             let query = document.getElementById("agency-filter").value.toLowerCase();
 
+            let visibleCount = 0;
+
             // Loop through all rows of table, and hide row if Agency Name does not match
             for (let i = 0; i < rows.length; i++) {
                 let agencyName = rows[i].getElementsByTagName("td")[0].innerText.toLowerCase(); // Get the first <td> in the row (Agency Name)
                 if (agencyName.startsWith(query)) {
                     rows[i].style.display = "";
+                    visibleCount++;
                 }
                 else {
                     rows[i].style.display = "none";
                 }
             }
+
+            // Announce the number of matching agencies to screen reader users
+            document.getElementById("agency-filter-status").textContent =
+                visibleCount + (visibleCount === 1 ? " agency" : " agencies") + " shown";
         }
     </script>
 }
@@ -42,10 +51,10 @@
 <table id="agency-table" class="table-bordered text-center">
     <thead>
         <tr>
-            <th>Agency Name</th>
-            <th>Agency Name 2</th>
-            <th>City</th>
-            <th></th>
+            <th scope="col">Agency Name</th>
+            <th scope="col">Secondary Agency Name</th>
+            <th scope="col">City</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
         </tr>
     </thead>
     <tbody>
@@ -65,8 +74,8 @@
                     }
                 </td>
                 <td>
-                    <a class="btn btn-outline-primary" target="_blank" id="edit-link" asp-action="Edit" asp-route-id="@agency.AgencyId">Edit</a> |
-                    <a class="btn btn-outline-danger" target="_blank" id="delete-link" asp-action="Delete" asp-route-id="@agency.AgencyId">Delete</a>
+                    <a class="btn btn-outline-primary edit-link" asp-action="Edit" asp-route-id="@agency.AgencyId">Edit<span class="visually-hidden"> @agency.AgencyName</span></a> |
+                    <a class="btn btn-outline-danger delete-link" asp-action="Delete" asp-route-id="@agency.AgencyId">Delete<span class="visually-hidden"> @agency.AgencyName</span></a>
                 </td>
             </tr>
         }

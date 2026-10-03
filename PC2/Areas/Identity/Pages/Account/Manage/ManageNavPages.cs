@@ -119,5 +119,12 @@ namespace  PC2.Areas.Identity.Pages.Account.Manage
                 ?? System.IO.Path.GetFileNameWithoutExtension(viewContext.ActionDescriptor.DisplayName);
             return string.Equals(activePage, page, StringComparison.OrdinalIgnoreCase) ? "active" : null;
         }
+
+        /// <summary>
+        ///     Returns "page" when the given page is the active page so the navigation link can be marked with
+        ///     aria-current="page" for assistive technologies; otherwise null so the attribute is omitted.
+        /// </summary>
+        public static string PageAriaCurrent(ViewContext viewContext, string page)
+            => PageNavClass(viewContext, page) == null ? null : "page";
     }
 }

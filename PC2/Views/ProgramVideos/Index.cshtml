@@ -13,6 +13,14 @@
         .video-section {
             margin-bottom: 2rem;
         }
+        /* Keeps the look of the page's previous <h1> video titles */
+        .video-title {
+            font-size: 1.5em;
+            margin-bottom: .5rem;
+        }
+        .player-frame {
+            max-width: 640px;
+        }
     </style>
 }
 
@@ -36,9 +44,12 @@
         {
             <div class="video-section">
                 <div class="flex-column justify-content-center">
-                    <h1>@video.Title</h1>
+                    <h2 class="video-title">@video.Title</h2>
                 </div>
-                <div class="player" id="player-@video.ProgramVideoId"></div>
+                @* The ratio wrapper lets the player shrink to fit small screens *@
+                <div class="player-frame ratio ratio-16x9 mx-auto">
+                    <div class="player" id="player-@video.ProgramVideoId"></div>
+                </div>
                 @if (!string.IsNullOrEmpty(video.PdfLocation))
                 {
                     <div class="row g-4 mt-1">
@@ -48,7 +59,7 @@
                                     <div class="d-flex align-items-center mb-3 min-width-0">
                                         <i class="bi bi-file-earmark-pdf text-danger me-3 fs-1" aria-hidden="true"></i>
                                         <div class="flex-grow-1">
-                                            <h5 class="card-title mb-1 text-primary">@video.PdfName</h5>
+                                            <h3 class="card-title h5 fw-bold mb-1 text-primary">@video.PdfName</h3>
                                             <small class="text-muted">PDF Handout</small>
                                         </div>
                                     </div>
@@ -56,7 +67,7 @@
                                         <a href="@video.PdfLocation"
                                            target="_blank"
                                            class="btn btn-primary text-white w-100 d-flex align-items-center justify-content-center"
-                                           aria-label="Download @video.PdfName PDF">
+                                           aria-label="Download PDF: @video.PdfName">
                                             <i class="bi bi-download me-2" aria-hidden="true"></i>
                                             Download PDF
                                         </a>
@@ -77,20 +88,31 @@
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        var videoIds = [
-            @Html.Raw(string.Join(",\n            ", Model.Select(v => $"{{ id: {v.ProgramVideoId}, youtubeId: '{v.YouTubeVideoId}' }}")))
-        ];
+        var videoIds = @Json.Serialize(Model.Select(v => new { id = v.ProgramVideoId, youtubeId = v.YouTubeVideoId, title = v.Title }));
 
         function onYouTubeIframeAPIReady() {
             videoIds.forEach(function (video) {
+                // Size comes from the .ratio wrapper so the player fits narrow screens
                 new YT.Player('player-' + video.id, {
-                    height: '390',
-                    width: '640',
+                    height: '100%',
+                    width: '100%',
                     videoId: video.youtubeId,
                     playerVars: {
                         'playsinline': 1
+                    },
+                    events: {
+                        // Give the iframe an accessible name
+                        'onReady': function (event) {
+                            event.target.getIframe().title = video.title;
+                        }
                     }
                 });
+
+                // The player's iframe takes over the placeholder's id; name it right away too
+                var iframe = document.getElementById('player-' + video.id);
+                if (iframe && iframe.tagName === 'IFRAME') {
+                    iframe.title = video.title;
+                }
             });
         }
     </script>

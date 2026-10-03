@@ -37,12 +37,12 @@
             const result = await response.json().catch(() => ({}));
 
             if (response.ok) {
-                // Replace the form so the same feedback isn't submitted twice
-                const thanks = document.createElement("p");
-                thanks.className = "mb-0";
-                thanks.setAttribute("role", "status");
-                thanks.textContent = result.message || "Thank you for your feedback!";
-                form.replaceWith(thanks);
+                // Hide the form so the same feedback isn't submitted twice. The thanks goes in the
+                // status region (outside the form) and gets focus, since the focused button is now hidden.
+                form.hidden = true;
+                status.textContent = result.message || "Thank you for your feedback!";
+                status.className = "mb-0";
+                status.focus();
                 return;
             }
 

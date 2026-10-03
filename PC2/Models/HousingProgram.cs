@@ -14,6 +14,7 @@ namespace PC2.Models
         [DataType(DataType.Currency)]
         public double MaximumIncome { get; set; }
 
+        [Display(Name = "Last Updated")]
         [DataType(DataType.Date)]
         public DateTime LastUpdated { get; set; }
     }

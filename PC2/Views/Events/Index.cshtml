@@ -5,10 +5,10 @@
 }
 <!-- Events banner -->
 <div class="d-flex justify-content-center">
-    <img src=~/images/events/events1.jpg alt="Flyer for upcoming community event on PC2" />
-    <img src=~/images/events/events2.jpg alt="PC2 event poster featuring local artists" />
-    <img src=~/images/events/events3.jpg alt="Announcement for county-sponsored festival" />
-    <img src=~/images/events/events4.jpg alt="Graphic promoting a PC2 charity fundraiser" />
+    <img src="~/images/events/events1.jpg" alt="" />
+    <img src="~/images/events/events2.jpg" alt="" />
+    <img src="~/images/events/events3.jpg" alt="" />
+    <img src="~/images/events/events4.jpg" alt="" />
 </div>
 
 <br />
@@ -63,11 +63,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+                <h2 class="modal-title h5 fw-bold" id="eventModalLabel">Event Details</h2>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h5 id="modalEventTitle" style="font-weight: normal;"></h5>
+                <h3 class="h5" id="modalEventTitle" style="font-weight: normal;"></h3>
                 <p><strong>Start Time:</strong> <span id="modalEventDate"></span></p>
                 <p><strong>End Time:</strong> <span id="modalEventEndTime"></span></p>
             </div>
@@ -86,6 +86,23 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             const isMobile = window.innerWidth < 768;
+            const eventModalEl = document.getElementById('eventModal');
+            let eventModalOpener = null;
+
+            // Return focus to the event that opened the modal once it closes
+            eventModalEl.addEventListener('hidden.bs.modal', function() {
+                if (eventModalOpener && document.body.contains(eventModalOpener)) {
+                    eventModalOpener.focus();
+                }
+                eventModalOpener = null;
+            });
+
+            // The prev/next buttons are named by their title; hide their icon spans (role="img" with no name)
+            function hideToolbarIcons() {
+                document.querySelectorAll('#calendar .fc-toolbar .fc-icon').forEach(function(icon) {
+                    icon.setAttribute('aria-hidden', 'true');
+                });
+            }
 
             var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                 initialView: isMobile ? 'listMonth' : 'dayGridMonth',
@@ -102,6 +119,12 @@
                     today:  'Today',
                     month:  'Month',
                     list:   'List'
+                },
+                // Events can be reached with Tab and opened with Enter or Space
+                eventInteractive: true,
+                datesSet: function() {
+                    // Runs after the toolbar re-renders
+                    setTimeout(hideToolbarIcons, 0);
                 },
                 events: function(info, successCallback, failureCallback) {
                     fetch('@Url.Action("GetEvents", "Events")')
@@ -128,7 +151,8 @@
                     document.getElementById('modalEventDate').innerText = startTime;
                     document.getElementById('modalEventEndTime').innerText = endTime;
 
-                    new bootstrap.Modal(document.getElementById('eventModal')).show();
+                    eventModalOpener = document.activeElement;
+                    bootstrap.Modal.getOrCreateInstance(eventModalEl).show();
                 },
                 validRange: function(currentDate) {
                     // Today's date
@@ -144,18 +168,43 @@
                     // Render HTML in event titles instead of escaped text.
                     // List view: write to the <td> directly to avoid nesting <a> inside FullCalendar's own <a>.
                     // Other views: write to the .fc-event-title element.
-                    const titleEl = info.view.type === 'listMonth'
+                    const isListView = info.view.type === 'listMonth';
+                    const titleEl = isListView
                         ? info.el.querySelector('.fc-list-event-title')
                         : info.el.querySelector('.fc-event-title');
 
                     if (titleEl) {
-                        titleEl.innerHTML = info.event.title;
-                        // Prevent inner link navigation so clicks bubble to eventClick and open the modal
+                        let titleContainer = titleEl;
+                        if (isListView) {
+                            // This replaces FullCalendar's keyboard-focusable <a>, so add a focusable
+                            // wrapper whose Enter/Space click bubbles to eventClick like a mouse click
+                            titleEl.innerHTML = '';
+                            titleContainer = document.createElement('span');
+                            titleContainer.tabIndex = 0;
+                            titleContainer.addEventListener('keydown', function(e) {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    titleContainer.click();
+                                }
+                            });
+                            titleEl.appendChild(titleContainer);
+                        }
+                        titleContainer.innerHTML = info.event.title;
+
+                        // Prevent inner link navigation so clicks bubble to eventClick and open the modal.
+                        // Keep them out of the tab order too, since the event itself is focusable.
                         titleEl.querySelectorAll('a').forEach(function(a) {
+                            a.tabIndex = -1;
                             a.addEventListener('click', function(e) {
                                 e.preventDefault();
                             });
                         });
+
+                        // Event type is otherwise shown only by colour
+                        const typeText = document.createElement('span');
+                        typeText.className = 'visually-hidden';
+                        typeText.textContent = info.event.classNames.includes('pc2-event') ? ' (PC2 event)' : ' (County event)';
+                        titleContainer.appendChild(typeText);
                     }
 
                     // Add a Bootstrap tooltip on month view events so the full text is visible on hover
@@ -166,7 +215,7 @@
                         new bootstrap.Tooltip(info.el, {
                             title: plainText,
                             placement: 'top',
-                            trigger: 'hover',
+                            trigger: 'hover focus',
                             container: 'body'
                         });
                     }
@@ -175,6 +224,7 @@
             });
 
             calendar.render();
+            hideToolbarIcons();
         });
     </script>
 }

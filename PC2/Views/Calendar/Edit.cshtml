@@ -6,45 +6,49 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<h4>Calendar Event</h4>
+<h2 class="h4">Calendar Event</h2>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
             <input type="hidden" asp-for="EventId" />
             <div class="form-group">
-                <label asp-for="DateOfEvent" class="control-label"></label>
-                <input asp-for="DateOfEvent" class="form-control" type="date" />
+                <label asp-for="DateOfEvent" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="DateOfEvent" class="form-control" type="date" aria-required="true" />
                 <span asp-validation-for="DateOfEvent" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="StartingTime" class="control-label"></label>
-                <input asp-for="StartingTime" class="form-control" type="time" />
+                <label asp-for="StartingTime" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="StartingTime" class="form-control" type="time" aria-required="true" />
                 <span asp-validation-for="StartingTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EndingTime" class="control-label"></label>
-                <input asp-for="EndingTime" class="form-control" type="time" />
+                <label asp-for="EndingTime" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="EndingTime" class="form-control" type="time" aria-required="true" />
                 <span asp-validation-for="EndingTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <label asp-for="Description" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <textarea asp-for="Description" class="form-control" rows="5" aria-required="true"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsPc2Event" /> @Html.DisplayNameFor(model => model.IsPc2Event)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsCountyEvent" /> @Html.DisplayNameFor(model => model.IsCountyEvent)
-                </label>
-                <br>
-                <span asp-validation-for="IsCountyEvent" class="text-danger"></span>
-            </div>
+            <fieldset aria-describedby="event-type-error">
+                <legend class="fs-6 mb-0">Event type (choose one)<span class="text-danger" aria-hidden="true"> *</span></legend>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsPc2Event" /> @Html.DisplayNameFor(model => model.IsPc2Event)
+                    </label>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsCountyEvent" /> @Html.DisplayNameFor(model => model.IsCountyEvent)
+                    </label>
+                    <br>
+                    <span asp-validation-for="IsCountyEvent" class="text-danger" id="event-type-error"></span>
+                </div>
+            </fieldset>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -56,3 +60,6 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

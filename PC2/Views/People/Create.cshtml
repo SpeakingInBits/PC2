@@ -18,12 +18,12 @@
     <div class="col-md-6">
         <div class="form-group mb-3">
             <label for="typeSelector" class="control-label">Member Type</label>
-            <select id="typeSelector" class="form-control">
+            <select id="typeSelector" class="form-control" aria-describedby="typeSelectorHelp">
                 <option value="@nameof(PersonType.Staff)" selected="@(Model.Type == PersonType.Staff)">Staff</option>
                 <option value="@nameof(PersonType.Board)" selected="@(Model.Type == PersonType.Board)">Board</option>
                 <option value="@nameof(PersonType.SteeringCommittee)" selected="@(Model.Type == PersonType.SteeringCommittee)">Steering Committee</option>
             </select>
-            <small class="form-text text-muted">The form fields below adjust to match the selected member type.</small>
+            <small class="form-text text-muted" id="typeSelectorHelp">The form fields below adjust to match the selected member type.</small>
         </div>
     </div>
 </div>
@@ -31,13 +31,14 @@
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Create" enctype="multipart/form-data" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
 
             <input type="hidden" asp-for="Type" id="typeInput" />
 
             <div class="form-group mb-3">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <label asp-for="Name" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="Name" class="form-control" aria-required="true" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
@@ -81,14 +82,14 @@
 
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5 class="mb-0">Photo</h5>
+                    <h2 class="h5 mb-0">Photo</h2>
                 </div>
                 <div class="card-body">
                     <div class="form-group mb-3">
-                        <label asp-for="PhotoFile" class="control-label"></label>
-                        <input asp-for="PhotoFile" class="form-control" type="file" accept="image/*" id="photoFile" />
+                        <label for="photoFile" class="control-label">@Html.DisplayNameFor(model => model.PhotoFile)</label>
+                        <input asp-for="PhotoFile" class="form-control" type="file" accept="image/*" id="photoFile" aria-describedby="photoFileHelp" />
                         <span asp-validation-for="PhotoFile" class="text-danger"></span>
-                        <small class="form-text text-muted">
+                        <small class="form-text text-muted" id="photoFileHelp">
                             Upload a photo file (JPEG, PNG, GIF, or BMP). Large images will be automatically resized.
                         </small>
                         <img id="photoPreview" src="" alt="Photo preview" class="img-thumbnail mt-2"
@@ -98,14 +99,14 @@
             </div>
 
             <div id="prioritySection" class="form-group mb-3" style="@(Model.Type == PersonType.SteeringCommittee ? "display:none" : null)">
-                <label asp-for="PriorityOrder" class="control-label"></label>
-                <select id="staffPriority" name="PriorityOrder" class="form-control"
+                <label for="staffPriority" id="priorityLabel" class="control-label">@Html.DisplayNameFor(model => model.PriorityOrder)</label>
+                <select id="staffPriority" name="PriorityOrder" class="form-control" aria-labelledby="priorityLabel"
                         style="@(Model.Type == PersonType.Staff ? null : "display:none")"
                         disabled="@(Model.Type == PersonType.Staff ? null : "disabled")">
                     <option value="1" selected="@(Model.PriorityOrder == 1)">Director</option>
                     <option value="10" selected="@(Model.PriorityOrder != 1)">Other</option>
                 </select>
-                <select id="boardPriority" name="PriorityOrder" class="form-control"
+                <select id="boardPriority" name="PriorityOrder" class="form-control" aria-labelledby="priorityLabel"
                         style="@(Model.Type == PersonType.Board ? null : "display:none")"
                         disabled="@(Model.Type == PersonType.Board ? null : "disabled")">
                     <option value="1" selected="@(Model.PriorityOrder == 1)">Board Chair</option>

@@ -7,12 +7,14 @@
 <h1>Housing Program Data</h1>
 
 @{
-    bool hasTempData = TempData["Message"] != null;
+    string? message = TempData["Message"] as string;
+    bool hasTempData = message != null;
     
     if(hasTempData)
     {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Message"]
+    bool isError = !message!.Contains("successfully", StringComparison.OrdinalIgnoreCase);
+    <div class="alert @(isError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="@(isError ? "alert" : "status")">
+        @message
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     }
@@ -21,13 +23,13 @@
 <table id="data_table" class="table">
     <thead>
         <tr>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.HouseHoldSize)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.MaximumIncome)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.LastUpdated)
             </th>
         </tr>
@@ -42,8 +44,9 @@
             <td>
                 <form method="post">
                     <input type="hidden" name="HouseHoldSize" value="@item.HouseHoldSize">
-                    $<input name="MaximumIncome" value="@item.MaximumIncome" />
-                    <input type="submit" value="Update Entry" class="btn btn-primary">
+                    <label for="maximumIncome-@item.HouseHoldSize" class="visually-hidden">Maximum income for household of @item.HouseHoldSize</label>
+                    $<input name="MaximumIncome" id="maximumIncome-@item.HouseHoldSize" value="@item.MaximumIncome" inputmode="decimal" />
+                    <button type="submit" class="btn btn-primary">Update Entry<span class="visually-hidden"> for household of @item.HouseHoldSize</span></button>
                 </form>
             </td>
             <td>

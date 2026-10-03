@@ -9,7 +9,7 @@
 
     @if (Model.AgencyName2 != null)
     {
-        <dt>AgencyName2</dt>
+        <dt>Agency Name 2</dt>
         <dd>@Model.AgencyName2</dd>
     }
 
@@ -21,13 +21,13 @@
 
     @if (Model.Address1 != null)
     {
-        <dt>@(Model.Address2 == null ? "Address" : "Address1")</dt>
+        <dt>@(Model.Address2 == null ? "Address" : "Address Line 1")</dt>
         <dd>@Model.Address1</dd>
     }
 
     @if (Model.Address2 != null)
     {
-        <dt>Address2</dt>
+        <dt>Address Line 2</dt>
         <dd>@Model.Address2</dd>
     }
 
@@ -45,25 +45,25 @@
 
     @if (Model.Zip != null)
     {
-        <dt>Zip</dt>
+        <dt>Zip Code</dt>
         <dd>@Model.Zip</dd>
     }
 
     @if (Model.MailingAddress != null)
     {
-        <dt>MailingAddress</dt>
+        <dt>Mailing Address</dt>
         <dd>@Model.MailingAddress</dd>
     }
 
     @if (Model.Phone != null)
     {
-        <dt>Phone</dt>
+        <dt>Phone Number</dt>
         <dd>@Html.Raw(PC2.Models.RendererHelper.RenderPhone(Model.Phone))</dd>
     }
 
     @if (Model.TollFree != null)
     {
-        <dt>TollFree</dt>
+        <dt>Toll Free</dt>
         <dd>@Model.TollFree</dd>
     }
 
@@ -81,7 +81,7 @@
 
     @if (Model.CrisisHelpHotline != null)
     {
-        <dt>CrisisHelpHotline</dt>
+        <dt>Crisis Help Hotline</dt>
         <dd>@Model.CrisisHelpHotline</dd>
     }
 

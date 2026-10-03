@@ -9,7 +9,7 @@
 
 @if (TempData["Message"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success alert-dismissible fade show" role="status">
         @TempData["Message"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -47,10 +47,10 @@
 </p>
 
 <div class="d-flex flex-wrap gap-2 mb-3">
-    <a asp-action="Index" asp-route-showAll="false" class="btn @(Model.ShowAll ? "btn-outline-primary" : "btn-primary")">
+    <a asp-action="Index" asp-route-showAll="false" class="btn @(Model.ShowAll ? "btn-outline-primary" : "btn-primary")" aria-current="@(Model.ShowAll ? null : "page")">
         New (@Model.NewFeedbackCount)
     </a>
-    <a asp-action="Index" asp-route-showAll="true" class="btn @(Model.ShowAll ? "btn-primary" : "btn-outline-primary")">
+    <a asp-action="Index" asp-route-showAll="true" class="btn @(Model.ShowAll ? "btn-primary" : "btn-outline-primary")" aria-current="@(Model.ShowAll ? "page" : null)">
         All Feedback
     </a>
     @if (Model.NewFeedbackCount > 0)
@@ -76,19 +76,20 @@ else
         <table class="table">
             <thead>
                 <tr>
-                    <th>Submitted</th>
-                    <th>Found It?</th>
-                    <th>Searched For</th>
-                    <th>Comments</th>
-                    <th>Status</th>
-                    <th></th>
+                    <th scope="col">Submitted</th>
+                    <th scope="col">Found It?</th>
+                    <th scope="col">Searched For</th>
+                    <th scope="col">Comments</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"><span class="visually-hidden">Actions</span></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var feedback in Model.Feedback)
                 {
+                    string submittedText = FeedbackDigestService.ToLocal(feedback.SubmittedAt, Model.TimeZone).ToString("MMM d, yyyy h:mm tt");
                     <tr>
-                        <td class="text-nowrap">@FeedbackDigestService.ToLocal(feedback.SubmittedAt, Model.TimeZone).ToString("MMM d, yyyy h:mm tt")</td>
+                        <td class="text-nowrap">@submittedText</td>
                         <td>
                             @if (feedback.IsResourceFound)
                             {
@@ -104,12 +105,12 @@ else
                         <td class="text-nowrap">
                             @if (feedback.FeedbackDigest != null)
                             {
-                                <span class="badge bg-secondary">Emailed</span>
+                                <span class="badge bg-secondary text-dark">Emailed</span>
                                 <small class="text-muted d-block">@FeedbackDigestService.ToLocal(feedback.FeedbackDigest.SentAt, Model.TimeZone).ToString("MMM d, yyyy")</small>
                             }
                             else if (feedback.ReviewedAt != null)
                             {
-                                <span class="badge bg-secondary">Reviewed</span>
+                                <span class="badge bg-secondary text-dark">Reviewed</span>
                                 <small class="text-muted d-block">@FeedbackDigestService.ToLocal(feedback.ReviewedAt.Value, Model.TimeZone).ToString("MMM d, yyyy")</small>
                             }
                             else
@@ -121,10 +122,10 @@ else
                             @if (!feedback.IsHandled)
                             {
                                 <form asp-action="MarkReviewed" asp-route-id="@feedback.FeedbackId" asp-route-showAll="@Model.ShowAll" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-outline-success">Mark Reviewed</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-success">Mark Reviewed<span class="visually-hidden">: feedback from @submittedText</span></button>
                                 </form>
                             }
-                            <a asp-action="Delete" asp-route-id="@feedback.FeedbackId" class="btn btn-sm btn-outline-danger">Delete</a>
+                            <a asp-action="Delete" asp-route-id="@feedback.FeedbackId" class="btn btn-sm btn-outline-danger">Delete<span class="visually-hidden"> feedback from @submittedText</span></a>
                         </td>
                     </tr>
                 }

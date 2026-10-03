@@ -11,7 +11,7 @@
 
 <div class="card mb-4">
     <div class="card-header">
-        <h5 class="mb-0">Search and Filter Members</h5>
+        <h2 class="h5 mb-0">Search and Filter Members</h2>
     </div>
     <div class="card-body">
         <form asp-action="Index" method="get" class="row g-3">
@@ -52,12 +52,12 @@
     <table class="table">
         <thead>
             <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Details</th>
-                <th></th>
+                <th scope="col"><span class="visually-hidden">Photo</span></th>
+                <th scope="col">Name</th>
+                <th scope="col">Title</th>
+                <th scope="col">Type</th>
+                <th scope="col">Details</th>
+                <th scope="col"><span class="visually-hidden">Actions</span></th>
             </tr>
         </thead>
         <tbody>
@@ -67,13 +67,13 @@
                     <td>
                         @if (!string.IsNullOrEmpty(item.CurrentImageUrl))
                         {
-                            <img src="@item.CurrentImageUrl" alt="@($"{item.Name}, {item.Title}")"
+                            <img src="@item.CurrentImageUrl" alt=""
                                  style="width: 48px; height: 48px; object-fit: cover; border-radius: 4px;" />
                         }
                         else
                         {
                             <span class="text-muted" style="font-size: 2rem; line-height: 1;">
-                                <i class="bi bi-person-circle"></i>
+                                <i class="bi bi-person-circle" aria-hidden="true"></i>
                             </span>
                         }
                     </td>
@@ -86,10 +86,10 @@
                                 <span class="badge bg-primary">Staff</span>
                                 break;
                             case PersonType.Board:
-                                <span class="badge bg-info">Board</span>
+                                <span class="badge bg-info text-dark">Board</span>
                                 break;
                             case PersonType.SteeringCommittee:
-                                <span class="badge bg-secondary">Steering Committee</span>
+                                <span class="badge bg-secondary text-dark">Steering Committee</span>
                                 break;
                         }
                     </td>
@@ -123,8 +123,8 @@
                         }
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.ID" asp-route-type="@item.Type.ToString()" class="btn btn-sm btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.ID" asp-route-type="@item.Type.ToString()" class="btn btn-sm btn-danger">Delete</a>
+                        <a asp-action="Edit" asp-route-id="@item.ID" asp-route-type="@item.Type.ToString()" class="btn btn-sm btn-warning">Edit<span class="visually-hidden"> @item.Name</span></a>
+                        <a asp-action="Delete" asp-route-id="@item.ID" asp-route-type="@item.Type.ToString()" class="btn btn-sm btn-danger">Delete<span class="visually-hidden"> @item.Name</span></a>
                     </td>
                 </tr>
             }

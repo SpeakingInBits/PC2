@@ -47,6 +47,12 @@ namespace PC2.Controllers
             {
                 if (pdfFile != null)
                 {
+                    if (!PdfFileValidator.IsPdf(pdfFile))
+                    {
+                        TempData["Message"] = $"Error uploading PDF: {pdfFile.FileName} is not a PDF. Only PDF files can be uploaded.";
+                        return View(programVideo);
+                    }
+
                     try
                     {
                         string filePath = await _azureBlobUploader.UploadFileAsync(pdfFile, pdfFile.FileName);
@@ -89,6 +95,12 @@ namespace PC2.Controllers
             {
                 if (pdfFile != null)
                 {
+                    if (!PdfFileValidator.IsPdf(pdfFile))
+                    {
+                        TempData["Message"] = $"Error uploading PDF: {pdfFile.FileName} is not a PDF. Only PDF files can be uploaded.";
+                        return View(programVideo);
+                    }
+
                     try
                     {
                         string filePath = await _azureBlobUploader.UploadFileAsync(pdfFile, pdfFile.FileName);

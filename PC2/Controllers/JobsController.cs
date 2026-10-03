@@ -63,6 +63,12 @@ namespace PC2.Controllers
 
             if (attachmentFile != null)
             {
+                if (!PdfFileValidator.IsPdf(attachmentFile))
+                {
+                    TempData["Message"] = $"Error uploading attachment: {attachmentFile.FileName} is not a PDF. Only PDF files can be uploaded.";
+                    return View(job);
+                }
+
                 try
                 {
                     string filePath = await _azureBlobUploader.UploadFileAsync(attachmentFile, attachmentFile.FileName);
@@ -105,6 +111,12 @@ namespace PC2.Controllers
 
             if (attachmentFile != null)
             {
+                if (!PdfFileValidator.IsPdf(attachmentFile))
+                {
+                    TempData["Message"] = $"Error uploading attachment: {attachmentFile.FileName} is not a PDF. Only PDF files can be uploaded.";
+                    return View(job);
+                }
+
                 try
                 {
                     // Remove the old attachment from blob storage when it is being replaced
