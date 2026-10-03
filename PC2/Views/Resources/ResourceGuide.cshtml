@@ -1,7 +1,24 @@
 ﻿@model PC2.Models.ResourceGuideModel
 
 @section Head {
+    <style>
+        /* Second-level headings that keep the look of the page title */
+        h2.section-title {
+            font-size: 1.5em;
+            text-align: center;
+            margin-bottom: .5rem;
+        }
 
+        /* Was #agencyName2 in site.css; a class because it repeats for every result */
+        .agency-name2 {
+            font-size: .9em;
+            color: rgb(41, 41, 41);
+        }
+
+        div.results:hover .agency-name2 {
+            color: inherit;
+        }
+    </style>
 }
 
 @{
@@ -9,10 +26,10 @@
 }
 
 <div class="headerPic d-flex justify-content-center">
-    <img src=~/images/resource/resource1.jpg />
-    <img src=~/images/resource/resource2.jpg />
-    <img src=~/images/resource/resource3.jpg />
-    <img src=~/images/resource/resource4.jpg />
+    <img src="~/images/resource/resource1.jpg" alt="" />
+    <img src="~/images/resource/resource2.jpg" alt="" />
+    <img src="~/images/resource/resource3.jpg" alt="" />
+    <img src="~/images/resource/resource4.jpg" alt="" />
 </div>
 
 <br />
@@ -21,8 +38,8 @@
 
 <div class="divider"></div>
 <div class="headerPic d-flex justify-content-center">
-    <img src="~/images/resource/2020 guide_cover.jpg" />
-    <img src="~/images/resource/2020 guide_cover2.jpg" />
+    <img src="~/images/resource/2020 guide_cover.jpg" alt="Cover of the Pierce County Resource Guide, 11th Edition" />
+    <img src="~/images/resource/2020 guide_cover2.jpg" alt="Back cover of the Resource Guide: funded by Pierce County Human Services, Developmental Disabilities Program; prepared and produced by PC2; printed by Print Solutions, Inc., Tacoma, Washington" />
 </div>
 
 <div>
@@ -31,7 +48,7 @@
     <p class="text-center">Who Experience Intellectual/Developmental Disabilities</p>
     <p class="text-center">(section links below).</p>
     <br />
-    <p class="text-center">Please call our office at <a href="tel: +2535640707">253.564.0707</a> to make arrangements to pick up your copy!</p>
+    <p class="text-center">Please call our office at <a href="tel:+12535640707">253.564.0707</a> to make arrangements to pick up your copy!</p>
 </div>
 <br />
 
@@ -70,7 +87,7 @@
 </div>
 
 <div class="divider"></div>
-<h1>SEARCH FOR A RESOURCE</h1>
+<h2 class="section-title">SEARCH FOR A RESOURCE</h2>
 <div class="divider"></div>
 <br />
 
@@ -141,7 +158,7 @@
 @if (Model.Agencies.Count == 0 && userPerformedSearch)
 {
     <div class="alert alert-danger" id="results">
-        <h4 class="alert-heading">There are no results for your search</h4>
+        <h2 class="alert-heading h4 fw-bold" tabindex="-1">There are no results for your search</h2>
     </div>
 }
 
@@ -188,7 +205,7 @@ else
     <div id="results" class="container">
         
         <div class="row">
-        <h1>
+        <h2 class="section-title" tabindex="-1">
             @if (Model.Category != null && Model.CurrentCity != null)
             {
                 @: @Model.Category.AgencyCategoryName - @Model.CurrentCity
@@ -201,7 +218,11 @@ else
             {
                 @: @Model.CurrentCity
             }
-        </h1>
+            else
+            {
+                @: Search Results
+            }
+        </h2>
     </div>
         <div id="scrollResults" class="container">
             @for (int i = 0; i < Model.Agencies.Count; i++)
@@ -215,7 +236,7 @@ else
                         }
                         @if (Model.Agencies[i].AgencyName2 != null)
                         {
-                            <p id="agencyName2"> @Model.Agencies[i].AgencyName2 </p>
+                            <p class="agency-name2"> @Model.Agencies[i].AgencyName2 </p>
                         }
                     </div>
                     <div class="col-md-5 col-9">
@@ -238,14 +259,14 @@ else
 
                     <div class="col-md-1 col-2">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailsModal-@i">
-                                Details
+                                Details<span class="visually-hidden"> for @Model.Agencies[i].AgencyName</span>
                             </button>
 
-                            <div class="modal fade" id="detailsModal-@i" data-bs-keyboard="false" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true" style="color: black">
+                            <div class="modal fade" id="detailsModal-@i" tabindex="-1" aria-labelledby="detailsModalLabel-@i" aria-hidden="true" style="color: black">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="detailsModalLabel">@Model.Agencies[i].AgencyName</h1>
+                                            <h2 class="modal-title fs-5" id="detailsModalLabel-@i">@Model.Agencies[i].AgencyName</h2>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
@@ -271,7 +292,21 @@ else
 
 @section Scripts{
     <script>
-            window.scrollTo(0, $("#results").offset().top);
+        // After a search, scroll to the results and move focus to their heading so
+        // keyboard and screen reader users know the results have loaded.
+        (function () {
+            const results = document.getElementById("results");
+            if (!results) {
+                return;
+            }
+
+            window.scrollTo(0, results.getBoundingClientRect().top + window.scrollY);
+
+            const heading = results.querySelector("[tabindex='-1']");
+            if (heading) {
+                heading.focus({ preventScroll: true });
+            }
+        })();
     </script>
 
     @if (showFeedbackForm)

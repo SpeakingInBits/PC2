@@ -6,12 +6,13 @@
 
 <h1>@ViewData["Title"]</h1>
 @{
-    bool hasTempData = TempData["Message"] != null;
+    string? message = TempData["Message"] as string;
     
-    if(hasTempData)
+    if(message != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Message"]
+        bool isError = message.StartsWith("Error");
+        <div class="alert @(isError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="@(isError ? "alert" : "status")">
+            @message
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
@@ -21,9 +22,10 @@
     <div class="col-md-4">
         <form asp-action="UploadNewsletter" enctype="multipart/form-data" method="post">
             <div class="form-group">
-                <input type="file" name="userFile" id="userFile" onchange="checkFileSize()" />
-                <span id="fileSizeError" class="text-danger"></span>
-                <span class="text-danger"></span>               
+                <label for="userFile" class="control-label">Newsletter file</label>
+                <input type="file" name="userFile" id="userFile" onchange="checkFileSize()" aria-describedby="userFileHelp fileSizeError" />
+                <small id="userFileHelp" class="form-text text-muted d-block">Usually a PDF. Maximum size: 50 MB.</small>
+                <span id="fileSizeError" class="text-danger" role="alert"></span>
             </div>
             <br />
             <div class="form-group">
@@ -36,10 +38,10 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.Name)
             </th>
-            <th></th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
         </tr>
     </thead>
     <tbody>
@@ -50,8 +52,8 @@
                     <a href="@Model.ElementAt(i).Location" target="_blank">@Model.ElementAt(i).Name</a>
                 </td>
                 <td>
-                    <a asp-action="DeleteNewsletter" asp-route-id="@Model.ElementAt(i).NewsletterId">Delete</a> |
-                    <a asp-action="RenameNewsletter" asp-route-id="@Model.ElementAt(i).NewsletterId">Rename</a>
+                    <a asp-action="DeleteNewsletter" asp-route-id="@Model.ElementAt(i).NewsletterId">Delete<span class="visually-hidden"> @Model.ElementAt(i).Name</span></a> |
+                    <a asp-action="RenameNewsletter" asp-route-id="@Model.ElementAt(i).NewsletterId">Rename<span class="visually-hidden"> @Model.ElementAt(i).Name</span></a>
                 </td>
             </tr>
         }

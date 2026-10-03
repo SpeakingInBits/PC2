@@ -4,6 +4,12 @@
 }
 @section Head{
     <style>
+        /* Matches the #content layout rules this wrapper used to inherit (the id is now unique) */
+        #about-content {
+            width: min(100%, calc(75% + 80px));
+            margin: 0 auto 50px auto;
+        }
+
         .aboutUS {
             font-size: 15px;
             text-align: center;
@@ -51,7 +57,7 @@
     </style>
 }
 
-<div id="content" class="people-list">
+<div id="about-content" class="people-list">
     <h1 class="text-center">@ViewData["Title"]</h1>
     <div class="divider"></div>
 
@@ -85,7 +91,7 @@
                     <div class="card h-100 text-center border-0 shadow-sm">
                         <div class="card-body d-flex flex-column">
                             <img src="@staff.ImageUrl" alt="@(string.IsNullOrEmpty(staff.Title) ? staff.Name : staff.Name + ", " + staff.Title)" class="person-avatar rounded mx-auto mb-3 border" />
-                            <h5 class="card-title mb-2">@staff.Name</h5>
+                            <h3 class="card-title h5 fw-bold mb-2">@staff.Name</h3>
                             @if (!string.IsNullOrEmpty(staff.Title))
                             {
                                 <p class="card-text fw-bold text-muted mb-2">@staff.Title</p>
@@ -115,7 +121,7 @@
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">Additional Staff Members</h5>
+                        <h3 class="h5 fw-bold mb-0">Additional Staff Members</h3>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -162,7 +168,7 @@
                     <div class="card h-100 text-center border-0 shadow-sm">
                         <div class="card-body d-flex flex-column">
                             <img src="@board.ImageUrl" alt="@board.Name" class="person-avatar rounded-circle mx-auto mb-3 border" />
-                            <h5 class="card-title mb-2">@board.Name</h5>
+                            <h3 class="card-title h5 fw-bold mb-2">@board.Name</h3>
                             @if (!string.IsNullOrEmpty(board.Title))
                             {
                                 <p class="card-text fw-bold text-muted mb-2">@board.Title</p>
@@ -181,7 +187,7 @@
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">@(Model.Board.Any(b => !string.IsNullOrEmpty(b.ImageUrl)) ? "Additional Board Members" : "Board Members")</h5>
+                        <h3 class="h5 fw-bold mb-0">@(Model.Board.Any(b => !string.IsNullOrEmpty(b.ImageUrl)) ? "Additional Board Members" : "Board Members")</h3>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -222,7 +228,7 @@
                         <div class="card h-100 text-center border-0 shadow-sm">
                             <div class="card-body d-flex flex-column">
                                 <img src="@member.ImageUrl" alt="@member.Name" class="person-avatar rounded-circle mx-auto mb-3 border" />
-                                <h5 class="card-title mb-2">@member.Name</h5>
+                                <h3 class="card-title h5 fw-bold mb-2">@member.Name</h3>
                                 @if (!string.IsNullOrEmpty(member.Title))
                                 {
                                     <p class="card-text fw-bold text-muted mb-0">@member.Title</p>
@@ -240,7 +246,7 @@
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0">@(Model.SteeringCommittee.Any(sc => !string.IsNullOrEmpty(sc.ImageUrl)) ? "Additional Steering Committee Members" : "Steering Committee Members")</h5>
+                            <h3 class="h5 fw-bold mb-0">@(Model.SteeringCommittee.Any(sc => !string.IsNullOrEmpty(sc.ImageUrl)) ? "Additional Steering Committee Members" : "Steering Committee Members")</h3>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">

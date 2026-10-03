@@ -10,34 +10,40 @@ public class CalendarEvent : IComparable<CalendarEvent>
     /// <summary>
     /// Day the event is taking place
     /// </summary>
+    [Display(Name = "Date of event")]
     public DateOnly DateOfEvent { get; set; }
 
     /// <summary>
     /// Start time of the event
     /// </summary>
+    [Display(Name = "Starting time")]
     [Required]
     public TimeOnly StartingTime {  get; set; }
 
     /// <summary>
     /// End time of the event
     /// </summary>
+    [Display(Name = "Ending time")]
     [Required]
     public TimeOnly EndingTime {  get; set; }
 
     /// <summary>
     /// Description of the Event
     /// </summary>
+    [Display(Name = "Description")]
     [Required]
     public string EventDescription { get; set; } = null!;
 
     /// <summary>
     /// True if the event is a PC2 event
     /// </summary>
+    [Display(Name = "PC2 event")]
     public bool PC2Event {  get; set; }
 
     /// <summary>
     /// True if the event is a county event
     /// </summary>
+    [Display(Name = "County event")]
     public bool CountyEvent {  get; set; }
 
     // Convert DateOnly and TimeOnly to DateTime
@@ -73,18 +79,21 @@ public class CalendarCreateEventViewModel : IValidatableObject
     /// <summary>
     /// The date of the event
     /// </summary>
+    [Display(Name = "Date of event")]
     [DataType(DataType.Date)]
     public DateTime DateOfEvent { get; set; }
 
     /// <summary>
     /// Time the event starts
     /// </summary>
+    [Display(Name = "Starting time")]
     [Required]
     public string StartingTime { get; set; } = null!;
 
     /// <summary>
     /// Time the event ends
     /// </summary>
+    [Display(Name = "Ending time")]
     [Required]
     public string EndingTime { get; set; } = null!;
 
@@ -97,11 +106,13 @@ public class CalendarCreateEventViewModel : IValidatableObject
     /// <summary>
     /// Is the event a PC2 sponsored event
     /// </summary>
+    [Display(Name = "PC2 event")]
     public bool IsPc2Event { get; set; }
 
     /// <summary>
     /// Is the event a county sponsored event
     /// </summary>
+    [Display(Name = "County event")]
     public bool IsCountyEvent { get; set; }
 
     /// <summary>

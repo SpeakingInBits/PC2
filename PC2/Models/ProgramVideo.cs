@@ -23,6 +23,7 @@ namespace PC2.Models
         /// The YouTube video ID (e.g. "tRadgduogZg")
         /// </summary>
         [Required]
+        [Display(Name = "YouTube Video ID")]
         public string YouTubeVideoId { get; set; } = null!;
 
         /// <summary>

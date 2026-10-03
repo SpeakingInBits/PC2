@@ -1,5 +1,16 @@
 ﻿@using PC2.Data
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@functions {
+    /// <summary>
+    /// Marks the menu link for the current page so screen readers announce it.
+    /// Returning null leaves the aria-current attribute off the link.
+    /// </summary>
+    private string? AriaCurrent(string controller, string action) =>
+        string.Equals(controller, ViewContext.RouteData.Values["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase)
+        && string.Equals(action, ViewContext.RouteData.Values["action"]?.ToString(), StringComparison.OrdinalIgnoreCase)
+            ? "page"
+            : null;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,21 +33,6 @@
     <link rel="stylesheet" href="~/sass/customBootStrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <style>
-        @{
-            string currController = ViewContext.RouteData.Values["controller"]?.ToString();
-            string currAction = ViewContext.RouteData.Values["action"]?.ToString();
-        }
-
-        @* Sets menu item text for the current page to white*@
-        #@currController-@currAction > a {
-            color:white !important;
-        }
-
-        @* Prevents menu item background from being highlighted for the current page*@
-        #@currController-@currAction {
-            background-color: rgba(91, 118, 35, 1) !important;
-        }
-
         /*Prevents floated elements from overflowing ---------------------------------------------*/
         #content::after {
             display: block;
@@ -49,17 +45,19 @@
     @await RenderSectionAsync("Head", false)
 </head>
 <body id="bootstrap-override">
+    <a class="skip-link visually-hidden-focusable" href="#main-content">Skip to main content</a>
     <header>
         <div id="heading">
             <div id="pc2Logo">
                 <a asp-controller="Home" asp-action="Index">
-                    <img src="~/images/PC2-logo.jpg" alt="PC2 logo" />
+                    <img src="~/images/PC2-logo.jpg" alt="PC2 home page" />
                 </a>
             </div>
             <div id="mainTitle">
-                <h1>
+                @* Not an <h1> so each page can use its own <h1> for the page title *@
+                <p class="site-title">
                     <a class="name" asp-controller="Home" asp-action="Index">Pierce County Coalition for <br /> Developmental Disabilities (PC2)</a>
-                </h1>
+                </p>
             </div>
         </div>
         <nav class="navbar navbar-expand-lg navbar-dark border-bottom border-top box-shadow mb-3">
@@ -78,44 +76,44 @@
                 <div class="navbar-collapse collapse d-lg-inline-flex flex-lg-row-reverse" id="navbarSupportedContent">
                     <ul class="navbar-nav flex-grow-1">
                         <li id="Home-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" aria-current="@AriaCurrent("Home", "Index")">Home</a>
                         </li>
                         <li id="ProgramVideos-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-controller="ProgramVideos" asp-action="Index">Program Videos</a>
+                            <a class="nav-link" asp-controller="ProgramVideos" asp-action="Index" aria-current="@AriaCurrent("ProgramVideos", "Index")">Program Videos</a>
                         </li>
                         <li id="NewsToKnow-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-area="" asp-controller="NewsToKnow" asp-action="Index">News</a>
+                            <a class="nav-link" asp-area="" asp-controller="NewsToKnow" asp-action="Index" aria-current="@AriaCurrent("NewsToKnow", "Index")">News</a>
                         </li>
                         <li id="Events-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-controller="Events" asp-action="Index">Events</a>
+                            <a class="nav-link" asp-controller="Events" asp-action="Index" aria-current="@AriaCurrent("Events", "Index")">Events</a>
                         </li>
                         <li id="Resources-Index" class="nav-item menu-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Resources
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="resourcesDropdown">
-                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="Index">Resources</a></li>
-                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness">Disability Awareness</a></li>
-                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceLinks">Resource Links</a></li>
-                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="AgeSpecificIssues">Age-Specific Issues</a></li>
-                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="LegislativeLinksAndEvents">Legislative Links and Events</a></li>
-                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="EmergencyPreparedness">Emergency Preparedness</a></li>
-                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="VirtualCloset">Virtual Closet</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="Index" aria-current="@AriaCurrent("Resources", "Index")">Resources</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="DisabilityAwareness" aria-current="@AriaCurrent("Resources", "DisabilityAwareness")">Disability Awareness</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="ResourceLinks" aria-current="@AriaCurrent("Resources", "ResourceLinks")">Resource Links</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="AgeSpecificIssues" aria-current="@AriaCurrent("Resources", "AgeSpecificIssues")">Age-Specific Issues</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="LegislativeLinksAndEvents" aria-current="@AriaCurrent("Resources", "LegislativeLinksAndEvents")">Legislative Links and Events</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="EmergencyPreparedness" aria-current="@AriaCurrent("Resources", "EmergencyPreparedness")">Emergency Preparedness</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="VirtualCloset" aria-current="@AriaCurrent("Resources", "VirtualCloset")">Virtual Closet</a></li>
                             </ul>
                         </li>
                         <li id="Resource-Guide-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-controller="Resources" asp-action="ResourceGuide">Resource Guide</a>
+                            <a class="nav-link" asp-controller="Resources" asp-action="ResourceGuide" aria-current="@AriaCurrent("Resources", "ResourceGuide")">Resource Guide</a>
                         </li>
                         <li id="Newsletters-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-controller="Resources" asp-action="FocusNewsletters">Focus Newsletters</a>
+                            <a class="nav-link" asp-controller="Resources" asp-action="FocusNewsletters" aria-current="@AriaCurrent("Resources", "FocusNewsletters")">Focus Newsletters</a>
                         </li>
                         <li id="housing-program" class="nav-item menu-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="housingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Other Program Services
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="housingDropdown">
-                                <li><a class="dropdown-item" asp-controller="Home" asp-action="HousingProgram">PC2's Housing Program</a></li>
-                                <li><a class="dropdown-item" asp-controller="Home" asp-action="PersonCenteredPlanning">Person Centered Planning</a></li>
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="HousingProgram" aria-current="@AriaCurrent("Home", "HousingProgram")">PC2's Housing Program</a></li>
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="PersonCenteredPlanning" aria-current="@AriaCurrent("Home", "PersonCenteredPlanning")">Person Centered Planning</a></li>
                             </ul>
                         </li>
                         <li id="about-menu" class="nav-item menu-item dropdown">
@@ -123,15 +121,15 @@
                                 About Us
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="About">About Us</a></li>
-                                <li><a class="dropdown-item" asp-controller="Jobs" asp-action="Index">Job Opportunities</a></li>
-                                <li><a class="dropdown-item" asp-controller="Home" asp-action="ContactPage">Contact Us</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="About" aria-current="@AriaCurrent("Home", "About")">About Us</a></li>
+                                <li><a class="dropdown-item" asp-controller="Jobs" asp-action="Index" aria-current="@AriaCurrent("Jobs", "Index")">Job Opportunities</a></li>
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="ContactPage" aria-current="@AriaCurrent("Home", "ContactPage")">Contact Us</a></li>
                             </ul>
                         </li>
                         @if (User.IsInRole(IdentityHelper.Admin) || User.IsInRole(IdentityHelper.Staff))
                         {
                             <li class="nav-item menu-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="Dashboard">Admin Pages</a>
+                                <a class="nav-link" asp-controller="Home" asp-action="Dashboard" aria-current="@AriaCurrent("Home", "Dashboard")">Admin Pages</a>
                             </li>
                         }
                     </ul>
@@ -141,7 +139,7 @@
     </header>
     <div class="container">
         <div id="content">
-            <main role="main" class="pb-3">
+            <main id="main-content" tabindex="-1" class="pb-3">
                 @RenderBody()
             </main>
         </div>
@@ -150,9 +148,9 @@
     <footer class="footer">
         <div class="footer-column">
             <div class="footer-item" id="footer-phone">
-                <a href="tel: +2535640707"><p class="text-white">253.564.0707</p></a>
-                <a href="tel: +8773354657"><p class="text-white">877.335.4657</p></a>
-                <a href="mailto:info@pc2online.org"><p class="text-white">info@pc2online.org</p></a>
+                <a href="tel:+12535640707">253.564.0707</a>
+                <a href="tel:+18773354657">877.335.4657</a>
+                <a href="mailto:info@pc2online.org">info@pc2online.org</a>
             </div>
 
             <div class="footer-item" id="footer-address">
@@ -170,16 +168,16 @@
                 <p>&copy; @DateTime.Now.Year by PC2 for DD</p>
             </div>
             <div class="footer-item" id="footer-social-media">
-                <a href="https://www.instagram.com/pc2_4dd/" target="_blank" aria-label="Open Instagram page">
-                    <img src="~/images/instagram-logo.svg" width="30" height="30" alt="Instagram logo" />
+                <a href="https://www.instagram.com/pc2_4dd/" target="_blank" rel="noopener" aria-label="PC2 on Instagram">
+                    <img src="~/images/instagram-logo.svg" width="30" height="30" alt="" />
                 </a>
-                <a href="https://www.facebook.com/PCCDD" target="_blank" aria-label="Open Facebook page">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                <a href="https://www.facebook.com/PCCDD" target="_blank" rel="noopener" aria-label="PC2 on Facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
                         <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
                     </svg>
                 </a>
-                <a href="https://www.linkedin.com/company/pierce-county-coalition-for-developmental-disabilities-pc2/" target="_blank" aria-label="Open LinkedIn page">
-                    <img src="~/images/linkedin-logo.png" height="30" alt="LinkedIn logo" />
+                <a href="https://www.linkedin.com/company/pierce-county-coalition-for-developmental-disabilities-pc2/" target="_blank" rel="noopener" aria-label="PC2 on LinkedIn">
+                    <img src="~/images/linkedin-logo.png" height="30" alt="" />
                 </a>
             </div>
         </div>

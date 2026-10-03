@@ -28,33 +28,35 @@
 <!-- Copy to Clipboard Button -->
 <div class="mb-3">
     <button type="button" class="btn btn-success" id="copyToClipboardBtn" onclick="copyAnalyticsToClipboard()">
-        <i class="bi bi-clipboard-check me-2"></i>Copy Analytics Report to Clipboard
+        <i class="bi bi-clipboard-check me-2" aria-hidden="true"></i>Copy Analytics Report to Clipboard
     </button>
-    <span id="copySuccess" class="text-success ms-2" style="display: none;">
-        <i class="bi bi-check-circle-fill"></i> Copied to clipboard!
+    <span role="status" class="ms-2">
+        <span id="copySuccess" class="text-success" style="display: none;">
+            <i class="bi bi-check-circle-fill" aria-hidden="true"></i> Copied to clipboard!
+        </span>
     </span>
 </div>
 
 @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
 {
     <div class="alert alert-danger" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>
         @ViewBag.ErrorMessage
     </div>
 }
 
 @if (!string.IsNullOrEmpty(ViewBag.InfoMessage))
 {
-    <div class="alert alert-warning" role="alert">
-        <i class="bi bi-info-circle-fill me-2"></i>
+    <div class="alert alert-warning" role="status">
+        <i class="bi bi-info-circle-fill me-2" aria-hidden="true"></i>
         @ViewBag.InfoMessage
     </div>
 }
 
 <!-- Date Filter Section -->
 <div class="card mb-4">
-    <div class="card-header bg-secondary text-white">
-        <h5 class="mb-0"><i class="bi bi-funnel-fill me-2"></i>Filter Analytics Data</h5>
+    <div class="card-header bg-secondary text-dark">
+        <h2 class="h5 mb-0"><i class="bi bi-funnel-fill me-2" aria-hidden="true"></i>Filter Analytics Data</h2>
     </div>
     <div class="card-body">
         <form method="get" asp-action="Analytics" id="filterForm">
@@ -65,13 +67,13 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link text-dark" id="date-range-tab" data-bs-toggle="tab" data-bs-target="#date-range" 
                                     type="button" role="tab" aria-controls="date-range" aria-selected="false">
-                                <i class="bi bi-calendar-range me-1"></i>Date Range
+                                <i class="bi bi-calendar-range me-1" aria-hidden="true"></i>Date Range
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active text-dark" id="month-year-tab" data-bs-toggle="tab" data-bs-target="#month-year" 
                                     type="button" role="tab" aria-controls="month-year" aria-selected="true">
-                                <i class="bi bi-calendar-month me-1"></i>Month & Year
+                                <i class="bi bi-calendar-month me-1" aria-hidden="true"></i>Month & Year
                             </button>
                         </li>
                     </ul>
@@ -99,7 +101,7 @@
                         <div class="col-md-2 d-flex align-items-end">
                             <div class="mb-3 w-100">
                                 <button type="submit" class="btn btn-primary w-100" onclick="clearMonthYear()">
-                                    <i class="bi bi-search me-1"></i>Filter
+                                    <i class="bi bi-search me-1" aria-hidden="true"></i>Filter
                                 </button>
                             </div>
                         </div>
@@ -144,7 +146,7 @@
                         <div class="col-md-2 d-flex align-items-end">
                             <div class="mb-3 w-100">
                                 <button type="submit" class="btn btn-primary w-100" onclick="clearDateRange()">
-                                    <i class="bi bi-search me-1"></i>Filter
+                                    <i class="bi bi-search me-1" aria-hidden="true"></i>Filter
                                 </button>
                             </div>
                         </div>
@@ -169,7 +171,7 @@
         @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
         {
             <div class="alert alert-info mt-3 mb-0">
-                <i class="bi bi-info-circle me-2"></i>
+                <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
                 Showing data from <strong>@Model.StartDate.Value.ToString("MMM dd, yyyy")</strong> to <strong>@Model.EndDate.Value.ToString("MMM dd, yyyy")</strong>
             </div>
         }
@@ -180,8 +182,8 @@
     <div class="col-md-4">
         <div class="card text-white bg-primary mb-3">
             <div class="card-body">
-                <h5 class="card-title">Total Page Views</h5>
-                <h2 class="display-4">@Model.TotalPageViews</h2>
+                <h2 class="h5 card-title">Total Page Views</h2>
+                <p class="display-4 mb-0">@Model.TotalPageViews</p>
                 <p class="card-text">
                     @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
                     {
@@ -195,8 +197,8 @@
     <div class="col-md-4">
         <div class="card text-white bg-success mb-3">
             <div class="card-body">
-                <h5 class="card-title">PDF Downloads</h5>
-                <h2 class="display-4">@Model.TotalPdfDownloads</h2>
+                <h2 class="h5 card-title">PDF Downloads</h2>
+                <p class="display-4 mb-0">@Model.TotalPdfDownloads</p>
                 <p class="card-text">
                     @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
                     {
@@ -208,10 +210,10 @@
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card text-white bg-info mb-3">
+        <div class="card text-dark bg-info mb-3">
             <div class="card-body">
-                <h5 class="card-title">Total Searches</h5>
-                <h2 class="display-4">@Model.TotalSearches</h2>
+                <h2 class="h5 card-title">Total Searches</h2>
+                <p class="display-4 mb-0">@Model.TotalSearches</p>
                 <p class="card-text">
                     @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
                     {
@@ -223,10 +225,10 @@
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card text-white bg-warning mb-3">
+        <div class="card text-dark bg-warning mb-3">
             <div class="card-body">
-                <h5 class="card-title">Unique Visitors</h5>
-                <h2 class="display-4">@Model.TotalUniqueUsers</h2>
+                <h2 class="h5 card-title">Unique Visitors</h2>
+                <p class="display-4 mb-0">@Model.TotalUniqueUsers</p>
                 <p class="card-text">
                     @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
                     {
@@ -242,7 +244,7 @@
 <!-- Page Views Section -->
 <div class="card mb-4">
     <div class="card-header bg-primary text-white">
-        <h3 class="mb-0"><i class="bi bi-eye-fill me-2"></i>Top Page Views</h3>
+        <h2 class="h3 mb-0"><i class="bi bi-eye-fill me-2" aria-hidden="true"></i>Top Page Views</h2>
     </div>
     <div class="card-body">
         @if (Model.PageViews.Any())
@@ -272,7 +274,7 @@
         else
         {
             <div class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i>
+                <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
                 No page view data available for the selected date range.
             </div>
         }
@@ -282,7 +284,7 @@
 <!-- PDF Downloads Section -->
 <div class="card mb-4">
     <div class="card-header bg-success text-white">
-        <h3 class="mb-0"><i class="bi bi-file-earmark-pdf-fill me-2"></i>PDF Downloads</h3>
+        <h2 class="h3 mb-0"><i class="bi bi-file-earmark-pdf-fill me-2" aria-hidden="true"></i>PDF Downloads</h2>
     </div>
     <div class="card-body">
         @if (Model.PdfDownloads.Any())
@@ -301,7 +303,7 @@
                         {
                             <tr>
                                 <td>
-                                    <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                                    <i class="bi bi-file-earmark-pdf text-danger me-2" aria-hidden="true"></i>
                                     @download.FileName
                                 </td>
                                 <td>
@@ -319,7 +321,7 @@
         else
         {
             <div class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i>
+                <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
                 No PDF download data available for the selected date range.
             </div>
         }
@@ -328,8 +330,8 @@
 
 <!-- Search Terms Section -->
 <div class="card mb-4">
-    <div class="card-header bg-info text-white">
-        <h3 class="mb-0"><i class="bi bi-search me-2"></i>Resource Guide Search Terms</h3>
+    <div class="card-header bg-info text-dark">
+        <h2 class="h3 mb-0"><i class="bi bi-search me-2" aria-hidden="true"></i>Resource Guide Search Terms</h2>
     </div>
     <div class="card-body">
         @if (Model.SearchTerms.Any())
@@ -348,11 +350,11 @@
                         {
                             <tr>
                                 <td>
-                                    <span class="badge bg-secondary">@search.SearchType</span>
+                                    <span class="badge bg-secondary text-dark">@search.SearchType</span>
                                 </td>
                                 <td>@search.SearchTerm</td>
                                 <td class="text-end">
-                                    <span class="badge bg-info rounded-pill">@search.SearchCount</span>
+                                    <span class="badge bg-info text-dark rounded-pill">@search.SearchCount</span>
                                 </td>
                             </tr>
                         }
@@ -363,7 +365,7 @@
         else
         {
             <div class="alert alert-info">
-                <i class="bi bi-info-circle me-2"></i>
+                <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
                 No search data available for the selected date range.
             </div>
         }
@@ -371,11 +373,11 @@
 </div>
 
 <div class="alert alert-secondary">
-    <i class="bi bi-info-circle-fill me-2"></i>
+    <i class="bi bi-info-circle-fill me-2" aria-hidden="true"></i>
     <strong>Note:</strong> Analytics data is retrieved from Azure Application Insights.
     Data is updated in near real-time and may take a few minutes to appear after events occur.
     <br />
-    <i class="bi bi-shield-check me-2"></i>
+    <i class="bi bi-shield-check me-2" aria-hidden="true"></i>
     <strong>Bot Filtering:</strong> All metrics exclude bot traffic and synthetic tests, showing only real human users.
 </div>
 

@@ -6,29 +6,34 @@
 <div class="divider"></div>
 <br />
 
-<div asp-validation-summary="All" class="text-danger"></div>
+<div asp-validation-summary="All" class="text-danger" role="alert"></div>
 
 <div class="row">
     <div class="col-md-5">
         <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
             <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required />
+                <label for="email" class="form-label">Email</label><span class="text-danger" aria-hidden="true"> *</span>
+                <input type="email" class="form-control" id="email" name="email" autocomplete="off" required />
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required />
-                <div class="form-text">
+                <label for="password" class="form-label">Password</label><span class="text-danger" aria-hidden="true"> *</span>
+                <input type="password" class="form-control" id="password" name="password" autocomplete="new-password" aria-describedby="passwordHelp" required />
+                <div class="form-text" id="passwordHelp">
                     Password must be at least 8 characters and contain uppercase, lowercase, digit, and special character.
                 </div>
             </div>
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-person-plus-fill me-2"></i>Create Staff User
+                    <i class="bi bi-person-plus-fill me-2" aria-hidden="true"></i>Create Staff User
                 </button>
                 <a asp-action="Index" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

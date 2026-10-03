@@ -35,8 +35,9 @@ a {
 
 /* Sticky footer styles
 -------------------------------------------------- */
+/* Percentages respect the visitor's browser font size setting (87.5% of the default 16px = 14px) */
 html {
-    font-size: 14px;
+    font-size: 87.5%;
 }
 
 .border-top {
@@ -83,8 +84,37 @@ body {
     font-size: 16px;
 }
 
+/* Contains floated content without clipping anything that is wider than the screen */
 main {
-    overflow: hidden;
+    display: flow-root;
+}
+
+main iframe, main video {
+    max-width: 100%;
+}
+
+/* Lets the rows of banner photos shrink to fit small screens instead of overflowing.
+   object-fit crops slightly rather than squashing the photos. */
+main .d-flex > img {
+    min-width: 0;
+    object-fit: cover;
+}
+
+/* main receives focus from the skip link, it doesn't need an outline */
+#main-content:focus {
+    outline: none;
+}
+
+.skip-link:focus {
+    position: absolute;
+    top: .5rem;
+    left: .5rem;
+    z-index: 1050;
+    padding: .5rem 1rem;
+    background-color: #fff;
+    color: rgba(18, 66, 35, 1);
+    font-weight: bold;
+    outline: 3px solid rgba(18, 66, 35, 1);
 }
 
 .footer-item {
@@ -110,6 +140,23 @@ main {
 
 #footer-social-media {
     flex-direction: row;
+}
+
+#bootstrap-override .footer a {
+    color: #fff;
+}
+
+#bootstrap-override .footer a:focus-visible, #bootstrap-override .footer button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* Padding gives each link a tall enough tap target */
+#footer-phone a {
+    display: block;
+    padding: 3px 0;
+    text-align: center;
+    line-height: 1.3em;
 }
 
 #footer-social-media a {
@@ -139,9 +186,10 @@ main {
     margin: auto;
 }
 
-#mainTitle h1 {
+#mainTitle .site-title {
     margin-bottom: 0;
     font-size: 2.5rem;
+    line-height: 1.2;
 }
 
 #mainTitle a {
@@ -206,7 +254,6 @@ nav .container {
     /*font-size: 19px;*/
     border: none;
     border-radius: 0;
-    outline: none;
     padding-inline: 0;
 }
 
@@ -240,12 +287,18 @@ nav .container {
     box-shadow: none;
 }
 
+#bootstrap-override .navbar-toggler:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: -3px;
+}
+
 #bootstrap-override .menu-item a {
     font-size: 17px;
 }
 
-/*text color transition when hovered*/
-#bootstrap-override .menu-item:hover > a {
+/*text color transition when hovered or focused with the keyboard*/
+#bootstrap-override .menu-item:hover > a,
+#bootstrap-override .menu-item:focus-within > a {
     color: black;
     transition: color .4s ease 0s;
 }
@@ -257,16 +310,40 @@ nav .container {
     align-items: center;
 }
 
-/*background color transition when hovered*/
-.menu-item:hover {
+/*background color transition when hovered or focused with the keyboard*/
+.menu-item:hover, .menu-item:focus-within {
     background-color: rgba(180, 204, 132, 1);
     transition: background-color .4s ease 0s;
 }
 
 /*changes text color to provide contrast*/
-.nav-link:hover {
+.nav-link:hover, .menu-item:focus-within > .nav-link {
     color: black !important;
     transition: background-color .4s ease 0s;
+}
+
+#bootstrap-override nav a:focus-visible {
+    outline: 2px solid #000;
+    outline-offset: -2px;
+}
+
+/*Highlights the menu item for the current page, unless it's being hovered or focused*/
+#bootstrap-override .menu-item:has([aria-current="page"]):not(:hover):not(:focus-within) {
+    background-color: rgba(91, 118, 35, 1);
+}
+
+/*Underline marks the current page without relying on color alone*/
+#bootstrap-override .menu-item a[aria-current="page"] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+
+/*Bootstrap's light hover background is unreadable with the white menu text*/
+#bootstrap-override .dropdown-menu .dropdown-item:hover,
+#bootstrap-override .dropdown-menu .dropdown-item:focus {
+    color: black;
+    background-color: rgba(180, 204, 132, 1);
 }
 
 nav a {
@@ -383,7 +460,7 @@ nav a {
 /*min-width should match the breakpoint for <nav>*/
 @media only screen and (min-width: 992px) {
     html {
-        font-size: 16px;
+        font-size: 100%;
     }
 
     #menu-bar * {
@@ -423,9 +500,15 @@ h2 {
     margin: 0;
 }
 
-#content a {
+/* Buttons made from links keep Bootstrap's button colors */
+#content a:not(.btn) {
     color: inherit;
     text-decoration: underline;
+}
+
+/* Extra line height so links on consecutive lines are far enough apart to tap (WCAG 2.5.8) */
+.spaced-links, .spaced-links p {
+    line-height: 1.8;
 }
 
 main p {
@@ -433,7 +516,7 @@ main p {
     margin-bottom: 0;
 }
 
-#agencyName2 {
+#agencyName2, .agency-name2 {
     font-size: .9em;
     color: rgb(41, 41, 41);
 }
@@ -469,7 +552,8 @@ main p {
 }
 
 #content {
-    width: calc(75% + 80px);
+    /* min() stops the extra 80px from making content wider than very small screens */
+    width: min(100%, calc(75% + 80px));
     margin: 0 auto 50px auto;
 }
 
@@ -515,9 +599,19 @@ li {
 div.results:nth-child(even) {
     background-color: #f2f2f2;
 }
-div.results:hover, div.results:hover #agencyName2 {
-    color: white;
+div.results:hover, div.results:hover #agencyName2, div.results:hover .agency-name2 {
+    color: black;
     background-color: #88b235;
+}
+
+/* The secondary brand green (#88b235) is too light for text on white (2.5:1),
+   so text uses the darker primary green instead (5.2:1) */
+.text-secondary {
+    color: #5b7623 !important;
+}
+
+.btn-outline-secondary {
+    color: #5b7623;
 }
 
 #scrollResults {

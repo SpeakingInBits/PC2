@@ -10,35 +10,36 @@
 <div class="row">
     <div class="col-md-6">
         <form asp-action="EditVideo" enctype="multipart/form-data" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
             <input type="hidden" asp-for="ProgramVideoId" />
             <input type="hidden" asp-for="PdfLocation" />
             <input type="hidden" asp-for="PdfName" />
 
             <div class="form-group mb-3">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
+                <label asp-for="Title" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="Title" class="form-control" aria-required="true" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="YouTubeVideoId" class="control-label"></label>
-                <input asp-for="YouTubeVideoId" class="form-control" id="youTubeVideoId" />
+                <label for="youTubeVideoId" class="control-label">@Html.DisplayNameFor(model => model.YouTubeVideoId)</label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="YouTubeVideoId" class="form-control" id="youTubeVideoId" aria-required="true" aria-describedby="youTubeVideoIdHelp" />
                 <span asp-validation-for="YouTubeVideoId" class="text-danger"></span>
-                <small class="form-text text-muted">Enter the YouTube video ID or paste a full YouTube URL — the ID will be extracted automatically.</small>
+                <small class="form-text text-muted" id="youTubeVideoIdHelp">Enter the YouTube video ID or paste a full YouTube URL — the ID will be extracted automatically.</small>
             </div>
 
             <div class="form-group mb-3">
-                <label class="control-label">PDF Attachment</label>
+                <label for="pdfFile" class="control-label">PDF Attachment</label>
                 @if (!string.IsNullOrEmpty(Model.PdfLocation))
                 {
                     <p>
                         Current: <a href="@Model.PdfLocation" target="_blank">@Model.PdfName</a>
                     </p>
                 }
-                <input type="file" name="pdfFile" id="pdfFile" accept=".pdf" onchange="checkFileSize()" class="form-control" />
-                <span id="fileSizeError" class="text-danger"></span>
-                <small class="form-text text-muted">Upload a new PDF to replace the existing attachment, or leave blank to keep the current one.</small>
+                <input type="file" name="pdfFile" id="pdfFile" accept=".pdf" onchange="checkFileSize()" class="form-control" aria-describedby="fileSizeError pdfFileHelp" />
+                <span id="fileSizeError" class="text-danger" role="alert"></span>
+                <small class="form-text text-muted" id="pdfFileHelp">Upload a new PDF to replace the existing attachment, or leave blank to keep the current one.</small>
             </div>
 
             <div class="form-group">

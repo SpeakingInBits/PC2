@@ -13,11 +13,11 @@
         <li>
             <p>
                 Download a two-factor authenticator app like Microsoft Authenticator for
-                <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> and
-                <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> or
+                <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android<span class="visually-hidden"> (Microsoft Authenticator)</span></a> and
+                <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS<span class="visually-hidden"> (Microsoft Authenticator)</span></a> or
                 Google Authenticator for
-                <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and
-                <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
+                <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android<span class="visually-hidden"> (Google Authenticator)</span></a> and
+                <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS<span class="visually-hidden"> (Google Authenticator)</span></a>.
             </p>
         </li>
         <li>
@@ -33,13 +33,13 @@
             <div class="row">
                 <div class="col-md-6">
                     <form id="send-code" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                         <div class="form-floating">
-                            <input asp-for="Input.Code" class="form-control" autocomplete="off" />
+                            <input asp-for="Input.Code" class="form-control" autocomplete="one-time-code" inputmode="numeric" aria-required="true" />
                             <label asp-for="Input.Code" class="control-label form-label">Verification Code</label>
                             <span asp-validation-for="Input.Code" class="text-danger"></span>
                         </div>
                         <button type="submit" class="w-100 btn btn-lg btn-primary">Verify</button>
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     </form>
                 </div>
             </div>

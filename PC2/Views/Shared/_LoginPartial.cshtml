@@ -15,11 +15,12 @@
             <a class="nav-link text-dark" asp-controller="Home" asp-action="Dashboard">Admin Pages</a>
         </p>
     }
-    <p>
+    @* A <form> can't be inside a <p>, so a div is used here *@
+    <div>
         <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
             <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
         </form>
-    </p>
+    </div>
 }
 else
 {

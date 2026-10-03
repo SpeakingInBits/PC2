@@ -6,26 +6,27 @@
     List<AgencyCategory> newAgencyCategories = (List<AgencyCategory>)ViewData["Categories"];
 }
 
+<h1>Edit @Model.AgencyName</h1>
+
 @if (TempData["EditSuccess"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success alert-dismissible fade show" role="status">
       Agency was updated successfully
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-<h1>Edit @Model.AgencyName</h1>
-
-<h4>Agency</h4>
+<h2 class="h4">Agency</h2>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
             <input type="hidden" asp-for="AgencyId" />
             <div class="form-group">
-                <label asp-for="AgencyName" class="control-label"></label>
-                <input asp-for="AgencyName" class="form-control" />
+                <label asp-for="AgencyName" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="AgencyName" class="form-control" aria-required="true" />
                 <span asp-validation-for="AgencyName" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -114,7 +115,7 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="list-of-existing-categories" class="control-label">Choose a service from the list to remove:</label>
+                <label for="list-of-existing-service" class="control-label">Choose a service from the list to remove:</label>
                 <input list="list-of-existing-categories" name="list-of-existing-categories" id="list-of-existing-service" class="form-control">
                 <datalist id="list-of-existing-categories">
                     @for (int i = 0; i < agencyCategories.Count; i++)
@@ -122,12 +123,12 @@
                         <option class="agencyName" value="@agencyCategories[i].AgencyCategoryName" />
                     }
                 </datalist>
-                <span class="text-success" id="existing-category-success"></span>
+                <span class="text-success" id="existing-category-success" role="status"></span>
                 <br />
                 <button type="button" class="btn btn-primary remove-category-submit" id="remove-category-submit" value="Remove Service">Remove Service</button>
             </div>
             <div class="form-group">
-                <label for="list-of-categories" class="control-label">Choose a service from the list:</label>
+                <label for="list-of-service" class="control-label">Choose a service from the list:</label>
                 <input list="list-of-categories" name="list-of-categories" id="list-of-service" class="form-control">
                 <datalist id="list-of-categories">
                     @for (int i = 0; i < newAgencyCategories.Count; i++)
@@ -135,7 +136,7 @@
                         <option class="agencyName" value="@newAgencyCategories[i].AgencyCategoryName" />
                     }
                 </datalist>
-                <span class="text-success" id="category-success"></span>
+                <span class="text-success" id="category-success" role="status"></span>
                 <br />
                 <button type="button" class="btn btn-primary category-submit" id="category-submit" value="Add Service">Add Service</button>
             </div>
@@ -147,3 +148,7 @@
 </div>
 
 <script src=~/js/edit.js></script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

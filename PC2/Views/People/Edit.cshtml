@@ -16,14 +16,15 @@
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Edit" enctype="multipart/form-data" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
             <input type="hidden" asp-for="ID" />
             <input type="hidden" asp-for="Type" />
             <input type="hidden" asp-for="CurrentImageUrl" />
 
             <div class="form-group mb-3">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <label asp-for="Name" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="Name" class="form-control" aria-required="true" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
@@ -69,13 +70,13 @@
 
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5 class="mb-0">Photo</h5>
+                    <h2 class="h5 mb-0">Photo</h2>
                 </div>
                 <div class="card-body">
                     @if (!string.IsNullOrEmpty(Model.CurrentImageUrl))
                     {
                         <div class="mb-3">
-                            <label class="form-label">Current Photo:</label>
+                            <p class="form-label">Current Photo:</p>
                             <div class="text-center">
                                 <img src="@Model.CurrentImageUrl" alt="@Model.Name" class="img-thumbnail"
                                      style="max-width: 200px; max-height: 200px;" />
@@ -83,14 +84,14 @@
                         </div>
                         <div class="form-check mb-3">
                             <input asp-for="RemovePhoto" class="form-check-input" id="removePhoto" />
-                            <label asp-for="RemovePhoto" class="form-check-label">Remove current photo</label>
+                            <label for="removePhoto" class="form-check-label">Remove current photo</label>
                         </div>
                     }
                     <div class="form-group mb-3" id="photoUpload">
-                        <label asp-for="PhotoFile" class="control-label"></label>
-                        <input asp-for="PhotoFile" class="form-control" type="file" accept="image/*" id="photoFile" />
+                        <label for="photoFile" class="control-label">@Html.DisplayNameFor(model => model.PhotoFile)</label>
+                        <input asp-for="PhotoFile" class="form-control" type="file" accept="image/*" id="photoFile" aria-describedby="photoFileHelp" />
                         <span asp-validation-for="PhotoFile" class="text-danger"></span>
-                        <small class="form-text text-muted">
+                        <small class="form-text text-muted" id="photoFileHelp">
                             Upload a new photo (JPEG, PNG, GIF, or BMP). Large images will be automatically resized.
                         </small>
                         <img id="photoPreview" src="" alt="New photo preview" class="img-thumbnail mt-2"

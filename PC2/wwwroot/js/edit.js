@@ -16,7 +16,7 @@ window.onload = function () {
 function removeService() {
     if ($('[name="list-of-existing-categories"]').val().trim() != "") {
         removedServices.push($('[name="list-of-existing-categories"]').val());
-        document.getElementById("existing-category-success").innerHTML = $('[name="list-of-existing-categories"]').val() + " removed";
+        document.getElementById("existing-category-success").textContent = $('[name="list-of-existing-categories"]').val() + " removed";
         document.getElementById("list-of-existing-service").value = "";
     }
 }
@@ -24,7 +24,7 @@ function removeService() {
 function addService() {
     if ($('[name="list-of-categories"]').val().trim() != "") {
         addedServices.push($('[name="list-of-categories"]').val());
-        document.getElementById("category-success").innerHTML = $('[name="list-of-categories"]').val() + " added";
+        document.getElementById("category-success").textContent = $('[name="list-of-categories"]').val() + " added";
         document.getElementById("list-of-service").value = "";
     }
 }

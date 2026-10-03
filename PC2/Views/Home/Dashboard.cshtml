@@ -51,7 +51,7 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
-        .dashboard-card h3 {
+        .dashboard-card h2 {
             color: rgb(91, 118, 35);
             margin-bottom: 1rem;
             font-size: 1.3rem;
@@ -134,7 +134,7 @@
     <div class="dashboard-grid">
         <!-- Agencies Management -->
         <div class="dashboard-card">
-            <h3><i class="bi bi-building"></i> Agencies</h3>
+            <h2><i class="bi bi-building" aria-hidden="true"></i> Agencies</h2>
             <div class="dashboard-card-buttons">
                 <a href="@Url.Action("Index", "Agency")" class="dashboard-btn">View Agencies</a>
                 <a href="@Url.Action("Create", "Agency")" class="dashboard-btn">Add New Agency</a>
@@ -143,7 +143,7 @@
 
         <!-- Housing Program Data -->
         <div class="dashboard-card">
-            <h3><i class="bi bi-house"></i> Housing Program</h3>
+            <h2><i class="bi bi-house" aria-hidden="true"></i> Housing Program</h2>
             <div class="dashboard-card-buttons">
                 <a href="@Url.Action("HousingProgramData", "About")" class="dashboard-btn">Housing Program Data</a>
             </div>
@@ -151,7 +151,7 @@
 
         <!-- Analytics -->
         <div class="dashboard-card">
-            <h3><i class="bi bi-graph-up"></i> Analytics</h3>
+            <h2><i class="bi bi-graph-up" aria-hidden="true"></i> Analytics</h2>
             <div class="dashboard-card-buttons">
                 <a href="@Url.Action("Analytics", "Admin")" class="dashboard-btn">View Analytics Dashboard</a>
             </div>
@@ -159,7 +159,7 @@
 
         <!-- Job Opportunities -->
         <div class="dashboard-card">
-            <h3><i class="bi bi-briefcase"></i> Job Opportunities</h3>
+            <h2><i class="bi bi-briefcase" aria-hidden="true"></i> Job Opportunities</h2>
             <div class="dashboard-card-buttons">
                 <a href="@Url.Action("Manage", "Jobs")" class="dashboard-btn">Manage Job Opportunities</a>
             </div>
@@ -167,7 +167,7 @@
 
         <!-- Resource Guide Feedback -->
         <div class="dashboard-card">
-            <h3><i class="bi bi-chat-left-text"></i> Resource Guide Feedback</h3>
+            <h2><i class="bi bi-chat-left-text" aria-hidden="true"></i> Resource Guide Feedback</h2>
             <div class="dashboard-card-buttons">
                 <a href="@Url.Action("Index", "Feedback")" class="dashboard-btn">View Feedback</a>
             </div>
@@ -175,7 +175,7 @@
 
         <!-- Calendar and Events -->
         <div class="dashboard-card">
-            <h3><i class="bi bi-calendar-event"></i> Calendar & Events</h3>
+            <h2><i class="bi bi-calendar-event" aria-hidden="true"></i> Calendar & Events</h2>
             <div class="dashboard-card-buttons">
                 <a href="@Url.Action("Index", "Calendar")" class="dashboard-btn">View Calendar</a>
                 <a href="@Url.Action("Create", "Calendar")" class="dashboard-btn">Create Event</a>
@@ -184,7 +184,7 @@
 
         <!-- Members Management -->
         <div class="dashboard-card">
-            <h3><i class="bi bi-people"></i> Members</h3>
+            <h2><i class="bi bi-people" aria-hidden="true"></i> Members</h2>
             <div class="dashboard-card-buttons">
                 <a href="@Url.Action("Index", "People")" class="dashboard-btn">View Members</a>
                 <a href="@Url.Action("Create", "People")" class="dashboard-btn">Add New Member</a>
@@ -193,7 +193,7 @@
 
         <!-- Newsletter & Videos -->
         <div class="dashboard-card">
-            <h3><i class="bi bi-file-text"></i> Content</h3>
+            <h2><i class="bi bi-file-text" aria-hidden="true"></i> Content</h2>
             <div class="dashboard-card-buttons">
                 <a href="@Url.Action("UploadNewsletter", "About")" class="dashboard-btn">Upload Newsletter</a>
                 <a href="@Url.Action("ManageVideos", "ProgramVideos")" class="dashboard-btn">Manage Program Videos</a>
@@ -204,7 +204,7 @@
         @if (User.IsInRole(IdentityHelper.Admin))
         {
             <div class="dashboard-card">
-                <h3><i class="bi bi-shield-lock"></i> User Management</h3>
+                <h2><i class="bi bi-shield-lock" aria-hidden="true"></i> User Management</h2>
                 <div class="dashboard-card-buttons">
                     <a href="@Url.Action("Index", "UserManagement")" class="dashboard-btn">Manage Users</a>
                 </div>

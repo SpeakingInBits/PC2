@@ -6,10 +6,10 @@
 }
 
 <div class="d-flex justify-content-center">
-    <img src="~/images/news/news1.jpg" alt="Headline news article about community events" />
-    <img src="~/images/news/news2.jpg" alt="PC2 newsletter featuring updates on local programs" />
-    <img src="~/images/news/news3.jpg" alt="Announcement about upcoming advocacy initiatives" />
-    <img src="~/images/news/news4.jpg" alt="Flyer promoting a disability rights awareness campaign" />
+    <img src="~/images/news/news1.jpg" alt="" />
+    <img src="~/images/news/news2.jpg" alt="" />
+    <img src="~/images/news/news3.jpg" alt="" />
+    <img src="~/images/news/news4.jpg" alt="" />
 </div>
 <br />
 <h1>@ViewData["Title"]</h1>
@@ -17,24 +17,46 @@
 <div class="divider"></div>
 
 <div class="d-flex justify-content-center">
-    <img src="~/images/news/information.jpg" alt="Graphic displaying key information about PC2 services" />
+    <img src="~/images/news/information.jpg" alt="Pierce County DD Information and Education flyer from PAVE and PC2. The text of the flyer follows the image." />
 </div>
 
 <div class="content">
+    @* Text from the flyer image, so it can be read by screen readers, zoomed and translated *@
+    <br />
+    <h2 class="text-center">Pierce County DD Information &amp; Education: Resources for Individuals with Disabilities &amp; Their Families</h2>
+    <div class="row mt-3">
+        <div class="col-12 col-md-6">
+            <h3 class="h6 fw-bold">PAVE (Pierce County Parent to Parent)</h3>
+            <p class="spaced-links">
+                <a href="https://wapave.org">wapave.org</a><br />
+                <a href="https://wapave.org/get-help">wapave.org/get-help</a><br />
+                <a href="tel:+12535652266">253.565.2266</a> ext.115
+            </p>
+            <p><strong>PAVE mission:</strong> PAVE provides support, training, information and resources to empower and give voice to individuals, youth and families impacted by disabilities.</p>
+            <p><strong>PAVE vision:</strong> We envision an inclusive community that values the unique abilities, cultures, voices, contributions and potential of all individuals.</p>
+        </div>
+        <div class="col-12 col-md-6">
+            <h3 class="h6 fw-bold">PC2 (Pierce County Coalition for Developmental Disabilities)</h3>
+            <p class="spaced-links">
+                <a href="https://pc2online.org">PC2online.org</a><br />
+                <a href="mailto:info@pc2online.org">info@pc2online.org</a><br />
+                <a href="tel:+12535640707">253-564-0707</a>
+            </p>
+            <p><strong>PC2&rsquo;s mission:</strong> &ldquo;Empowering individuals with developmental disabilities and their families.&rdquo;</p>
+            <p><strong>PC2&rsquo;s vision:</strong> &ldquo;All people with developmental disabilities have access to the services and programs that meet their needs.&rdquo;</p>
+        </div>
+    </div>
     <br />
     <br />
     <br />
     <br />
     <h2>Informing Families video series:</h2>
-    <br />
-    &emsp;<a href="https://informingfamilies.org/care-video/">Understanding Your DDA Care Assessment</a>
-    <br />
-    &emsp;<a href="https://informingfamilies.org/everyone-wins/">Everyone Wins When Everyone's Included</a>
-    <br />
-    &emsp;<a href="https://informingfamilies.org/family-day/">Standing Strong for Families</a>
-    <br />
-    &emsp;<a href="https://informingfamilies.org/just-like-you/">Just Like You</a>
-    <br />
+    <ul>
+        <li><a href="https://informingfamilies.org/care-video/">Understanding Your DDA Care Assessment</a></li>
+        <li><a href="https://informingfamilies.org/everyone-wins/">Everyone Wins When Everyone's Included</a></li>
+        <li><a href="https://informingfamilies.org/family-day/">Standing Strong for Families</a></li>
+        <li><a href="https://informingfamilies.org/just-like-you/">Just Like You</a></li>
+    </ul>
     <br />
     <p>Other Videos: <a href="https://informingfamilies.org/category/videos">https://informingfamilies.org/category/videos</a></p>
 </div>
