@@ -23,8 +23,8 @@
         <form asp-action="UploadNewsletter" enctype="multipart/form-data" method="post">
             <div class="form-group">
                 <label for="userFile" class="control-label">Newsletter file</label>
-                <input type="file" name="userFile" id="userFile" onchange="checkFileSize()" aria-describedby="userFileHelp fileSizeError" />
-                <small id="userFileHelp" class="form-text text-muted d-block">Usually a PDF. Maximum size: 50 MB.</small>
+                <input type="file" name="userFile" id="userFile" accept=".pdf" onchange="checkFileSize()" aria-describedby="userFileHelp fileSizeError" />
+                <small id="userFileHelp" class="form-text text-muted d-block">PDF files only. Maximum size: 50 MB.</small>
                 <span id="fileSizeError" class="text-danger" role="alert"></span>
             </div>
             <br />

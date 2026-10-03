@@ -2796,14 +2796,28 @@ INSERT [dbo].[AgencyAgencyCategory] ([AgenciesAgencyId], [AgencyCategoriesAgency
 (899, 33),
 (900, 8)
 
-SET IDENTITY_INSERT [dbo].[CalendarEvents] ON
+-- Calendar events for the current and next month, dated relative to today so the Events calendar always has data.
+-- Includes one event today, two events on the same day, and descriptions with a link, phone number and email.
+-- Skipped if there are already events from this month on, so running the script again next month adds a new set.
+-- Days stay at 26 or below so they exist in every month.
+DECLARE @monthStart date = DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
+DECLARE @nextMonthStart date = DATEADD(MONTH, 1, @monthStart)
 
-INSERT [dbo].[CalendarEvents] ([CalendarEventID], [StartingTime], [EndingTime], [EventDescription], [PC2Event], [CountyEvent]) VALUES
-(1, N'3:00 PM', N'6:15 PM', N'This is a pre-christmas event', 0, 1),
-(2, N'2:00 PM', N'4:00 PM', N'Some event', 0, 1),
-(3, N'4:46 PM', N'7:46 PM', N'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 0, 1)
-
-SET IDENTITY_INSERT [dbo].[CalendarEvents] OFF
+IF NOT EXISTS (SELECT 1 FROM [dbo].[CalendarEvents] WHERE [DateOfEvent] >= @monthStart)
+BEGIN
+INSERT [dbo].[CalendarEvents] ([DateOfEvent], [StartingTime], [EndingTime], [EventDescription], [PC2Event], [CountyEvent]) VALUES
+(DATEADD(DAY, 2, @monthStart), N'10:00 AM', N'11:30 AM', N'PC2 Board Meeting', 1, 0),
+(DATEADD(DAY, 7, @monthStart), N'9:30 AM', N'11:00 AM', N'Parent to Parent Coffee Hour. Learn more at https://wapave.org', 0, 1),
+(CAST(GETDATE() AS date), N'1:00 PM', N'2:00 PM', N'Resource Guide Q&A. Questions? Call 253.564.0707 or email info@pc2online.org', 1, 0),
+(DATEADD(DAY, 14, @monthStart), N'3:00 PM', N'4:30 PM', N'Self-Advocacy Group', 1, 0),
+(DATEADD(DAY, 14, @monthStart), N'6:00 PM', N'7:30 PM', N'Pierce County Developmental Disabilities Advisory Board', 0, 1),
+(DATEADD(DAY, 21, @monthStart), N'5:30 PM', N'7:00 PM', N'PC2 Housing Program information session', 1, 0),
+(DATEADD(DAY, 25, @monthStart), N'4:00 PM', N'7:00 PM', N'Transition Fair for students and families. Meet agencies that offer employment, education, housing and recreation services for young adults leaving high school. Free admission, and Spanish interpreters will be available.', 0, 1),
+(DATEADD(DAY, 4, @nextMonthStart), N'10:00 AM', N'11:30 AM', N'PC2 Board Meeting', 1, 0),
+(DATEADD(DAY, 9, @nextMonthStart), N'6:30 PM', N'8:00 PM', N'Community Inclusion Workshop', 0, 1),
+(DATEADD(DAY, 17, @nextMonthStart), N'1:00 PM', N'3:00 PM', N'Person Centered Planning workshop', 1, 0),
+(DATEADD(DAY, 23, @nextMonthStart), N'11:00 AM', N'2:00 PM', N'Pierce County Human Services open house', 0, 1)
+END
 
 SET IDENTITY_INSERT [dbo].[People] ON
 
