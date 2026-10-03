@@ -1,0 +1,134 @@
+@using PC2.Services
+@model PC2.Models.ManageFeedbackViewModel
+
+@{
+    ViewData["Title"] = "Resource Guide Feedback";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<p>
+    Visitors can leave feedback after searching the Resource Guide.
+    @if (Model.DigestSchedule != null)
+    {
+        @:New feedback is emailed to PC2 every @Model.DigestSchedule.
+    }
+    else
+    {
+        @:Automatic feedback emails are turned off.
+    }
+    Feedback that has been emailed or marked as reviewed won't be emailed again.
+</p>
+<p>
+    <strong>Last email sent:</strong>
+    @if (Model.LastDigest != null)
+    {
+        @FeedbackDigestService.ToLocal(Model.LastDigest.SentAt, Model.TimeZone).ToString("MMMM d, yyyy 'at' h:mm tt")
+    }
+    else
+    {
+        <span class="text-muted">Never</span>
+    }
+</p>
+
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <a asp-action="Index" asp-route-showAll="false" class="btn @(Model.ShowAll ? "btn-outline-primary" : "btn-primary")">
+        New (@Model.NewFeedbackCount)
+    </a>
+    <a asp-action="Index" asp-route-showAll="true" class="btn @(Model.ShowAll ? "btn-primary" : "btn-outline-primary")">
+        All Feedback
+    </a>
+    @if (Model.NewFeedbackCount > 0)
+    {
+        <form asp-action="SendDigest" method="post" class="d-inline"
+              onsubmit="return confirm('Email the @Model.NewFeedbackCount new feedback entries to PC2 now?');">
+            <button type="submit" class="btn btn-outline-secondary">Email New Feedback Now</button>
+        </form>
+        <form asp-action="MarkAllReviewed" method="post" class="d-inline"
+              onsubmit="return confirm('Mark all @Model.NewFeedbackCount new feedback entries as reviewed? They will not be emailed.');">
+            <button type="submit" class="btn btn-outline-secondary">Mark All as Reviewed</button>
+        </form>
+    }
+</div>
+
+@if (Model.Feedback.Count == 0)
+{
+    <p class="text-muted">@(Model.ShowAll ? "No feedback has been submitted yet." : "There is no new feedback.")</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Submitted</th>
+                    <th>Found It?</th>
+                    <th>Searched For</th>
+                    <th>Comments</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var feedback in Model.Feedback)
+                {
+                    <tr>
+                        <td class="text-nowrap">@FeedbackDigestService.ToLocal(feedback.SubmittedAt, Model.TimeZone).ToString("MMM d, yyyy h:mm tt")</td>
+                        <td>
+                            @if (feedback.IsResourceFound)
+                            {
+                                <span class="badge bg-success">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">No</span>
+                            }
+                        </td>
+                        <td>@feedback.SearchedFor</td>
+                        <td style="white-space: pre-line">@feedback.Comments</td>
+                        <td class="text-nowrap">
+                            @if (feedback.FeedbackDigest != null)
+                            {
+                                <span class="badge bg-secondary">Emailed</span>
+                                <small class="text-muted d-block">@FeedbackDigestService.ToLocal(feedback.FeedbackDigest.SentAt, Model.TimeZone).ToString("MMM d, yyyy")</small>
+                            }
+                            else if (feedback.ReviewedAt != null)
+                            {
+                                <span class="badge bg-secondary">Reviewed</span>
+                                <small class="text-muted d-block">@FeedbackDigestService.ToLocal(feedback.ReviewedAt.Value, Model.TimeZone).ToString("MMM d, yyyy")</small>
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary">New</span>
+                            }
+                        </td>
+                        <td class="text-nowrap">
+                            @if (!feedback.IsHandled)
+                            {
+                                <form asp-action="MarkReviewed" asp-route-id="@feedback.FeedbackId" asp-route-showAll="@Model.ShowAll" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">Mark Reviewed</button>
+                                </form>
+                            }
+                            <a asp-action="Delete" asp-route-id="@feedback.FeedbackId" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -135,6 +135,7 @@
 
 @{
     bool userPerformedSearch = Model.UserSearchedByAgency != null || Model.UserSearchedByCityOrService != null;
+    bool showFeedbackForm = userPerformedSearch || Model.Category != null;
 }
 
 @if (Model.Agencies.Count == 0 && userPerformedSearch)
@@ -263,10 +264,21 @@ else
     </div>
 }
 
+@if (showFeedbackForm)
+{
+    <partial name="_ResourceGuideFeedbackPartial" model="Model.SearchDescription" />
+}
+
 @section Scripts{
     <script>
             window.scrollTo(0, $("#results").offset().top);
     </script>
+
+    @if (showFeedbackForm)
+    {
+        <partial name="_ReCaptchaScriptsPartial" />
+        <script src="~/js/resource-guide-feedback.js" asp-append-version="true"></script>
+    }
 
     <script>
         function clearForm() {

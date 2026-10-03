@@ -40,6 +40,20 @@ Google reCAPTCHA v3 is used for spam protection on forms. To configure it for lo
 
 Production keys are managed separately, so contributors only need a development key. If the keys aren't set, the app still runs, but reCAPTCHA verification reports as unavailable.
 
+### Resource Guide Feedback Emails
+Visitors can leave feedback after searching the Resource Guide. Admin and Staff can view it at `/Feedback` (linked from the Admin Dashboard).
+New feedback is emailed to PC2 in a single weekly digest, sent by a background service (`FeedbackDigestBackgroundService`) using SendGrid.
+Feedback that has been emailed or marked as reviewed on the website is never emailed again.
+
+Settings are in the `FeedbackDigest` section of `appsettings.json`:
+- `Enabled` - turns the automatic weekly email on or off. It is off in `appsettings.Development.json` so local runs don't send email.
+- `Recipient` - who receives the email. Defaults to `PC2Email` when blank.
+- `SendDay`, `SendHour`, `TimeZone` - when the email is sent (default: Sunday at 8 AM Pacific).
+- `WebsiteUrl` - the public site URL, used to link to the feedback page from the email.
+
+In production, enable **Always On** for the App Service so the background service keeps running. If the app is asleep at the scheduled time,
+the email is sent the next time the app checks (every 15 minutes while running). Run a single instance; scaling out could send duplicate emails.
+
 ## Admin Credentials
 - Username: `admin@pc2online.org`
 - Password: `Password01#`

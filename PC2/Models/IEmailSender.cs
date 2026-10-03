@@ -6,6 +6,15 @@ namespace IdentityLogin.Models
     public interface IEmailSender
     {
         Task<Response> SendEmailAsync(string Name, string Email, string Phone, string Subject, string Message);
+
+        /// <summary>
+        /// Sends an HTML email from the PC2 noreply address
+        /// </summary>
+        /// <param name="toEmail">The recipient's email address</param>
+        /// <param name="subject">The subject of the email</param>
+        /// <param name="plainTextContent">The plain text version of the email for clients that don't display HTML</param>
+        /// <param name="htmlContent">The HTML version of the email</param>
+        Task<Response> SendHtmlEmailAsync(string toEmail, string subject, string plainTextContent, string htmlContent);
     }
 
     public class EmailSenderSendGrid : IEmailSender
@@ -41,6 +50,20 @@ namespace IdentityLogin.Models
                 Message,
             };
             msg.AddTo(new EmailAddress(PC2Email, "PC2 Team"));
+            return await client.SendEmailAsync(msg);
+        }
+
+        public async Task<Response> SendHtmlEmailAsync(string toEmail, string subject, string plainTextContent, string htmlContent)
+        {
+            string apiKey = _config.GetSection("PC2SendGridAPIKey").Value;
+            string noReplyEmail = _config.GetSection("PC2NoReplyEmail").Value;
+            SendGridClient client = new(apiKey);
+            SendGridMessage msg = MailHelper.CreateSingleEmail(
+                new EmailAddress(noReplyEmail, "PC2 Website"),
+                new EmailAddress(toEmail),
+                subject,
+                plainTextContent,
+                htmlContent);
             return await client.SendEmailAsync(msg);
         }
     }

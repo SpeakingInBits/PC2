@@ -1,0 +1,33 @@
+@using PC2.Services
+@model PC2.Models.Feedback
+
+@{
+    ViewData["Title"] = "Delete Feedback";
+    TimeZoneInfo timeZone = (TimeZoneInfo)ViewData["TimeZone"]!;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h3>Are you sure you want to delete this feedback?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Submitted</dt>
+        <dd class="col-sm-9">@FeedbackDigestService.ToLocal(Model.SubmittedAt, timeZone).ToString("MMMM d, yyyy 'at' h:mm tt")</dd>
+        <dt class="col-sm-3">Found what they were looking for</dt>
+        <dd class="col-sm-9">@(Model.IsResourceFound ? "Yes" : "No")</dd>
+        @if (!string.IsNullOrEmpty(Model.SearchedFor))
+        {
+            <dt class="col-sm-3">Searched For</dt>
+            <dd class="col-sm-9">@Model.SearchedFor</dd>
+        }
+        <dt class="col-sm-3">Comments</dt>
+        <dd class="col-sm-9" style="white-space: pre-line">@(string.IsNullOrEmpty(Model.Comments) ? "None" : Model.Comments)</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="FeedbackId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

@@ -58,6 +58,16 @@ builder.Services.AddControllersWithViews();
 // email provider
 builder.Services.AddTransient<IEmailSender, EmailSenderSendGrid>();
 
+// Weekly Resource Guide feedback digest email
+builder.Services.AddOptions<FeedbackDigestOptions>()
+    .Bind(builder.Configuration.GetSection(FeedbackDigestOptions.SectionName))
+    .ValidateDataAnnotations()
+    .Validate(options => options.IsTimeZoneValid(), "FeedbackDigest:TimeZone is not a recognized time zone.")
+    .ValidateOnStart();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddScoped<FeedbackDigestService>();
+builder.Services.AddHostedService<FeedbackDigestBackgroundService>();
+
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US");

@@ -1,4 +1,6 @@
-﻿namespace PC2.Models
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+
+namespace PC2.Models
 {
     public class ResourceGuideModel
     {
@@ -48,5 +50,11 @@
         /// If this value is null, the user searched by agency.
         /// </summary>
         public string? UserSearchedByCityOrService { get; set; }
+        /// <summary>
+        /// A description of the search the user performed, e.g. "Service: Respite Care, City: Tacoma".
+        /// Included with Resource Guide feedback so PC2 knows what the user was looking for.
+        /// </summary>
+        [BindNever]
+        public string? SearchDescription { get; set; }
     }
 }
