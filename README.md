@@ -24,8 +24,7 @@ is hosted on Azure SQL Database.
 2. Open the solution in Visual Studio.
 3. Run `update-database` in the Package Manager Console for the `PC2` project.
 4. Execute `PC2-TestData.sql` (found in the Solution Items folder) against localdb. It adds agencies, calendar events, members,
-   job opportunities, and Resource Guide feedback. If you seeded your database before job opportunities and feedback were added,
-   select and run just those two sections at the bottom of the script; they skip themselves if the tables already have data.
+   job opportunities, and Resource Guide feedback.
 5. Run the website to create default roles and admin login.
 
 ### Azure Blob Storage
