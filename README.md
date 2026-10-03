@@ -65,6 +65,28 @@ the email is sent the next time the app checks (every 15 minutes while running).
   Re-run the feedback section of `PC2-TestData.sql` after deleting all rows from `Feedback` and then `FeedbackDigests` to reset it.
 - **Send real email from development:** set `EmailSender` to `SendGrid` in user secrets and configure the SendGrid settings.
 
+### Accessibility Testing
+The website should meet [WCAG 2.2 Level AA](https://www.w3.org/WAI/WCAG22/quickref/?levels=aaa). The `PC2AccessibilityTests` project scans each page with
+[axe-core](https://github.com/dequelabs/axe-core) in a headless browser. It checks the public pages, the Resource Guide search results, and
+the Admin/Staff pages (logged in as the default admin).
+
+1. Run the website (F5 or `dotnet run --project PC2 --launch-profile PC2`).
+2. Run the tests in **Test Explorer**, or from a second terminal:
+   ```
+   dotnet test PC2AccessibilityTests
+   ```
+
+Each failing test lists the problem elements, the WCAG rule, and a link explaining how to fix it. The tests use Microsoft Edge or Google Chrome
+if installed, otherwise Playwright downloads Chromium the first time. If the site isn't running, the tests are skipped, so they don't affect CI.
+Set `PC2_A11Y_BASE_URL` to scan a different address (default `https://localhost:7057`). To leave them out of a full test run, use
+`dotnet test --filter TestCategory!=Accessibility`.
+
+Automated tools find roughly a third of accessibility problems. When changing a page, also:
+- Use the page with only the keyboard (Tab, Shift+Tab, Enter, Space, Esc). Every control should be reachable and show a visible focus outline.
+- Run [Accessibility Insights for Web](https://accessibilityinsights.io/docs/web/overview/) **FastPass**, or Lighthouse in Chrome/Edge DevTools.
+- Try the page with the free [NVDA](https://www.nvaccess.org/) screen reader.
+- Zoom the browser to 200% and narrow the window to 320px wide. Content shouldn't be cut off or need sideways scrolling.
+
 ## Admin Credentials
 - Username: `admin@pc2online.org`
 - Password: `Password01#`
