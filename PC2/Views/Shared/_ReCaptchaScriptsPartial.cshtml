@@ -1,0 +1,33 @@
+@using Microsoft.Extensions.Options
+@using PC2.Services
+@inject IOptions<ReCaptchaOptions> ReCaptchaOptions
+@{
+    var options = ReCaptchaOptions.Value;
+}
+
+@if (options.IsSiteKeyConfigured)
+{
+    <script src="https://www.google.com/recaptcha/api.js?render=@options.SiteKey"></script>
+    <script>
+        function getReCaptchaToken(action) {
+            if (typeof grecaptcha === 'undefined') {
+                return Promise.reject(new Error('reCAPTCHA failed to load'));
+            }
+            return new Promise(function (resolve, reject) {
+                grecaptcha.ready(function () {
+                    grecaptcha.execute('@options.SiteKey', { action: action }).then(resolve, reject);
+                });
+            });
+        }
+    </script>
+}
+else
+{
+    <script>
+        // Keep the same contract when reCAPTCHA isn't configured (e.g. local dev without secrets)
+        // so callers can handle it with the same rejection path as a blocked or failed script load.
+        function getReCaptchaToken(action) {
+            return Promise.reject(new Error('reCAPTCHA is not configured'));
+        }
+    </script>
+}
