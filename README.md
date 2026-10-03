@@ -23,7 +23,8 @@ is hosted on Azure SQL Database.
 1. Clone the repository.
 2. Open the solution in Visual Studio.
 3. Run `update-database` in the Package Manager Console for the `PC2` project.
-4. Execute `PC2-TestData.sql` (found in the Solution Items folder) against localdb.
+4. Execute `PC2-TestData.sql` (found in the Solution Items folder) against localdb. It adds agencies, calendar events, members,
+   job opportunities, and Resource Guide feedback.
 5. Run the website to create default roles and admin login.
 
 ### Azure Blob Storage
@@ -39,6 +40,30 @@ Google reCAPTCHA v3 is used for spam protection on forms. To configure it for lo
    ```
 
 Production keys are managed separately, so contributors only need a development key. If the keys aren't set, the app still runs, but reCAPTCHA verification reports as unavailable.
+
+### Resource Guide Feedback Emails
+Visitors can leave feedback after searching the Resource Guide. Admin and Staff can view it at `/Feedback` (linked from the Admin Dashboard).
+New feedback is emailed to PC2 in a single weekly digest, sent by a background service (`FeedbackDigestBackgroundService`) using SendGrid.
+Feedback that has been emailed or marked as reviewed on the website is never emailed again.
+
+Settings are in the `FeedbackDigest` section of `appsettings.json`:
+- `Enabled` - turns the automatic weekly email on or off. It is off in `appsettings.Development.json` so local runs don't send email.
+- `Recipient` - who receives the email. Defaults to `PC2Email` when blank.
+- `SendDay`, `SendHour`, `TimeZone` - when the email is sent (default: Sunday at 8 AM Pacific).
+- `WebsiteUrl` - the public site URL, used to link to the feedback page from the email.
+
+In production, enable **Always On** for the App Service so the background service keeps running. If the app is asleep at the scheduled time,
+the email is sent the next time the app checks (every 15 minutes while running). Run a single instance; scaling out could send duplicate emails.
+
+#### Testing emails in development
+`appsettings.Development.json` sets `"EmailSender": "File"`, so in development emails are saved as HTML files in `PC2/DevEmails/`
+(ignored by git) instead of being sent. Open a file in a browser to see the email. No SendGrid key is needed and nothing is delivered.
+
+- **Send the digest manually:** sign in as an admin, go to the Admin Dashboard > Resource Guide Feedback, and click **Email New Feedback Now**.
+- **Test the weekly schedule:** set `FeedbackDigest:Enabled` to `true` in `appsettings.Development.json` (or user secrets) and run the app.
+  The seed data includes new feedback from over a week ago, so the digest is due and is saved within a few seconds of startup.
+  Re-run the feedback section of `PC2-TestData.sql` after deleting all rows from `Feedback` and then `FeedbackDigests` to reset it.
+- **Send real email from development:** set `EmailSender` to `SendGrid` in user secrets and configure the SendGrid settings.
 
 ## Admin Credentials
 - Username: `admin@pc2online.org`

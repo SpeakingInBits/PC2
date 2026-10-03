@@ -34,6 +34,7 @@ namespace PC2.Controllers
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, categoryID);
                 resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
                 TrackResourceGuideTelemetry("Manual/Category", resourceGuide.Category.AgencyCategoryName);
+                resourceGuide.SearchDescription = $"Service: {resourceGuide.Category.AgencyCategoryName}";
             }
 
             await AgencyDB.GetDataForDataLists(_context, resourceGuide);
@@ -75,6 +76,7 @@ namespace PC2.Controllers
                 {
                     TrackResourceGuideTelemetry("Agency", searchModel.SearchedAgency);
                     resourceGuide.Agencies = await AgencyDB.GetAgenciesByName(_context, searchModel.SearchedAgency);
+                    resourceGuide.SearchDescription = $"Agency: {searchModel.SearchedAgency}";
                 }
             }
             else if (!string.IsNullOrEmpty(searchModel.UserSearchedByCityOrService))
@@ -87,18 +89,21 @@ namespace PC2.Controllers
                         searchModel.SearchedCategory, searchModel.SearchedCity);
                     resourceGuide.CurrentCity = searchModel.SearchedCity;
                     resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
+                    resourceGuide.SearchDescription = $"Service: {searchModel.SearchedCategory}, City: {searchModel.SearchedCity}";
                 }
                 else if (searchModel.SearchedCategory != null)
                 {
                     TrackResourceGuideTelemetry("Service", $"{searchModel.SearchedCategory}");
                     resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
                     resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
+                    resourceGuide.SearchDescription = $"Service: {searchModel.SearchedCategory}";
                 }
                 else if (searchModel.SearchedCity != null)
                 {
                     TrackResourceGuideTelemetry("City", searchModel.SearchedCity);
                     resourceGuide.CurrentCity = searchModel.SearchedCity;
                     resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, searchModel.SearchedCity);
+                    resourceGuide.SearchDescription = $"City: {searchModel.SearchedCity}";
                 }
             }
             

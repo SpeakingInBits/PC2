@@ -1,0 +1,40 @@
+@model string?
+@*
+    Asks visitors whether they found what they were looking for after a Resource Guide search.
+    The model is a description of the search, saved with the feedback. Submitted by resource-guide-feedback.js.
+*@
+
+<section id="resource-guide-feedback" class="card my-4" aria-labelledby="feedback-heading">
+    <div class="card-body">
+        <form id="feedback-form" asp-controller="Feedback" asp-action="Submit" method="post"
+              data-recaptcha-action="@PC2.Controllers.FeedbackController.ReCaptchaAction" novalidate>
+            <input type="hidden" name="SearchedFor" value="@Model" />
+
+            <fieldset class="mb-3">
+                <legend id="feedback-heading" class="h5">Did you find what you were looking for?</legend>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="IsResourceFound" id="feedback-found-yes" value="true" required>
+                    <label class="form-check-label" for="feedback-found-yes">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="IsResourceFound" id="feedback-found-no" value="false">
+                    <label class="form-check-label" for="feedback-found-no">No</label>
+                </div>
+            </fieldset>
+
+            <div class="mb-3">
+                <label for="feedback-comments" class="form-label">Comments (optional)</label>
+                <textarea id="feedback-comments" name="Comments" class="form-control" rows="3"
+                          maxlength="@PC2.Models.Feedback.CommentsMaxLength" aria-describedby="feedback-comments-help"></textarea>
+                <div id="feedback-comments-help" class="form-text">
+                    Tell us what you were looking for or how we can improve the Resource Guide.
+                    Please don't include personal information. If you need help finding a resource,
+                    call our office at <a href="tel:+12535640707">253.564.0707</a>.
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send Feedback</button>
+            <div id="feedback-status" class="mt-3" role="status" aria-live="polite"></div>
+        </form>
+    </div>
+</section>

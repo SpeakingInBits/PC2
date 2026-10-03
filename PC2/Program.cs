@@ -55,8 +55,25 @@ builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOpti
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
-// email provider
-builder.Services.AddTransient<IEmailSender, EmailSenderSendGrid>();
+// email provider. "File" saves emails to disk instead of sending them (used in development)
+if (builder.Configuration.GetSection("EmailSender").Value == "File")
+{
+    builder.Services.AddTransient<IEmailSender, FileEmailSender>();
+}
+else
+{
+    builder.Services.AddTransient<IEmailSender, EmailSenderSendGrid>();
+}
+
+// Weekly Resource Guide feedback digest email
+builder.Services.AddOptions<FeedbackDigestOptions>()
+    .Bind(builder.Configuration.GetSection(FeedbackDigestOptions.SectionName))
+    .ValidateDataAnnotations()
+    .Validate(options => options.IsTimeZoneValid(), "FeedbackDigest:TimeZone is not a recognized time zone.")
+    .ValidateOnStart();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddScoped<FeedbackDigestService>();
+builder.Services.AddHostedService<FeedbackDigestBackgroundService>();
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {

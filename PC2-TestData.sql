@@ -2822,4 +2822,59 @@ INSERT [dbo].[People] ([ID], [Name], [Title], [Discriminator], [MembershipStart]
 
 SET IDENTITY_INSERT [dbo].[People] OFF
 
+-- Job Opportunities. Closing dates are relative to today so the open, expired and closed states always appear.
+-- Skipped if the table already has data, so this section can be run on its own against an existing database.
+IF NOT EXISTS (SELECT 1 FROM [dbo].[JobOpportunities])
+BEGIN
+SET IDENTITY_INSERT [dbo].[JobOpportunities] ON
+
+INSERT [dbo].[JobOpportunities] ([JobOpportunityId], [Title], [Description], [ClosingDate], [IsClosed], [AttachmentLocation], [AttachmentName]) VALUES
+(1, N'Family Support Specialist', N'Help families of individuals with intellectual/developmental disabilities find and connect with services in Pierce County.
+
+Part time, 20 hours per week. Open until filled.
+
+To apply, email a resume and cover letter to jobs@example.org or call 253.564.0707.', NULL, 0, NULL, NULL),
+(2, N'Program Coordinator', N'Coordinate PC2 events, trainings, and the Resource Guide update process.
+
+Full time with benefits. Learn more at https://www.example.org/careers', DATEADD(DAY, 21, CAST(GETDATE() AS date)), 0, NULL, NULL),
+(3, N'Administrative Assistant', N'Expired posting: the closing date has passed, so it only appears on the Manage Job Opportunities page.', DATEADD(DAY, -5, CAST(GETDATE() AS date)), 0, NULL, NULL),
+(4, N'Community Outreach Volunteer', N'Closed posting: manually closed by an Admin, so it only appears on the Manage Job Opportunities page.', NULL, 1, NULL, NULL)
+
+SET IDENTITY_INSERT [dbo].[JobOpportunities] OFF
+END
+
+-- Resource Guide feedback. Dates are relative to now (UTC) so there is always:
+--   * a digest email that was already sent, with the feedback it included (Emailed)
+--   * feedback that was marked as reviewed on the website (Reviewed)
+--   * new feedback from over a week ago, so the weekly digest is due and sends on the next check
+--   * new feedback from this week
+-- Skipped if feedback already exists, so this section can be run on its own against an existing database.
+IF NOT EXISTS (SELECT 1 FROM [dbo].[Feedback]) AND NOT EXISTS (SELECT 1 FROM [dbo].[FeedbackDigests])
+BEGIN
+DECLARE @now datetime2 = SYSUTCDATETIME()
+
+SET IDENTITY_INSERT [dbo].[FeedbackDigests] ON
+
+INSERT [dbo].[FeedbackDigests] ([FeedbackDigestId], [SentAt], [SentTo]) VALUES
+(1, DATEADD(DAY, -14, @now), N'info@example.org')
+
+SET IDENTITY_INSERT [dbo].[FeedbackDigests] OFF
+
+SET IDENTITY_INSERT [dbo].[Feedback] ON
+
+INSERT [dbo].[Feedback] ([FeedbackId], [IsResourceFound], [Comments], [SearchedFor], [SubmittedAt], [ReviewedAt], [FeedbackDigestId]) VALUES
+(1, 0, N'Looking for ABA therapy providers that accept Apple Health.', N'Service: Behavioral Health Services', DATEADD(DAY, -18, @now), NULL, 1),
+(2, 1, NULL, N'City: Puyallup', DATEADD(DAY, -16, @now), NULL, 1),
+(3, 0, N'Just testing the form, please ignore.', N'Agency: Arc of Washington State', DATEADD(DAY, -12, @now), DATEADD(DAY, -11, @now), NULL),
+(4, 0, N'I need weekend respite care near Gig Harbor. I only found agencies in Tacoma.', N'Service: Respite / In - Home Care Services, City: Gig Harbor', DATEADD(DAY, -9, @now), NULL, NULL),
+(5, 1, NULL, N'Service: Employment Training / Supports', DATEADD(DAY, -8, @now), NULL, NULL),
+(6, 1, N'Very helpful, thank you!
+The phone numbers made it easy to call.', N'Agency: Arc of King County', DATEADD(DAY, -3, @now), NULL, NULL),
+(7, 0, N'Are there any summer camps for teens with autism in <Lakewood>?', N'Service: Camps / Summer Programs, City: Lakewood', DATEADD(DAY, -2, @now), NULL, NULL),
+(8, 1, NULL, N'Service: Transportation', DATEADD(DAY, -1, @now), NULL, NULL),
+(9, 0, NULL, N'City: Buckley', DATEADD(HOUR, -2, @now), NULL, NULL)
+
+SET IDENTITY_INSERT [dbo].[Feedback] OFF
+END
+
 COMMIT TRANSACTION
