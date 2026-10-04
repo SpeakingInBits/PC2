@@ -1,5 +1,5 @@
 // Shows the sections of the Get Help referral forms that apply, and adds a reCAPTCHA token before they are sent.
-// Requires _ReCaptchaScriptsPartial, which defines getReCaptchaToken.
+// Requires _ReCaptchaScriptsPartial, which defines getReCaptchaToken and renderReCaptchaCheckbox.
 (function () {
     // Move focus to the list of problems when the server sends the form back, so screen readers announce it
     const errors = document.getElementById("referral-errors");
@@ -29,6 +29,19 @@
     });
     showSectionsForAnswers();
 
+    // After a low reCAPTCHA score the server sends the form back with the "I'm not a robot" checkbox
+    const checkbox = form.querySelector("[data-recaptcha-checkbox]:not([hidden])");
+    let checkboxWidgetId = null;
+    if (checkbox) {
+        renderReCaptchaCheckbox(checkbox.querySelector("[data-recaptcha-checkbox-widget]"))
+            .then(function (widgetId) {
+                checkboxWidgetId = widgetId;
+            })
+            .catch(function () {
+                // reCAPTCHA is blocked; the form is sent without a token and the server explains the problem
+            });
+    }
+
     const submitButton = form.querySelector("button[type=submit]");
     const submitText = submitButton.textContent;
     let isSubmitting = false;
@@ -41,14 +54,28 @@
             return;
         }
 
+        if (checkboxWidgetId !== null) {
+            const checkboxToken = grecaptcha.getResponse(checkboxWidgetId);
+            const checkboxError = checkbox.querySelector("[data-recaptcha-checkbox-error]");
+            if (!checkboxToken) {
+                checkboxError.textContent = "Please check the \"I'm not a robot\" box.";
+                checkbox.querySelector("iframe")?.focus();
+                return;
+            }
+            checkboxError.textContent = "";
+            form.elements.ReCaptchaCheckboxToken.value = checkboxToken;
+        }
+
         isSubmitting = true;
         submitButton.disabled = true;
         submitButton.textContent = "Sending...";
 
-        try {
-            form.elements.ReCaptchaToken.value = await getReCaptchaToken(form.dataset.recaptchaAction);
-        } catch {
-            // reCAPTCHA is blocked or not configured; the server decides whether to accept the form
+        if (checkboxWidgetId === null) {
+            try {
+                form.elements.ReCaptchaToken.value = await getReCaptchaToken(form.dataset.recaptchaAction);
+            } catch {
+                // reCAPTCHA is blocked or not configured; the server decides whether to accept the form
+            }
         }
 
         // Sends the form without raising the submit event again
@@ -61,6 +88,11 @@
             isSubmitting = false;
             submitButton.disabled = false;
             submitButton.textContent = submitText;
+
+            // A checkbox token only works once, so the visitor checks the box again to resend
+            if (checkboxWidgetId !== null) {
+                grecaptcha.reset(checkboxWidgetId);
+            }
         }
     });
 })();

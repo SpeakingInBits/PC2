@@ -94,6 +94,34 @@ public class FeedbackControllerTests
     }
 
     [TestMethod]
+    public async Task Submit_ReCaptchaChallengeRequired_AsksForCheckboxAndDoesNotSave()
+    {
+        SetupReCaptcha(ReCaptchaVerificationResult.ChallengeRequired);
+
+        IActionResult result = await _controller.Submit(new FeedbackSubmission { IsResourceFound = true }, CancellationToken.None);
+
+        Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+        object? value = ((BadRequestObjectResult)result).Value;
+        Assert.AreEqual(true, value!.GetType().GetProperty("challengeRequired")!.GetValue(value));
+        Assert.AreEqual(0, await _context.Feedback.CountAsync());
+    }
+
+    [TestMethod]
+    public async Task Submit_CheckboxToken_VerifiesCheckboxInsteadOfScoreAndSaves()
+    {
+        _reCaptchaMock
+            .Setup(r => r.VerifyCheckboxAsync("checkbox-token", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ReCaptchaVerificationResult.Passed);
+
+        IActionResult result = await _controller.Submit(
+            new FeedbackSubmission { IsResourceFound = true, ReCaptchaCheckboxToken = "checkbox-token" }, CancellationToken.None);
+
+        Assert.IsInstanceOfType<OkObjectResult>(result);
+        Assert.AreEqual(1, await _context.Feedback.CountAsync());
+        _reCaptchaMock.Verify(r => r.VerifyAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
+    }
+
+    [TestMethod]
     public async Task Submit_ReCaptchaUnavailable_SavesFeedback()
     {
         SetupReCaptcha(ReCaptchaVerificationResult.Unavailable);

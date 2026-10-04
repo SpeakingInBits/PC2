@@ -41,6 +41,17 @@ Google reCAPTCHA v3 is used for spam protection on forms. To configure it for lo
 
 Production keys are managed separately, so contributors only need a development key. If the keys aren't set, the app still runs, but reCAPTCHA verification reports as unavailable.
 
+Visitors who score below `GoogleReCaptcha:MinimumScore` are shown a reCAPTCHA v2 **"I'm not a robot"** checkbox so they can prove they're
+human instead of being turned away. The checkbox needs its own keys: create them in the Admin Console using **reCAPTCHA v2 > "I'm not a robot" Checkbox**
+with the same domains, then add them alongside the v3 keys:
+```
+dotnet user-secrets set "GoogleReCaptcha:CheckboxSiteKey" "<your-checkbox-site-key>"
+dotnet user-secrets set "GoogleReCaptcha:CheckboxSecretKey" "<your-checkbox-secret-key>"
+```
+Without the checkbox keys, visitors with low scores get an error as before. To try the checkbox locally, use Google's
+[v2 test keys](https://developers.google.com/recaptcha/docs/faq#id-like-to-run-automated-tests-with-recaptcha.-what-should-i-do), which always pass,
+and temporarily set `GoogleReCaptcha:MinimumScore` to `1.0` so every submission scores too low.
+
 ### Resource Guide Feedback Emails
 Visitors can leave feedback after searching the Resource Guide. Admin and Staff can view it at `/Feedback` (linked from the Admin Dashboard).
 New feedback is emailed to PC2 in a single weekly digest, sent by a background service (`FeedbackDigestBackgroundService`) using SendGrid.

@@ -1,5 +1,5 @@
 // Submits the Resource Guide feedback form in the background so visitors keep their search results.
-// Requires _ReCaptchaScriptsPartial, which defines getReCaptchaToken.
+// Requires _ReCaptchaScriptsPartial, which defines getReCaptchaToken and renderReCaptchaCheckbox.
 (function () {
     const form = document.getElementById("feedback-form");
     if (!form) {
@@ -14,6 +14,20 @@
         status.className = "mt-3 alert " + (isError ? "alert-danger" : "alert-success");
     }
 
+    // Shown after a low reCAPTCHA score so the visitor can prove they're human
+    const checkbox = form.querySelector("[data-recaptcha-checkbox]");
+    let checkboxWidgetId = null;
+
+    async function showCheckbox() {
+        checkbox.hidden = false;
+        if (checkboxWidgetId === null) {
+            checkboxWidgetId = await renderReCaptchaCheckbox(checkbox.querySelector("[data-recaptcha-checkbox-widget]"));
+        } else {
+            // A checkbox token only works once, so the visitor checks the box again
+            grecaptcha.reset(checkboxWidgetId);
+        }
+    }
+
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
 
@@ -23,13 +37,25 @@
             return;
         }
 
+        const formData = new FormData(form);
+        if (checkboxWidgetId !== null) {
+            const checkboxToken = grecaptcha.getResponse(checkboxWidgetId);
+            if (!checkboxToken) {
+                showStatus("Please check the \"I'm not a robot\" box.", true);
+                checkbox.querySelector("iframe")?.focus();
+                return;
+            }
+            formData.set("ReCaptchaCheckboxToken", checkboxToken);
+        }
+
         submitButton.disabled = true;
 
-        const formData = new FormData(form);
-        try {
-            formData.append("ReCaptchaToken", await getReCaptchaToken(form.dataset.recaptchaAction));
-        } catch {
-            // reCAPTCHA is blocked or not configured; the server decides whether to accept the feedback
+        if (checkboxWidgetId === null) {
+            try {
+                formData.append("ReCaptchaToken", await getReCaptchaToken(form.dataset.recaptchaAction));
+            } catch {
+                // reCAPTCHA is blocked or not configured; the server decides whether to accept the feedback
+            }
         }
 
         try {
@@ -47,6 +73,11 @@
             }
 
             showStatus(result.message || "Your feedback could not be submitted. Please try again.", true);
+            if (result.challengeRequired) {
+                await showCheckbox().catch(function () {
+                    // reCAPTCHA is blocked; the visitor still sees the message
+                });
+            }
         } catch {
             showStatus("Your feedback could not be submitted. Please check your connection and try again.", true);
         }

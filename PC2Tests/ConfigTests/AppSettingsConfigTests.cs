@@ -84,6 +84,20 @@ public class AppSettingsConfigTests
     }
 
     [TestMethod]
+    public void GoogleReCaptcha_CheckboxSiteKey_IsPresent()
+    {
+        var value = _config["GoogleReCaptcha:CheckboxSiteKey"];
+        Assert.IsNotNull(value, "GoogleReCaptcha:CheckboxSiteKey is missing in appsettings.json");
+    }
+
+    [TestMethod]
+    public void GoogleReCaptcha_CheckboxSecretKey_IsPresent()
+    {
+        var value = _config["GoogleReCaptcha:CheckboxSecretKey"];
+        Assert.IsNotNull(value, "GoogleReCaptcha:CheckboxSecretKey is missing in appsettings.json");
+    }
+
+    [TestMethod]
     public void GoogleReCaptcha_MinimumScore_IsPresentAndValid()
     {
         var value = _config["GoogleReCaptcha:MinimumScore"];

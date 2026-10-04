@@ -1,0 +1,11 @@
+@model bool
+@*
+    The reCAPTCHA "I'm not a robot" checkbox, shown after a low reCAPTCHA score so the visitor can prove they're human.
+    The form's script renders the widget with renderReCaptchaCheckbox (from _ReCaptchaScriptsPartial) and copies its
+    token to ReCaptchaCheckboxToken. The model is whether it is shown when the page loads.
+*@
+<div class="mb-3" data-recaptcha-checkbox hidden="@(!Model)">
+    <input type="hidden" name="ReCaptchaCheckboxToken" />
+    <div data-recaptcha-checkbox-widget></div>
+    <div class="text-danger small mt-1" role="alert" data-recaptcha-checkbox-error></div>
+</div>
