@@ -1,0 +1,66 @@
+@model IEnumerable<PC2.Models.ResourceLink>
+
+@{
+    ViewData["Title"] = "Manage Resource Links";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@{
+    if (TempData["Message"] is string message)
+    {
+        bool isError = message.StartsWith("Error");
+        <div class="alert @(isError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="@(isError ? "alert" : "status")">
+            @message
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Link</a>
+    <a asp-controller="Resources" asp-action="ResourceLinks" class="btn btn-secondary">View Resource Links Page</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Link Text</th>
+            <th scope="col">Links To</th>
+            <th scope="col">Description</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var link in Model)
+        {
+            <tr>
+                <td>@link.Name</td>
+                <td class="text-break">
+                    @if (link.FileName != null)
+                    {
+                        <a href="@link.Url" target="_blank">@link.FileName</a> <span class="badge bg-secondary">File</span>
+                    }
+                    else
+                    {
+                        <a href="@link.Url" target="_blank">@link.Url</a>
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(link.Description))
+                    {
+                        @link.Description
+                    }
+                    else
+                    {
+                        <span class="text-muted">None</span>
+                    }
+                </td>
+                <td class="text-nowrap">
+                    <a asp-action="Edit" asp-route-id="@link.ResourceLinkId" class="btn btn-sm btn-outline-primary">Edit<span class="visually-hidden"> @link.Name</span></a>
+                    <a asp-action="Delete" asp-route-id="@link.ResourceLinkId" class="btn btn-sm btn-outline-danger">Delete<span class="visually-hidden"> @link.Name</span></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

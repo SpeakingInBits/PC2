@@ -1,0 +1,64 @@
+@model PC2.Models.ResourceLink
+
+@{
+    ViewData["Title"] = "Add Resource Link";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (TempData["Message"] is string message)
+{
+    <div class="alert alert-danger" role="alert">@message</div>
+}
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
+
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="Name" class="form-control" aria-required="true" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <fieldset class="mb-3">
+                <legend class="fs-6">Link to a website or upload a PDF<span class="text-danger" aria-hidden="true"> *</span></legend>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Url" class="control-label"></label>
+                    @* data-val="false": the address is only required when no PDF is uploaded, which the server checks *@
+                    <input asp-for="Url" class="form-control" type="text" inputmode="url" placeholder="https://www.example.org" aria-describedby="urlHelp" data-val="false" />
+                    <span asp-validation-for="Url" class="text-danger"></span>
+                    <small class="form-text text-muted" id="urlHelp">Leave blank if you are uploading a PDF.</small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="uploadedFile" class="control-label">PDF File</label>
+                    <input type="file" name="uploadedFile" id="uploadedFile" accept=".pdf" onchange="checkFileSize()" class="form-control" aria-describedby="fileSizeError fileSizeWarning" />
+                    <span id="fileSizeError" class="text-danger" role="alert"></span>
+                    <div id="fileSizeWarning" class="alert alert-warning mt-2 mb-0 py-2 d-none" role="alert"></div>
+                </div>
+            </fieldset>
+
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3" aria-describedby="descriptionHelp"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+                <small class="form-text text-muted" id="descriptionHelp">Optional. Shown below the link.</small>
+            </div>
+
+            <div class="form-group">
+                <input id="submitButton" type="submit" value="Add Link" class="btn btn-primary" />
+                <a asp-action="Manage" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/resource-links.js"></script>
+}

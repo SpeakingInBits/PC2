@@ -122,9 +122,10 @@ namespace PC2.Controllers
             return View();
         }
 
-        public IActionResult ResourceLinks()
+        public async Task<IActionResult> ResourceLinks()
         {
-            return View();
+            List<ResourceLink> links = await ResourceLinkDB.GetAllAsync(_context);
+            return View(links);
         }
 
         public IActionResult AgeSpecificIssues()

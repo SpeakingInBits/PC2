@@ -25,6 +25,8 @@ public class AdminPageTests
     [DataRow("/People/Create")]
     [DataRow("/ProgramVideos/ManageVideos")]
     [DataRow("/ProgramVideos/CreateVideo")]
+    [DataRow("/ResourceLinks/Manage")]
+    [DataRow("/ResourceLinks/Create")]
     [DataRow("/UserManagement")]
     [DataRow("/UserManagement/Create")]
     [DataRow("/Identity/Account/Manage")]
