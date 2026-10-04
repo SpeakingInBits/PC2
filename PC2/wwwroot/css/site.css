@@ -211,6 +211,15 @@ main .d-flex > img {
     height: 130px;
 }
 
+/*Same width as the logo so it sits centered underneath*/
+#get-help-button {
+    display: block;
+    width: 200px;
+    margin-top: .5em;
+    font-size: 1.15rem;
+    font-weight: bold;
+}
+
 #bootstrap-override nav, #bootstrap-override nav button, .menu-item, #menu-bar, .divider, .dropdown-menu {
     background-color: rgba(18, 66, 35, 1);
 }
@@ -409,6 +418,10 @@ nav a {
     #pc2Logo img {
         width: 160px;
         height: 104px;
+    }
+
+    #get-help-button {
+        width: 160px;
     }
 
     #mainTitle {

@@ -1,0 +1,22 @@
+@model ReferralSubmission
+@* The last questions on both referral forms *@
+
+<div class="row">
+    <div class="col-md-6 form-group mb-3">
+        <label asp-for="HowHeard" class="form-label"></label>
+        <select asp-for="HowHeard" class="form-select" asp-items="@(new SelectList(ReferralChoices.HowHeard, Model.HowHeard))">
+            <option value="">Choose one (optional)</option>
+        </select>
+        <span asp-validation-for="HowHeard" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group mb-3">
+    <label asp-for="AdditionalInformation" class="form-label">@ViewData["AdditionalInformationLabel"]</label>
+    <textarea asp-for="AdditionalInformation" class="form-control" rows="6" aria-describedby="additional-information-help"></textarea>
+    <div id="additional-information-help" class="form-text">
+        Please don't include Social Security numbers, medical records, or other private documents.
+        Up to @ReferralSubmission.AdditionalInformationMaxLength characters.
+    </div>
+    <span asp-validation-for="AdditionalInformation" class="text-danger"></span>
+</div>

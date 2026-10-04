@@ -1,0 +1,145 @@
+@using PC2.Controllers
+@using PC2.Models.ViewModels
+@model ProfessionalReferral
+
+@{
+    ViewData["Title"] = "Professional Referral";
+    ViewData["AdditionalInformationLabel"] = "Tell us about the person or family and how PC2 can help";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    Use this form to refer a person or family you work with to PC2. Please get their permission before sending
+    their information. If you're asking for help for yourself or your own family, please use the
+    <a asp-action="Self">Ask for Help form</a>.
+</p>
+
+<div class="row">
+    <div class="col-lg-9 col-xl-8">
+        <partial name="_ReferralErrorSummary" />
+
+        <form id="referral-form" asp-action="Professional" method="post" data-recaptcha-action="@GetHelpController.ProfessionalReCaptchaAction">
+            <input type="hidden" name="ReCaptchaToken" />
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
+
+            <h2 class="h4 mt-4">Your information</h2>
+
+            <div class="form-group mb-3">
+                <label asp-for="OrganizationName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="OrganizationName" class="form-control" autocomplete="organization" aria-required="true" />
+                <span asp-validation-for="OrganizationName" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="FirstName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                    <input asp-for="FirstName" class="form-control" autocomplete="given-name" aria-required="true" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="LastName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                    <input asp-for="LastName" class="form-control" autocomplete="family-name" aria-required="true" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="RoleOrRelationship" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="RoleOrRelationship" class="form-control" autocomplete="organization-title" aria-required="true"
+                       aria-describedby="role-help" />
+                <div id="role-help" class="form-text">For example, special education teacher, nurse, or DDA case manager.</div>
+                <span asp-validation-for="RoleOrRelationship" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Email" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                    <input asp-for="Email" class="form-control" autocomplete="email" aria-required="true" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone" class="form-control" autocomplete="tel" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+            </div>
+
+            <h2 class="h4 mt-4">Person or family to contact</h2>
+
+            <div class="form-group mb-3">
+                <label asp-for="ContactName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="ContactName" class="form-control" autocomplete="off" aria-required="true" aria-describedby="contact-name-help" />
+                <div id="contact-name-help" class="form-text">The person with a disability, or their parent or caregiver.</div>
+                <span asp-validation-for="ContactName" class="text-danger"></span>
+            </div>
+
+            <p id="contact-help" class="form-text mt-0">Please enter their phone number, email address, or both.</p>
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="ContactPhone" class="form-label"></label>
+                    <input asp-for="ContactPhone" class="form-control" type="tel" autocomplete="off" aria-describedby="contact-help" />
+                    <span asp-validation-for="ContactPhone" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="ContactEmail" class="form-label"></label>
+                    <input asp-for="ContactEmail" class="form-control" type="email" autocomplete="off" aria-describedby="contact-help" />
+                    <span asp-validation-for="ContactEmail" class="text-danger"></span>
+                </div>
+            </div>
+
+            <partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.ContactPreferredMethod),
+                Html.DisplayNameFor(m => m.ContactPreferredMethod), ReferralChoices.ContactMethods, Model.ContactPreferredMethod)" />
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="BestTimesToContact" class="form-label">Best days and times to contact them</label>
+                    <input asp-for="BestTimesToContact" class="form-control" aria-describedby="best-times-help" />
+                    <div id="best-times-help" class="form-text">For example, weekday mornings.</div>
+                    <span asp-validation-for="BestTimesToContact" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="ZipCode" class="form-label"></label>
+                    <input asp-for="ZipCode" class="form-control" autocomplete="off" inputmode="numeric" />
+                    <span asp-validation-for="ZipCode" class="text-danger"></span>
+                </div>
+            </div>
+
+            <h2 class="h4 mt-4">About the person with a disability</h2>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="PersonName" class="form-label"></label>
+                    <input asp-for="PersonName" class="form-control" autocomplete="off" aria-describedby="person-name-help" />
+                    <div id="person-name-help" class="form-text">Leave blank if it's the person PC2 should contact.</div>
+                    <span asp-validation-for="PersonName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <partial name="_ReferralNeeds" model="Model" />
+
+            <h2 class="h4 mt-4">Anything else?</h2>
+
+            <partial name="_ReferralClosing" model="Model" />
+
+            <div class="form-check mb-3">
+                @* Not asp-for: jQuery Validation Unobtrusive can't require a checkbox to be checked, so this uses a jQuery Validation rule *@
+                <input type="checkbox" id="HasConsent" name="HasConsent" value="true" class="form-check-input"
+                       checked="@Model.HasConsent" aria-required="true"
+                       data-rule-required="true" data-msg-required="@ProfessionalReferral.ConsentRequiredMessage" />
+                <label asp-for="HasConsent" class="form-check-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <span asp-validation-for="HasConsent" class="d-block text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send Referral</button>
+        </form>
+    </div>
+</div>
+
+<partial name="_GetHelpContactInfo" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ReCaptchaScriptsPartial" />
+    <script src="~/js/referral.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,30 @@
+@model PC2.Models.ViewModels.RadioGroupViewModel
+@{
+    string? error = ViewData.ModelState[Model.Name]?.Errors.FirstOrDefault()?.ErrorMessage;
+    string errorId = $"{Model.Name}-error";
+}
+
+<fieldset class="mb-3" aria-describedby="@errorId">
+    <legend class="form-label fs-6 mb-1">
+        @Model.Legend
+        @if (Model.IsRequired)
+        {
+            <span class="text-danger" aria-hidden="true">*</span>
+            <span class="visually-hidden">(required)</span>
+        }
+    </legend>
+    @for (int i = 0; i < Model.Choices.Count; i++)
+    {
+        string choice = Model.Choices[i];
+        string id = $"{Model.Name}-{i}";
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="@Model.Name" id="@id" value="@choice"
+                   checked="@(Model.Selected == choice)"
+                   data-val="@(Model.IsRequired ? "true" : null)" data-val-required="@Model.RequiredMessage" />
+            <label class="form-check-label" for="@id">@choice</label>
+        </div>
+    }
+    @* Filled in by the server, or by jQuery Validation when nothing is chosen *@
+    <span id="@errorId" class="d-block text-danger @(error == null ? "field-validation-valid" : "field-validation-error")"
+          data-valmsg-for="@Model.Name" data-valmsg-replace="true">@error</span>
+</fieldset>

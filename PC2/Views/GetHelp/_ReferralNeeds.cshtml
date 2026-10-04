@@ -1,0 +1,54 @@
+@using PC2.Models.ViewModels
+@model ReferralSubmission
+@*
+    The questions about the person with a disability and the help they need, asked on both referral forms
+*@
+@{
+    string? purposesError = ViewData.ModelState[nameof(Model.Purposes)]?.Errors.FirstOrDefault()?.ErrorMessage;
+}
+
+<fieldset class="mb-3" aria-describedby="Purposes-error">
+    <legend class="form-label fs-6 mb-1">
+        What kind of help is needed? Choose all that apply.
+        <span class="text-danger" aria-hidden="true">*</span>
+        <span class="visually-hidden">(required)</span>
+    </legend>
+    <div class="row row-cols-1 row-cols-md-2">
+        @for (int i = 0; i < ReferralChoices.Purposes.Count; i++)
+        {
+            string purpose = ReferralChoices.Purposes[i];
+            string id = $"Purposes-{i}";
+            <div class="col">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="Purposes" id="@id" value="@purpose"
+                           checked="@Model.Purposes.Contains(purpose)" />
+                    <label class="form-check-label" for="@id">@purpose</label>
+                </div>
+            </div>
+        }
+    </div>
+    <span id="Purposes-error" class="d-block text-danger">@purposesError</span>
+</fieldset>
+
+<div id="other-purpose-group" class="form-group mb-3">
+    <label asp-for="OtherPurpose" class="form-label">If you chose Other, what kind of help is needed?</label>
+    <input asp-for="OtherPurpose" class="form-control" />
+    <span asp-validation-for="OtherPurpose" class="text-danger"></span>
+</div>
+
+<partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.AgeRange),
+    Html.DisplayNameFor(m => m.AgeRange), ReferralChoices.AgeRanges, Model.AgeRange)" />
+
+<partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.Diagnosis),
+    Html.DisplayNameFor(m => m.Diagnosis), ReferralChoices.Diagnosis, Model.Diagnosis)" />
+
+<div class="row">
+    <div class="col-md-6 form-group mb-3">
+        <label asp-for="PrimaryLanguage" class="form-label"></label>
+        <input asp-for="PrimaryLanguage" class="form-control" autocomplete="language" />
+        <span asp-validation-for="PrimaryLanguage" class="text-danger"></span>
+    </div>
+</div>
+
+<partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.NeedsInterpreter),
+    Html.DisplayNameFor(m => m.NeedsInterpreter), ReferralChoices.YesNoNotSure, Model.NeedsInterpreter)" />

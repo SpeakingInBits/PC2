@@ -1,0 +1,103 @@
+@using PC2.Controllers
+@using PC2.Models.ViewModels
+@model SelfReferral
+
+@{
+    ViewData["Title"] = "Ask for Help";
+    ViewData["AdditionalInformationLabel"] = "Tell us about your situation and how we can help";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    Fill out this form and a member of the PC2 team will contact you. If you're a professional referring someone
+    you work with, please use the <a asp-action="Professional">professional referral form</a>.
+</p>
+
+<div class="row">
+    <div class="col-lg-9 col-xl-8">
+        <partial name="_ReferralErrorSummary" />
+
+        <form id="referral-form" asp-action="Self" method="post" data-recaptcha-action="@GetHelpController.SelfReCaptchaAction">
+            <input type="hidden" name="ReCaptchaToken" />
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
+
+            <partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.ReferringFor),
+                Html.DisplayNameFor(m => m.ReferringFor), ReferralChoices.ReferringFor, Model.ReferringFor,
+                SelfReferral.ReferringForRequiredMessage)" />
+
+            <h2 class="h4 mt-4">Your contact information</h2>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="FirstName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                    <input asp-for="FirstName" class="form-control" autocomplete="given-name" aria-required="true" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="LastName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                    <input asp-for="LastName" class="form-control" autocomplete="family-name" aria-required="true" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <p id="contact-help" class="form-text mt-0">Please enter a phone number, an email address, or both.</p>
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone" class="form-control" autocomplete="tel" aria-describedby="contact-help" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" autocomplete="email" aria-describedby="contact-help" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+
+            <partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.PreferredContactMethod),
+                Html.DisplayNameFor(m => m.PreferredContactMethod), ReferralChoices.ContactMethods, Model.PreferredContactMethod)" />
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="BestTimesToContact" class="form-label"></label>
+                    <input asp-for="BestTimesToContact" class="form-control" aria-describedby="best-times-help" />
+                    <div id="best-times-help" class="form-text">For example, weekday mornings.</div>
+                    <span asp-validation-for="BestTimesToContact" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="ZipCode" class="form-label"></label>
+                    <input asp-for="ZipCode" class="form-control" autocomplete="postal-code" inputmode="numeric" />
+                    <span asp-validation-for="ZipCode" class="text-danger"></span>
+                </div>
+            </div>
+
+            <h2 class="h4 mt-4">About the person who needs help</h2>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="PersonName" class="form-label"></label>
+                    <input asp-for="PersonName" class="form-control" aria-describedby="person-name-help" />
+                    <div id="person-name-help" class="form-text">Leave blank if you are asking for help for yourself.</div>
+                    <span asp-validation-for="PersonName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <partial name="_ReferralNeeds" model="Model" />
+
+            <h2 class="h4 mt-4">Anything else?</h2>
+
+            <partial name="_ReferralClosing" model="Model" />
+
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+</div>
+
+<partial name="_GetHelpContactInfo" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ReCaptchaScriptsPartial" />
+    <script src="~/js/referral.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,25 @@
+@*
+    Lists every problem after the form is sent back by the server. referral.js moves focus here so
+    screen reader users hear it. Problems found in the browser are shown next to each field instead.
+*@
+@{
+    List<string> errors = ViewData.ModelState.Values
+        .SelectMany(v => v.Errors)
+        .Select(e => e.ErrorMessage)
+        .Where(e => !string.IsNullOrEmpty(e))
+        .Distinct()
+        .ToList();
+}
+
+@if (errors.Count > 0)
+{
+    <div id="referral-errors" class="alert alert-danger" role="alert" tabindex="-1">
+        <h2 class="h6 fw-bold">There was a problem sending the form:</h2>
+        <ul class="mb-0">
+            @foreach (string error in errors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}

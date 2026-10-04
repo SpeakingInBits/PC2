@@ -65,6 +65,14 @@ the email is sent the next time the app checks (every 15 minutes while running).
   Re-run the feedback section of `PC2-TestData.sql` after deleting all rows from `Feedback` and then `FeedbackDigests` to reset it.
 - **Send real email from development:** set `EmailSender` to `SendGrid` in user secrets and configure the SendGrid settings.
 
+### Get Help Referral Forms
+The **Get Help** button in the header goes to `/GetHelp`, where visitors choose between asking for help for themselves or their family
+(`/GetHelp/Self`) and a professional referral (`/GetHelp/Professional`). Submitted referrals are emailed to the `PC2Email` address and are
+**not saved** in the database. Both forms are protected by reCAPTCHA. If Google can't be reached the referral is still sent, with a note in
+the email that it wasn't checked for spam. The answer choices (kinds of help, age ranges, etc.) are in `ReferralChoices` in `Models/Referral.cs`.
+
+In development, referral emails are saved to `PC2/DevEmails/` like other emails (see above).
+
 ### Accessibility Testing
 The website should meet [WCAG 2.2 Level AA](https://www.w3.org/WAI/WCAG22/quickref/?levels=aaa). The `PC2AccessibilityTests` project scans each page with
 [axe-core](https://github.com/dequelabs/axe-core) in a headless browser. It checks the public pages, the Resource Guide search results, and
