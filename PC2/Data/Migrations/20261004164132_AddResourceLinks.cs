@@ -81,7 +81,6 @@ namespace PC2.Data.Migrations
                     { "Pierce County Aging & Disability Resources", "https://www.co.pierce.wa.us/1986/Aging-Disability-Resources", null },
                     { "Pierce County Human Services, DD", "https://www.co.pierce.wa.us/4755/Developmental-Disabilities", null },
                     { "Reduce the Noise: Help Loved Ones with Sensory Overload Enjoy Shopping", "https://www.retailmenot.com/blog/sensory-overload-while-shopping.html", null },
-                    { "Reduced Cost Services Guide (PDF)", "/PDF/ResourceLinks/Reduced-Cost-Service-Guide-May-2023.pdf", null },
                     { "Self Advocates in Leadership (SAIL)", "https://www.selfadvocatesinleadership.com/", null },
                     { "Sesame Street Autism Resources for Parents", "https://autism.sesamestreet.org/", null },
                     { "Society for Disability Studies", "https://www.disstudies.org", null },

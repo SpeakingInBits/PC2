@@ -9,8 +9,7 @@ public class ResourceLinkTests
     [DataRow("https://www.thearc.org")]
     [DataRow("http://www.ldawa.org")]
     [DataRow("https://www.co.pierce.wa.us/1986/Aging-Disability-Resources")]
-    [DataRow("/PDF/ResourceLinks/Reduced-Cost-Service-Guide-May-2023.pdf")]
-    public void IsValidUrl_WebAddressOrSitePath_ReturnsTrue(string url)
+    public void IsValidUrl_WebAddress_ReturnsTrue(string url)
     {
         Assert.IsTrue(ResourceLink.IsValidUrl(url));
     }
@@ -25,6 +24,7 @@ public class ResourceLinkTests
     [DataRow("mailto:info@pc2online.org")]
     [DataRow("//evil.example.org")]
     [DataRow("/\\evil.example.org")]
+    [DataRow("/PDF/guide.pdf")]
     public void IsValidUrl_InvalidAddress_ReturnsFalse(string? url)
     {
         Assert.IsFalse(ResourceLink.IsValidUrl(url));

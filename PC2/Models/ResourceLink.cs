@@ -40,7 +40,7 @@ namespace PC2.Models
         public string? FileName { get; set; }
 
         /// <summary>
-        /// Returns true when the URL is a full http/https address or a path on this site (e.g. /PDF/guide.pdf).
+        /// Returns true when the URL is a full http/https address.
         /// Other schemes such as javascript: are rejected so they can't be placed in a link.
         /// </summary>
         /// <param name="url">The URL entered by the user.</param>
@@ -49,12 +49,6 @@ namespace PC2.Models
             if (string.IsNullOrWhiteSpace(url))
             {
                 return false;
-            }
-
-            if (url.StartsWith('/'))
-            {
-                // "//example.com" is a link to another site, not a path on this one
-                return !url.StartsWith("//") && !url.StartsWith("/\\");
             }
 
             return Uri.TryCreate(url, UriKind.Absolute, out Uri? uri)
