@@ -52,9 +52,6 @@
                 <a asp-controller="Home" asp-action="Index">
                     <img src="~/images/PC2-logo.jpg" alt="PC2 home page" />
                 </a>
-                @* In the header instead of the menu, which has no room for another item *@
-                <a id="get-help-button" class="btn btn-primary" asp-controller="GetHelp" asp-action="Index"
-                   aria-current="@AriaCurrent("GetHelp", "Index")">Get Help</a>
             </div>
             <div id="mainTitle">
                 @* Not an <h1> so each page can use its own <h1> for the page title *@
@@ -155,7 +152,6 @@
                 <a href="tel:+12535640707">253.564.0707</a>
                 <a href="tel:+18773354657">877.335.4657</a>
                 <a href="mailto:info@pc2online.org">info@pc2online.org</a>
-                <a asp-controller="GetHelp" asp-action="Index">Get Help</a>
             </div>
 
             <div class="footer-item" id="footer-address">

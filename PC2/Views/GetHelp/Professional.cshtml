@@ -100,11 +100,10 @@
 
             @* Live region so screen readers announce the note when referral.js shows it *@
             <div aria-live="polite">
-                <div id="no-consent-note" class="alert alert-warning" data-show-when="HasConsent" data-show-value="@ReferralChoices.No"
+                <div id="no-consent-note" class="alert alert-info" data-show-when="HasConsent" data-show-value="@ReferralChoices.No"
                      hidden="@(Model.HasConsent != ReferralChoices.No)">
-                    <strong>The family's contact details won't be sent.</strong>
-                    Without their consent, PC2 will only receive your information and will contact you about this referral.
-                    If the family agrees later, you can send a new referral with their details.
+                    We only ask for the family's contact details when they agree to share them.
+                    PC2 will contact you about this referral.
                 </div>
             </div>
 
