@@ -50,6 +50,8 @@ namespace PC2.Data
         public virtual DbSet<Feedback> Feedback { get; set; }
 
         public virtual DbSet<FeedbackDigest> FeedbackDigests { get; set; }
+
+        public virtual DbSet<ResourceLink> ResourceLinks { get; set; }
     }
 
     internal class DateOnlyConverter : ValueConverter<DateOnly, DateTime>

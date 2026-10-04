@@ -1,0 +1,34 @@
+@model PC2.Models.ResourceLink
+
+@{
+    ViewData["Title"] = "Delete Resource Link";
+}
+
+<h1>Delete "@Model.Name"</h1>
+
+<h2 class="h3">Are you sure you want to delete "@Model.Name"?</h2>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Link Text</dt>
+        <dd class="col-sm-9">@Model.Name</dd>
+        <dt class="col-sm-3">Links To</dt>
+        <dd class="col-sm-9 text-break"><a href="@Model.Url" target="_blank">@(Model.FileName ?? Model.Url)</a></dd>
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+        }
+    </dl>
+
+    @if (Model.FileName != null)
+    {
+        <p>The uploaded file will also be deleted.</p>
+    }
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ResourceLinkId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Manage">Back to List</a>
+    </form>
+</div>
