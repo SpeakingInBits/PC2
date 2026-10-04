@@ -452,8 +452,26 @@ nav a {
         margin-bottom: 0;
     }
 
-    #Resources-Index, #housing-program, #about-menu {
+    /*Opens dropdowns below their label, pushing the items under them down. As a fixed height row, an open
+      dropdown sat beside its label and covered the items below it, or ran off the side of the screen*/
+    #bootstrap-override .menu-item.dropdown {
+        flex-direction: column;
+        align-items: stretch;
+        height: auto;
+    }
+
+    #bootstrap-override .menu-item.dropdown > .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 60px;
+        width: 100%;
         padding-left: 12px;
+    }
+
+    #bootstrap-override .menu-item .dropdown-menu {
+        width: 100%;
+        margin: 0;
     }
 }
 
@@ -478,6 +496,17 @@ nav a {
 
     .ribbon {
         bottom: -50px;
+    }
+
+    /*Below about 1200px, 80% is narrower than the menu items, so the last ones stuck out past the bar. 945px fits
+      every item on two lines or fewer, including Admin Pages for signed-in staff (which needs about 915px)*/
+    #bootstrap-override nav {
+        width: max(80%, 945px);
+    }
+
+    /*Bootstrap keeps dropdown labels on one line; let this long one wrap like "Program Videos" does*/
+    #bootstrap-override #housingDropdown {
+        white-space: normal;
     }
 }
 
