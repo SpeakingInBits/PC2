@@ -71,9 +71,10 @@ namespace PC2.Controllers
         private async Task<IActionResult> SubmitAsync(ReferralSubmission referral, string reCaptchaAction,
             CancellationToken cancellationToken)
         {
+            RemoveInactiveFieldErrors(referral);
+            AddObjectValidationErrors(referral);
             if (!ModelState.IsValid)
             {
-                AddObjectValidationErrors(referral);
                 return View(referral);
             }
 
@@ -104,8 +105,25 @@ namespace PC2.Controllers
         }
 
         /// <summary>
-        /// MVC only runs <see cref="IValidatableObject.Validate"/> when every field is valid. Run it anyway so
-        /// visitors see all of the problems with the form at once, instead of fixing them in rounds.
+        /// Ignores problems with answers in sections the visitor's answers hide, e.g. a mistyped email in the
+        /// child's section after switching the referral to "Myself"
+        /// </summary>
+        private void RemoveInactiveFieldErrors(ReferralSubmission referral)
+        {
+            List<string> inactiveFields = referral.GetInactiveFields().ToList();
+            foreach (string key in ModelState.Keys.ToList())
+            {
+                if (inactiveFields.Any(field => key == field || key.StartsWith(field + ".")))
+                {
+                    ModelState.Remove(key);
+                }
+            }
+        }
+
+        /// <summary>
+        /// MVC only runs <see cref="IValidatableObject.Validate"/> when every field is valid, and errors in hidden
+        /// sections could have stopped it running. Run it here so visitors see all of the problems at once.
+        /// Problems MVC already found aren't added twice.
         /// </summary>
         private void AddObjectValidationErrors(ReferralSubmission referral)
         {

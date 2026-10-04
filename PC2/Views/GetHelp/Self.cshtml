@@ -4,14 +4,17 @@
 
 @{
     ViewData["Title"] = "Ask for Help";
-    ViewData["AdditionalInformationLabel"] = "Tell us about your situation and how we can help";
+
+    ViewDataDictionary SectionData(ReferralPersonSection section) => new(ViewData) { ["Section"] = section };
+    RadioGroupViewModel YesNo(string name, string? selected, string? requiredMessage) =>
+        new(name, Html.DisplayName(name), ReferralChoices.YesNo, selected, requiredMessage);
 }
 
 <h1>@ViewData["Title"]</h1>
 
 <p>
-    Fill out this form and a member of the PC2 team will contact you. If you're a professional referring someone
-    you work with, please use the <a asp-action="Professional">professional referral form</a>.
+    Fill out this form and a member of the PC2 team will contact you. If you work for a partner, school, or
+    organization and are referring someone, please use the <a asp-action="Professional">professional referral form</a>.
 </p>
 
 <div class="row">
@@ -26,68 +29,53 @@
                 Html.DisplayNameFor(m => m.ReferringFor), ReferralChoices.ReferringFor, Model.ReferringFor,
                 SelfReferral.ReferringForRequiredMessage)" />
 
-            <h2 class="h4 mt-4">Your contact information</h2>
+            <partial name="_ReferralQuestions" model="Model" />
 
-            <div class="row">
-                <div class="col-md-6 form-group mb-3">
-                    <label asp-for="FirstName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
-                    <input asp-for="FirstName" class="form-control" autocomplete="given-name" aria-required="true" />
-                    <span asp-validation-for="FirstName" class="text-danger"></span>
-                </div>
-                <div class="col-md-6 form-group mb-3">
-                    <label asp-for="LastName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
-                    <input asp-for="LastName" class="form-control" autocomplete="family-name" aria-required="true" />
-                    <span asp-validation-for="LastName" class="text-danger"></span>
-                </div>
+            @* Shown by referral.js when "Myself" is chosen *@
+            <div data-show-when="ReferringFor" data-show-value="@ReferralChoices.Myself" hidden="@(Model.ReferringFor != ReferralChoices.Myself)">
+                <h2 class="h4 mt-4">@SelfReferral.SelfSection.Heading</h2>
+                <partial name="_ReferralPerson" for="Self" view-data="SectionData(SelfReferral.SelfSection)" />
+                <partial name="_RadioGroup" model="YesNo(nameof(Model.HasChildWithDisability), Model.HasChildWithDisability,
+                    SelfReferral.HasChildWithDisabilityRequiredMessage)" />
+                <partial name="_RadioGroup" model="YesNo(nameof(Model.CaresForAdult), Model.CaresForAdult,
+                    SelfReferral.CaresForAdultRequiredMessage)" />
+                <partial name="_RadioGroup" model="YesNo(nameof(Model.PaidToCareForAdultChild), Model.PaidToCareForAdultChild,
+                    SelfReferral.PaidToCareForAdultChildRequiredMessage)" />
             </div>
 
-            <p id="contact-help" class="form-text mt-0">Please enter a phone number, an email address, or both.</p>
-            <div class="row">
-                <div class="col-md-6 form-group mb-3">
-                    <label asp-for="Phone" class="form-label"></label>
-                    <input asp-for="Phone" class="form-control" autocomplete="tel" aria-describedby="contact-help" />
-                    <span asp-validation-for="Phone" class="text-danger"></span>
-                </div>
-                <div class="col-md-6 form-group mb-3">
-                    <label asp-for="Email" class="form-label"></label>
-                    <input asp-for="Email" class="form-control" autocomplete="email" aria-describedby="contact-help" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
+            @* Shown by referral.js when "My child" is chosen *@
+            <div data-show-when="ReferringFor" data-show-value="@ReferralChoices.MyChild" hidden="@(Model.ReferringFor != ReferralChoices.MyChild)">
+                <h2 class="h4 mt-4">@ReferralSubmission.ParentSection.Heading</h2>
+                <partial name="_ReferralPerson" for="Parent" view-data="SectionData(ReferralSubmission.ParentSection)" />
+                <partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.AgeRange),
+                    Html.DisplayNameFor(m => m.AgeRange), ReferralChoices.AgeRanges, Model.AgeRange, SelfReferral.AgeRangeRequiredMessage)" />
+
+                <h2 class="h4 mt-4">@SelfReferral.ChildSection.Heading</h2>
+                <partial name="_ReferralPerson" for="Child" view-data="SectionData(SelfReferral.ChildSection)" />
+                <partial name="_RadioGroup" model="YesNo(nameof(Model.ChildIsAdultWithPaidCaregiver), Model.ChildIsAdultWithPaidCaregiver, null)" />
             </div>
 
-            <partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.PreferredContactMethod),
-                Html.DisplayNameFor(m => m.PreferredContactMethod), ReferralChoices.ContactMethods, Model.PreferredContactMethod)" />
+            @* Shown by referral.js when "Family member or friend" is chosen *@
+            <div data-show-when="ReferringFor" data-show-value="@ReferralChoices.FamilyMemberOrFriend"
+                 hidden="@(Model.ReferringFor != ReferralChoices.FamilyMemberOrFriend)">
+                <h2 class="h4 mt-4">@SelfReferral.ReferrerSection.Heading</h2>
+                <partial name="_ReferralPerson" for="Referrer" view-data="SectionData(SelfReferral.ReferrerSection)" />
 
-            <div class="row">
-                <div class="col-md-6 form-group mb-3">
-                    <label asp-for="BestTimesToContact" class="form-label"></label>
-                    <input asp-for="BestTimesToContact" class="form-control" aria-describedby="best-times-help" />
-                    <div id="best-times-help" class="form-text">For example, weekday mornings.</div>
-                    <span asp-validation-for="BestTimesToContact" class="text-danger"></span>
-                </div>
-                <div class="col-md-6 form-group mb-3">
-                    <label asp-for="ZipCode" class="form-label"></label>
-                    <input asp-for="ZipCode" class="form-control" autocomplete="postal-code" inputmode="numeric" />
-                    <span asp-validation-for="ZipCode" class="text-danger"></span>
-                </div>
+                <h2 class="h4 mt-4">@SelfReferral.FamilyMemberSection.Heading</h2>
+                <partial name="_ReferralPerson" for="FamilyMember" view-data="SectionData(SelfReferral.FamilyMemberSection)" />
+                <partial name="_RadioGroup" model="YesNo(nameof(Model.CaringWithoutPay), Model.CaringWithoutPay,
+                    SelfReferral.CaringWithoutPayRequiredMessage)" />
             </div>
 
-            <h2 class="h4 mt-4">About the person who needs help</h2>
-
-            <div class="row">
-                <div class="col-md-6 form-group mb-3">
-                    <label asp-for="PersonName" class="form-label"></label>
-                    <input asp-for="PersonName" class="form-control" aria-describedby="person-name-help" />
-                    <div id="person-name-help" class="form-text">Leave blank if you are asking for help for yourself.</div>
-                    <span asp-validation-for="PersonName" class="text-danger"></span>
+            <div class="form-group mb-3 mt-4">
+                <label asp-for="Situation" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <textarea asp-for="Situation" class="form-control" rows="6" aria-required="true" aria-describedby="situation-help"></textarea>
+                <div id="situation-help" class="form-text">
+                    Please don't include Social Security numbers, medical records, or other private documents.
+                    Up to @ReferralSubmission.LongTextMaxLength characters.
                 </div>
+                <span asp-validation-for="Situation" class="text-danger"></span>
             </div>
-
-            <partial name="_ReferralNeeds" model="Model" />
-
-            <h2 class="h4 mt-4">Anything else?</h2>
-
-            <partial name="_ReferralClosing" model="Model" />
 
             <button type="submit" class="btn btn-primary">Send</button>
         </form>

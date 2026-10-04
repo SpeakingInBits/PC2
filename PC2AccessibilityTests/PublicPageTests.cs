@@ -39,6 +39,30 @@ public class PublicPageTests
         await AccessibilityScanner.AssertPageIsAccessibleAsync(page, path);
     }
 
+    /// <summary>
+    /// The referral forms hide sections until an answer shows them, and axe skips hidden content
+    /// </summary>
+    [TestMethod]
+    [DataRow("/GetHelp/Self", "#ReferringFor-0")]
+    [DataRow("/GetHelp/Self", "#ReferringFor-1")]
+    [DataRow("/GetHelp/Self", "#ReferringFor-2")]
+    [DataRow("/GetHelp/Professional", "#HasConsent-0")]
+    public async Task GetHelp_SectionsShownByAnswers_MeetWcag(string path, string answerSelector)
+    {
+        IPage page = await AccessibilityTestSite.NewPageAsync();
+        try
+        {
+            await page.GotoAsync(path);
+            await page.CheckAsync(answerSelector);
+
+            await AccessibilityScanner.AssertNoViolationsAsync(page);
+        }
+        finally
+        {
+            await page.Context.CloseAsync();
+        }
+    }
+
     [TestMethod]
     public async Task ResourceGuide_SearchResults_MeetWcag()
     {

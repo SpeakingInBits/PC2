@@ -1,7 +1,9 @@
 @model PC2.Models.ViewModels.RadioGroupViewModel
 @{
     string? error = ViewData.ModelState[Model.Name]?.Errors.FirstOrDefault()?.ErrorMessage;
-    string errorId = $"{Model.Name}-error";
+    // Names of nested fields contain dots, e.g. "Parent.OkToText", which aren't convenient in ids
+    string idPrefix = Model.Name.Replace('.', '_');
+    string errorId = $"{idPrefix}-error";
 }
 
 <fieldset class="mb-3" aria-describedby="@errorId">
@@ -16,15 +18,18 @@
     @for (int i = 0; i < Model.Choices.Count; i++)
     {
         string choice = Model.Choices[i];
-        string id = $"{Model.Name}-{i}";
+        string id = $"{idPrefix}-{i}";
         <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="@Model.Name" id="@id" value="@choice"
                    checked="@(Model.Selected == choice)"
-                   data-val="@(Model.IsRequired ? "true" : null)" data-val-required="@Model.RequiredMessage" />
+                   required="@Model.IsRequired" data-msg-required="@Model.RequiredMessage" />
             <label class="form-check-label" for="@id">@choice</label>
         </div>
     }
-    @* Filled in by the server, or by jQuery Validation when nothing is chosen *@
+    @*
+        Filled in by the server, or by jQuery Validation when nothing is chosen. jQuery Validation uses the
+        "required" attribute, and skips it while the radio buttons are in a hidden section.
+    *@
     <span id="@errorId" class="d-block text-danger @(error == null ? "field-validation-valid" : "field-validation-error")"
           data-valmsg-for="@Model.Name" data-valmsg-replace="true">@error</span>
 </fieldset>

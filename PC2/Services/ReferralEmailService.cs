@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using IdentityLogin.Models;
@@ -97,9 +99,10 @@ public class ReferralEmailService
     {
         string subject = referral switch
         {
-            ProfessionalReferral professional =>
-                $"New professional referral: {professional.ContactName} (from {professional.OrganizationName})",
-            SelfReferral self => $"New Get Help request: {self.FirstName} {self.LastName} (for {DescribeReferringFor(self.ReferringFor)})",
+            ProfessionalReferral { IsConsentGiven: true } professional =>
+                $"New professional referral: {FullName(professional.Parent)} (from {professional.OrganizationName})",
+            ProfessionalReferral professional => $"New professional referral from {professional.OrganizationName}",
+            SelfReferral self => $"New Get Help request: {FullName(GetContactPerson(self))} (for {DescribeReferringFor(self.ReferringFor)})",
             _ => "New Get Help request"
         };
 
@@ -107,16 +110,29 @@ public class ReferralEmailService
         return Regex.Replace(subject, @"\s+", " ").Trim();
     }
 
+    /// <summary>
+    /// The person PC2 should contact about a self-referral
+    /// </summary>
+    private static ReferralPerson GetContactPerson(SelfReferral referral) => referral.ReferringFor switch
+    {
+        ReferralChoices.MyChild => referral.Parent,
+        ReferralChoices.FamilyMemberOrFriend => referral.Referrer,
+        _ => referral.Self
+    };
+
+    private static string FullName(ReferralPerson person) => $"{person.FirstName} {person.LastName}";
+
     private static string DescribeReferringFor(string? referringFor) => referringFor switch
     {
-        "Myself" => "themselves",
-        "My child" => "their child",
-        "A family member or friend" => "a family member or friend",
+        ReferralChoices.Myself => "themselves",
+        ReferralChoices.MyChild => "their child",
+        ReferralChoices.FamilyMemberOrFriend => "a family member or friend",
         _ => "unknown"
     };
 
     /// <summary>
-    /// Lists the answers on the referral, grouped the same way as on the form
+    /// Lists the answers on the referral, grouped the same way as on the form. Sections hidden by the
+    /// visitor's answers are left out.
     /// </summary>
     public static List<ReferralEmailSection> BuildSections(ReferralSubmission referral)
     {
@@ -124,46 +140,66 @@ public class ReferralEmailService
 
         if (referral is SelfReferral self)
         {
-            sections.Add(new ReferralEmailSection("Contact information",
+            sections.Add(new ReferralEmailSection("Referral",
             [
-                new("Who needs help", self.ReferringFor),
-                new("Name", $"{self.FirstName} {self.LastName}"),
-                new("Phone", self.Phone, ReferralEmailFieldType.Phone),
-                new("Email", self.Email, ReferralEmailFieldType.Email),
-                new("Best way to contact", self.PreferredContactMethod),
-                new("Best days and times", referral.BestTimesToContact),
-                new("ZIP code", self.ZipCode)
+                Field(self, nameof(SelfReferral.ReferringFor)),
+                Field(self, nameof(ReferralSubmission.Purpose)),
+                Field(self, nameof(ReferralSubmission.BestTimesToContact)),
+                Field(self, nameof(ReferralSubmission.HowHeard))
             ]));
-            sections.Add(new ReferralEmailSection("About the person who needs help", PersonFields(referral, self.PersonName)));
+
+            switch (self.ReferringFor)
+            {
+                case ReferralChoices.Myself:
+                    sections.Add(PersonSection(self, SelfReferral.SelfSection,
+                        Field(self, nameof(SelfReferral.HasChildWithDisability)),
+                        Field(self, nameof(SelfReferral.CaresForAdult)),
+                        Field(self, nameof(SelfReferral.PaidToCareForAdultChild))));
+                    break;
+                case ReferralChoices.MyChild:
+                    sections.Add(PersonSection(self, ReferralSubmission.ParentSection, Field(self, nameof(SelfReferral.AgeRange))));
+                    sections.Add(PersonSection(self, SelfReferral.ChildSection,
+                        Field(self, nameof(SelfReferral.ChildIsAdultWithPaidCaregiver))));
+                    break;
+                case ReferralChoices.FamilyMemberOrFriend:
+                    sections.Add(PersonSection(self, SelfReferral.ReferrerSection));
+                    sections.Add(PersonSection(self, SelfReferral.FamilyMemberSection,
+                        Field(self, nameof(SelfReferral.CaringWithoutPay))));
+                    break;
+            }
+
+            sections.Add(new ReferralEmailSection("Their situation", [Field(self, nameof(SelfReferral.Situation))]));
         }
         else if (referral is ProfessionalReferral professional)
         {
-            sections.Add(new ReferralEmailSection("Person or family to contact",
+            sections.Add(new ReferralEmailSection("Referral",
             [
-                new("Name", professional.ContactName),
-                new("Phone", professional.ContactPhone, ReferralEmailFieldType.Phone),
-                new("Email", professional.ContactEmail, ReferralEmailFieldType.Email),
-                new("Best way to contact", professional.ContactPreferredMethod),
-                new("Best days and times", referral.BestTimesToContact),
-                new("ZIP code", professional.ZipCode)
+                Field(professional, nameof(ReferralSubmission.Purpose)),
+                Field(professional, nameof(ReferralSubmission.BestTimesToContact)),
+                Field(professional, nameof(ReferralSubmission.HowHeard))
             ]));
-            sections.Add(new ReferralEmailSection("About the person with a disability", PersonFields(referral, professional.PersonName)));
             sections.Add(new ReferralEmailSection("Referred by",
             [
-                new("Name", $"{professional.FirstName} {professional.LastName}"),
-                new("Organization", professional.OrganizationName),
-                new("Role or relationship", professional.RoleOrRelationship),
-                new("Phone", professional.Phone, ReferralEmailFieldType.Phone),
-                new("Email", professional.Email, ReferralEmailFieldType.Email),
-                new("Family agreed to the referral", professional.HasConsent ? "Yes" : "No")
+                Field(professional, nameof(ProfessionalReferral.OrganizationName)),
+                new("Name", FullName(new ReferralPerson { FirstName = professional.FirstName, LastName = professional.LastName })),
+                Field(professional, nameof(ProfessionalReferral.RoleOrRelationship)),
+                Field(professional, nameof(ProfessionalReferral.Phone), ReferralEmailFieldType.Phone),
+                Field(professional, nameof(ProfessionalReferral.Email), ReferralEmailFieldType.Email)
             ]));
+            sections.Add(new ReferralEmailSection("About the family",
+            [
+                Field(professional, nameof(ProfessionalReferral.FamilyPrimaryLanguage)),
+                Field(professional, nameof(ProfessionalReferral.NeedsLanguageSupport)),
+                Field(professional, nameof(ProfessionalReferral.Diagnosis)),
+                Field(professional, nameof(ProfessionalReferral.AgeRange)),
+                Field(professional, nameof(ProfessionalReferral.AdditionalInformation)),
+                Field(professional, nameof(ProfessionalReferral.HasConsent))
+            ]));
+            if (professional.IsConsentGiven)
+            {
+                sections.Add(PersonSection(professional, ReferralSubmission.ParentSection));
+            }
         }
-
-        sections.Add(new ReferralEmailSection("Other",
-        [
-            new("How they heard about PC2", referral.HowHeard),
-            new("Additional information", referral.AdditionalInformation)
-        ]));
 
         // Leave out questions that weren't answered, and any section left empty
         return sections
@@ -172,25 +208,31 @@ public class ReferralEmailService
             .ToList();
     }
 
-    private static List<ReferralEmailField> PersonFields(ReferralSubmission referral, string? personName)
+    /// <summary>
+    /// An answer labeled with the question's display name
+    /// </summary>
+    private static ReferralEmailField Field(ReferralSubmission referral, string propertyName,
+        ReferralEmailFieldType type = ReferralEmailFieldType.Text)
     {
-        List<string> purposes = ReferralChoices.Purposes
-            .Where(p => p != ReferralChoices.OtherPurpose && referral.Purposes.Contains(p))
-            .ToList();
-        if (referral.Purposes.Contains(ReferralChoices.OtherPurpose))
-        {
-            purposes.Add($"Other: {referral.OtherPurpose?.Trim()}");
-        }
+        PropertyInfo property = referral.GetType().GetProperty(propertyName)!;
+        string label = property.GetCustomAttribute<DisplayAttribute>()?.Name ?? propertyName;
+        return new ReferralEmailField(label, property.GetValue(referral) as string, type);
+    }
 
-        return
-        [
-            new("Name", personName),
-            new("Help needed", string.Join("\n", purposes)),
-            new("Age", referral.AgeRange),
-            new("Has a diagnosis", referral.Diagnosis),
-            new("Primary language", referral.PrimaryLanguage),
-            new("Interpreter needed", referral.NeedsInterpreter)
-        ];
+    private static ReferralEmailSection PersonSection(ReferralSubmission referral, ReferralPersonSection section,
+        params ReferralEmailField[] extraFields)
+    {
+        ReferralPerson person = referral.GetPerson(section);
+        IEnumerable<ReferralEmailField> fields = section.Fields.Select(field => new ReferralEmailField(
+            ReferralPerson.GetDisplayName(field),
+            person.GetValue(field),
+            field switch
+            {
+                nameof(ReferralPerson.MobileNumber) => ReferralEmailFieldType.Phone,
+                nameof(ReferralPerson.Email) => ReferralEmailFieldType.Email,
+                _ => ReferralEmailFieldType.Text
+            }));
+        return new ReferralEmailSection(section.Heading, fields.Concat(extraFields).ToList());
     }
 
     public static string BuildPlainText(ReferralSubmission referral, List<ReferralEmailSection> sections, DateTime localSubmittedAt,

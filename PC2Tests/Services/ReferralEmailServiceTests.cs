@@ -50,73 +50,109 @@ public class ReferralEmailServiceTests
             TimeProvider.System, Mock.Of<ILogger<ReferralEmailService>>());
     }
 
-    private static SelfReferral SelfReferral() => new()
+    private static SelfReferral ChildReferral() => new()
     {
-        ReferringFor = "My child",
-        FirstName = "Jamie",
-        LastName = "Rivera",
-        Phone = "(253) 555-0100",
-        Email = "jamie@example.com",
-        PersonName = "Sam Rivera",
-        Purposes = [ReferralChoices.OtherPurpose, "Education and IEP support"],
-        OtherPurpose = "Summer camps",
-        AdditionalInformation = "Sam is <b>16</b>.\nWe need help with the IEP."
+        ReferringFor = ReferralChoices.MyChild,
+        Purpose = "Education support",
+        BestTimesToContact = "Weekday mornings",
+        HowHeard = "At school",
+        Parent = new ReferralPerson
+        {
+            FirstName = "Jamie", LastName = "Rivera", ZipCode = "98418", MobileNumber = "(253) 555-0100", Email = "jamie@example.com"
+        },
+        AgeRange = "6-18",
+        Child = new ReferralPerson
+        {
+            FirstName = "Sam", LastName = "Rivera", DateOfBirth = new DateTime(2012, 3, 4), Diagnosis = "Suspected",
+            Race = "Two or more races", PrimaryLanguage = "Spanish", CountryOfOrigin = "Mexico"
+        },
+        // Typed before switching to "My child", so it should be left out of the email
+        Self = new ReferralPerson { FirstName = "Hidden", Email = "hidden@example.com" },
+        Situation = "Sam is <b>13</b>.\nWe need help with the IEP."
     };
 
-    private static ProfessionalReferral ProfessionalReferral() => new()
+    private static ProfessionalReferral CompleteProfessionalReferral(string hasConsent = "Yes") => new()
     {
+        Purpose = "DDA services",
+        BestTimesToContact = "Afternoons",
+        HowHeard = "Community based organization",
         OrganizationName = "Tacoma Public Schools",
         FirstName = "Pat",
         LastName = "Lee",
         RoleOrRelationship = "Special education teacher",
+        Phone = "253-555-0199",
         Email = "pat@example.org",
-        ContactName = "Alex Morgan",
-        ContactPhone = "253-555-0199",
-        Purposes = ["Transition to adulthood"],
-        HasConsent = true
+        FamilyPrimaryLanguage = "Somali",
+        NeedsLanguageSupport = "Yes",
+        Diagnosis = "Yes",
+        AgeRange = "19-26",
+        AdditionalInformation = "Finishing transition program.",
+        HasConsent = hasConsent,
+        Parent = new ReferralPerson { FirstName = "Alex", LastName = "Morgan", MobileNumber = "253-555-0123", Email = "alex@example.com" }
     };
 
     [TestMethod]
-    public async Task SendAsync_SelfReferral_EmailsPC2()
+    public async Task SendAsync_ChildReferral_EmailsPC2()
     {
-        bool isSent = await CreateService().SendAsync(SelfReferral(), isSpamCheckSkipped: false);
+        bool isSent = await CreateService().SendAsync(ChildReferral(), isSpamCheckSkipped: false);
 
         Assert.IsTrue(isSent);
         Assert.AreEqual(PC2Email, _sentTo);
         Assert.AreEqual("New Get Help request: Jamie Rivera (for their child)", _sentSubject);
         StringAssert.Contains(_sentPlainText, "Self-referral");
-        StringAssert.Contains(_sentPlainText, "Who needs help: My child");
-        StringAssert.Contains(_sentPlainText, "Name: Sam Rivera");
+        StringAssert.Contains(_sentPlainText, "PARENT OR CAREGIVER DETAILS");
+        StringAssert.Contains(_sentPlainText, "CHILD DETAILS");
+        StringAssert.Contains(_sentPlainText, "Date of birth: March 4, 2012");
+        StringAssert.Contains(_sentPlainText, "Country of origin: Mexico");
         StringAssert.Contains(_sentHtml, "<a href=\"mailto:jamie@example.com\">jamie@example.com</a>");
         StringAssert.Contains(_sentHtml, "<a href=\"tel:2535550100\">(253) 555-0100</a>");
     }
 
     [TestMethod]
-    public async Task SendAsync_ProfessionalReferral_IncludesReferrer()
+    public async Task SendAsync_LeavesOutSectionsHiddenByAnswers()
     {
-        bool isSent = await CreateService().SendAsync(ProfessionalReferral(), isSpamCheckSkipped: false);
+        await CreateService().SendAsync(ChildReferral(), isSpamCheckSkipped: false);
+
+        Assert.IsFalse(_sentPlainText!.Contains("Hidden"));
+        Assert.IsFalse(_sentPlainText.Contains("YOUR DETAILS"));
+    }
+
+    [TestMethod]
+    public async Task SendAsync_ProfessionalReferralWithConsent_IncludesParent()
+    {
+        bool isSent = await CreateService().SendAsync(CompleteProfessionalReferral(), isSpamCheckSkipped: false);
 
         Assert.IsTrue(isSent);
         Assert.AreEqual("New professional referral: Alex Morgan (from Tacoma Public Schools)", _sentSubject);
         StringAssert.Contains(_sentPlainText, "Professional referral");
         StringAssert.Contains(_sentPlainText, "REFERRED BY");
-        StringAssert.Contains(_sentPlainText, "Organization: Tacoma Public Schools");
-        StringAssert.Contains(_sentPlainText, "Family agreed to the referral: Yes");
+        StringAssert.Contains(_sentPlainText, "Name of your organization, agency, or affiliation: Tacoma Public Schools");
+        StringAssert.Contains(_sentPlainText, "PARENT OR CAREGIVER DETAILS");
+    }
+
+    [TestMethod]
+    public async Task SendAsync_ProfessionalReferralWithoutConsent_LeavesOutParent()
+    {
+        await CreateService().SendAsync(CompleteProfessionalReferral(hasConsent: "No"), isSpamCheckSkipped: false);
+
+        Assert.AreEqual("New professional referral from Tacoma Public Schools", _sentSubject);
+        Assert.IsFalse(_sentPlainText!.Contains("Alex"));
+        StringAssert.Contains(_sentPlainText, "Did the family give you consent to share their information?: No");
     }
 
     [TestMethod]
     public async Task SendAsync_EncodesVisitorTextInHtml()
     {
-        await CreateService().SendAsync(SelfReferral(), isSpamCheckSkipped: false);
+        await CreateService().SendAsync(ChildReferral(), isSpamCheckSkipped: false);
 
-        Assert.IsFalse(_sentHtml!.Contains("<b>16</b>"));
-        StringAssert.Contains(_sentHtml, "Sam is &lt;b&gt;16&lt;/b&gt;.");
+        Assert.IsFalse(_sentHtml!.Contains("<b>13</b>"));
+        StringAssert.Contains(_sentHtml, "Sam is &lt;b&gt;13&lt;/b&gt;.");
     }
 
     [TestMethod]
     public async Task SendAsync_SpamCheckSkipped_NotesItInEmail()
     {
-        await CreateService().SendAsync(SelfReferral(), isSpamCheckSkipped: true);
+        await CreateService().SendAsync(ChildReferral(), isSpamCheckSkipped: true);
 
         StringAssert.Contains(_sentPlainText, "could not check this submission for spam");
         StringAssert.Contains(_sentHtml, "could not check this submission for spam");
@@ -125,7 +161,7 @@ public class ReferralEmailServiceTests
     [TestMethod]
     public async Task SendAsync_SpamCheckPassed_DoesNotMentionSpam()
     {
-        await CreateService().SendAsync(SelfReferral(), isSpamCheckSkipped: false);
+        await CreateService().SendAsync(ChildReferral(), isSpamCheckSkipped: false);
 
         Assert.IsFalse(_sentPlainText!.Contains("spam"));
     }
@@ -135,7 +171,7 @@ public class ReferralEmailServiceTests
     {
         SetupEmailResponse(HttpStatusCode.Unauthorized);
 
-        Assert.IsFalse(await CreateService().SendAsync(SelfReferral(), isSpamCheckSkipped: false));
+        Assert.IsFalse(await CreateService().SendAsync(ChildReferral(), isSpamCheckSkipped: false));
     }
 
     [TestMethod]
@@ -145,13 +181,13 @@ public class ReferralEmailServiceTests
             .Setup(s => s.SendHtmlEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ThrowsAsync(new HttpRequestException("SendGrid is down"));
 
-        Assert.IsFalse(await CreateService().SendAsync(SelfReferral(), isSpamCheckSkipped: false));
+        Assert.IsFalse(await CreateService().SendAsync(ChildReferral(), isSpamCheckSkipped: false));
     }
 
     [TestMethod]
     public async Task SendAsync_NoPC2Email_DoesNotSend()
     {
-        Assert.IsFalse(await CreateService(pc2Email: null).SendAsync(SelfReferral(), isSpamCheckSkipped: false));
+        Assert.IsFalse(await CreateService(pc2Email: null).SendAsync(ChildReferral(), isSpamCheckSkipped: false));
         _emailSenderMock.Verify(s => s.SendHtmlEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
             Times.Never);
     }
@@ -159,8 +195,8 @@ public class ReferralEmailServiceTests
     [TestMethod]
     public void BuildSubject_RemovesLineBreaks()
     {
-        SelfReferral referral = SelfReferral();
-        referral.FirstName = "Jamie\r\nBcc: someone@example.com";
+        SelfReferral referral = ChildReferral();
+        referral.Parent.FirstName = "Jamie\r\nBcc: someone@example.com";
 
         string subject = ReferralEmailService.BuildSubject(referral);
 
@@ -170,37 +206,13 @@ public class ReferralEmailServiceTests
     [TestMethod]
     public void BuildSections_LeavesOutUnansweredQuestions()
     {
-        SelfReferral referral = SelfReferral();
-        referral.Email = null;
-        referral.AgeRange = null;
+        SelfReferral referral = ChildReferral();
 
-        List<ReferralEmailField> fields = ReferralEmailService.BuildSections(referral).SelectMany(s => s.Fields).ToList();
+        List<ReferralEmailField> parentFields = ReferralEmailService.BuildSections(referral)
+            .Single(s => s.Heading == ReferralSubmission.ParentSection.Heading)
+            .Fields.ToList();
 
-        Assert.IsFalse(fields.Any(f => f.Label == "Email"));
-        Assert.IsFalse(fields.Any(f => f.Label == "Age"));
-        Assert.IsTrue(fields.All(f => !string.IsNullOrWhiteSpace(f.Value)));
-    }
-
-    [TestMethod]
-    public void BuildSections_ListsPurposesInFormOrderWithOtherLast()
-    {
-        ReferralEmailField helpNeeded = ReferralEmailService.BuildSections(SelfReferral())
-            .SelectMany(s => s.Fields)
-            .Single(f => f.Label == "Help needed");
-
-        Assert.AreEqual("Education and IEP support\nOther: Summer camps", helpNeeded.Value);
-    }
-
-    [TestMethod]
-    public void BuildSections_IgnoresPurposesNotOffered()
-    {
-        SelfReferral referral = SelfReferral();
-        referral.Purposes.Add("<script>alert(1)</script>");
-
-        ReferralEmailField helpNeeded = ReferralEmailService.BuildSections(referral)
-            .SelectMany(s => s.Fields)
-            .Single(f => f.Label == "Help needed");
-
-        Assert.IsFalse(helpNeeded.Value!.Contains("script"));
+        Assert.IsFalse(parentFields.Any(f => f.Label == "Date of birth"));
+        Assert.IsTrue(parentFields.All(f => !string.IsNullOrWhiteSpace(f.Value)));
     }
 }

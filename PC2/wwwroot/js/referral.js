@@ -1,4 +1,4 @@
-// Adds a reCAPTCHA token to the Get Help referral forms before they are sent.
+// Shows the sections of the Get Help referral forms that apply, and adds a reCAPTCHA token before they are sent.
 // Requires _ReCaptchaScriptsPartial, which defines getReCaptchaToken.
 (function () {
     // Move focus to the list of problems when the server sends the form back, so screen readers announce it
@@ -11,6 +11,23 @@
     if (!form) {
         return;
     }
+
+    // Show only the sections that apply to the visitor's answers, e.g. the child's details after choosing "My child".
+    // Each section names the radio buttons and value it depends on in data-show-when and data-show-value.
+    // jQuery Validation skips fields in hidden sections, and the server ignores them.
+    const conditionalSections = form.querySelectorAll("[data-show-when]");
+    function showSectionsForAnswers() {
+        conditionalSections.forEach(function (section) {
+            const selected = form.querySelector(`input[name="${section.dataset.showWhen}"]:checked`);
+            section.hidden = !selected || selected.value !== section.dataset.showValue;
+        });
+    }
+    form.addEventListener("change", function (event) {
+        if (event.target.type === "radio") {
+            showSectionsForAnswers();
+        }
+    });
+    showSectionsForAnswers();
 
     const submitButton = form.querySelector("button[type=submit]");
     const submitText = submitButton.textContent;

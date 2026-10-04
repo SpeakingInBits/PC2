@@ -69,7 +69,12 @@ the email is sent the next time the app checks (every 15 minutes while running).
 The **Get Help** button in the header goes to `/GetHelp`, where visitors choose between asking for help for themselves or their family
 (`/GetHelp/Self`) and a professional referral (`/GetHelp/Professional`). Submitted referrals are emailed to the `PC2Email` address and are
 **not saved** in the database. Both forms are protected by reCAPTCHA. If Google can't be reached the referral is still sent, with a note in
-the email that it wasn't checked for spam. The answer choices (kinds of help, age ranges, etc.) are in `ReferralChoices` in `Models/Referral.cs`.
+the email that it wasn't checked for spam.
+
+The questions follow the [Open Doors for Multicultural Families referral form](https://www.tfaforms.com/forms/view/4979848), which the
+client chose as an example, until the client asks for changes. Some sections only appear after certain answers, e.g. the child's details
+after choosing "My child". The answer choices are in `ReferralChoices`, and the questions in each section are set by the
+`ReferralPersonSection`s, both in `Models/Referral.cs`.
 
 In development, referral emails are saved to `PC2/DevEmails/` like other emails (see above).
 

@@ -66,25 +66,42 @@ public class GetHelpControllerTests
 
     private static SelfReferral ValidSelfReferral() => new()
     {
-        ReferringFor = "Myself",
-        FirstName = "Jamie",
-        LastName = "Rivera",
-        Email = "jamie@example.com",
-        Purposes = ["Employment"],
+        ReferringFor = ReferralChoices.FamilyMemberOrFriend,
+        Purpose = "Basic needs",
+        BestTimesToContact = "Evenings",
+        HowHeard = "Friend or relative",
+        Referrer = new ReferralPerson
+        {
+            FirstName = "Jamie", LastName = "Rivera", MobileNumber = "253-555-0100", OkToText = "No",
+            Email = "jamie@example.com", ZipCode = "98418"
+        },
+        FamilyMember = new ReferralPerson
+        {
+            FirstName = "Chris", LastName = "Rivera", DateOfBirth = new DateTime(1980, 1, 2), Diagnosis = "Yes",
+            Race = "Unknown", PrimaryLanguage = "English", CountryOfOrigin = "United States"
+        },
+        CaringWithoutPay = "Yes",
+        Situation = "Chris needs help finding housing.",
         ReCaptchaToken = "token"
     };
 
     private static ProfessionalReferral ValidProfessionalReferral() => new()
     {
+        Purpose = "DDA services",
+        BestTimesToContact = "Afternoons",
+        HowHeard = "Community based organization",
         OrganizationName = "Tacoma Public Schools",
         FirstName = "Pat",
         LastName = "Lee",
         RoleOrRelationship = "Special education teacher",
+        Phone = "253-555-0199",
         Email = "pat@example.org",
-        ContactName = "Alex Morgan",
-        ContactPhone = "253-555-0199",
-        Purposes = ["Transition to adulthood"],
-        HasConsent = true,
+        FamilyPrimaryLanguage = "Somali",
+        NeedsLanguageSupport = "Yes",
+        Diagnosis = "Yes",
+        AgeRange = "19-26",
+        AdditionalInformation = "Finishing transition program.",
+        HasConsent = "No",
         ReCaptchaToken = "token"
     };
 
@@ -152,17 +169,17 @@ public class GetHelpControllerTests
     {
         // MVC skips IValidatableObject when a field is invalid; the controller still reports those problems
         SelfReferral referral = ValidSelfReferral();
-        referral.FirstName = null;
-        referral.Email = null;
-        referral.Purposes = [];
-        _controller.ModelState.AddModelError(nameof(SelfReferral.FirstName), "Please enter your first name.");
+        referral.Situation = null;
+        referral.Referrer.Email = null;
+        referral.CaringWithoutPay = null;
+        _controller.ModelState.AddModelError(nameof(SelfReferral.Situation), "Information about your situation is required.");
 
         IActionResult result = await _controller.Self(referral, CancellationToken.None);
 
         Assert.IsInstanceOfType<ViewResult>(result);
-        Assert.AreEqual(1, _controller.ModelState[nameof(SelfReferral.FirstName)]!.Errors.Count);
-        Assert.IsTrue(_controller.ModelState[nameof(SelfReferral.Phone)]!.Errors.Count > 0);
-        Assert.IsTrue(_controller.ModelState[nameof(ReferralSubmission.Purposes)]!.Errors.Count > 0);
+        Assert.AreEqual(1, _controller.ModelState[nameof(SelfReferral.Situation)]!.Errors.Count);
+        Assert.IsTrue(_controller.ModelState["Referrer.Email"]!.Errors.Count > 0);
+        Assert.IsTrue(_controller.ModelState[nameof(SelfReferral.CaringWithoutPay)]!.Errors.Count > 0);
         VerifyEmailSent(Times.Never());
         _reCaptchaMock.Verify(r => r.VerifyAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
     }
@@ -171,11 +188,34 @@ public class GetHelpControllerTests
     public async Task Self_InvalidModel_DoesNotDuplicateExistingErrors()
     {
         SelfReferral referral = ValidSelfReferral();
-        referral.Email = null;
-        _controller.ModelState.AddModelError(nameof(SelfReferral.Phone), "Please enter a valid phone number.");
+        referral.Referrer.Email = null;
+        _controller.ModelState.AddModelError("Referrer.Email", "Your email is required.");
 
         await _controller.Self(referral, CancellationToken.None);
 
-        Assert.AreEqual(1, _controller.ModelState[nameof(SelfReferral.Phone)]!.Errors.Count);
+        Assert.AreEqual(1, _controller.ModelState["Referrer.Email"]!.Errors.Count);
+    }
+
+    [TestMethod]
+    public async Task Self_ErrorInHiddenSection_IsIgnored()
+    {
+        // e.g. a mistyped email in the child's section before switching to "Family member or friend"
+        _controller.ModelState.AddModelError("Child.Email", "Please enter a valid email address.");
+        _controller.ModelState.AddModelError("Self.ZipCode", "Please enter a 5 digit ZIP code.");
+
+        IActionResult result = await _controller.Self(ValidSelfReferral(), CancellationToken.None);
+
+        Assert.IsInstanceOfType<RedirectToActionResult>(result);
+        VerifyEmailSent(Times.Once());
+    }
+
+    [TestMethod]
+    public async Task Professional_WithoutConsent_IgnoresParentErrors()
+    {
+        _controller.ModelState.AddModelError("Parent.Email", "Please enter a valid email address.");
+
+        IActionResult result = await _controller.Professional(ValidProfessionalReferral(), CancellationToken.None);
+
+        Assert.IsInstanceOfType<RedirectToActionResult>(result);
     }
 }
