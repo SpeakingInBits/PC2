@@ -29,10 +29,12 @@ namespace PC2.Controllers
         public async Task<IActionResult> ResourceGuide(int categoryID)
         {
             ResourceGuideModel resourceGuide = new ResourceGuideModel();
-            if (categoryID != 0)
+            // The category may have been deleted since the link was saved
+            AgencyCategory? category = categoryID != 0 ? await AgencyCategoryDB.GetAgencyCategory(_context, categoryID) : null;
+            if (category != null)
             {
                 resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, categoryID);
-                resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, categoryID);
+                resourceGuide.Category = category;
                 TrackResourceGuideTelemetry("Manual/Category", resourceGuide.Category.AgencyCategoryName);
                 resourceGuide.SearchDescription = $"Service: {resourceGuide.Category.AgencyCategoryName}";
             }
@@ -95,7 +97,11 @@ namespace PC2.Controllers
                 {
                     TrackResourceGuideTelemetry("Service", $"{searchModel.SearchedCategory}");
                     resourceGuide.Category = await AgencyCategoryDB.GetAgencyCategory(_context, searchModel.SearchedCategory);
-                    resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
+                    // Typed names that don't match a category find no agencies
+                    if (resourceGuide.Category != null)
+                    {
+                        resourceGuide.Agencies = await AgencyDB.GetSpecificAgenciesAsync(_context, resourceGuide.Category.AgencyCategoryId);
+                    }
                     resourceGuide.SearchDescription = $"Service: {searchModel.SearchedCategory}";
                 }
                 else if (searchModel.SearchedCity != null)
