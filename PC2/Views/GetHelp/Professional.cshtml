@@ -1,0 +1,127 @@
+@using PC2.Controllers
+@using PC2.Models.ViewModels
+@model ProfessionalReferral
+
+@{
+    ViewData["Title"] = "Professional Referral";
+
+    ViewDataDictionary parentSectionData = new(ViewData) { ["Section"] = ReferralSubmission.ParentSection };
+    RadioGroupViewModel RequiredRadios(string name, IReadOnlyList<string> choices, string? selected) =>
+        new(name, Html.DisplayName(name), choices, selected, ReferralSubmission.GetRequiredMessage(typeof(ProfessionalReferral), name));
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    Use this form if you work for a partner, school, or organization and are referring a person or family to PC2.
+    If you're asking for help for yourself, your child, or a family member or friend, please use the
+    <a asp-action="Self">Ask for Help form</a>.
+</p>
+
+<div class="row">
+    <div class="col-lg-9 col-xl-8">
+        <partial name="_ReferralErrorSummary" />
+
+        <form id="referral-form" asp-action="Professional" method="post" data-recaptcha-action="@GetHelpController.ProfessionalReCaptchaAction">
+            <input type="hidden" name="ReCaptchaToken" />
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
+
+            <partial name="_ReferralQuestions" model="Model" />
+
+            <h2 class="h4 mt-4">Professional referral details</h2>
+
+            <div class="form-group mb-3">
+                <label asp-for="OrganizationName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="OrganizationName" class="form-control" autocomplete="organization" aria-required="true" />
+                <span asp-validation-for="OrganizationName" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="FirstName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                    <input asp-for="FirstName" class="form-control" autocomplete="given-name" aria-required="true" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="LastName" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                    <input asp-for="LastName" class="form-control" autocomplete="family-name" aria-required="true" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="RoleOrRelationship" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="RoleOrRelationship" class="form-control" autocomplete="organization-title" aria-required="true"
+                       aria-describedby="role-help" />
+                <div id="role-help" class="form-text">For example: friend, special education teacher, nurse, DDA case manager, or health care provider.</div>
+                <span asp-validation-for="RoleOrRelationship" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Phone" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                    <input asp-for="Phone" class="form-control" autocomplete="tel" aria-required="true" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Email" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                    <input asp-for="Email" class="form-control" autocomplete="email" aria-required="true" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 form-group mb-3">
+                    <label asp-for="FamilyPrimaryLanguage" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                    <select asp-for="FamilyPrimaryLanguage" class="form-select" aria-required="true"
+                            asp-items="new SelectList(ReferralChoices.Languages, Model.FamilyPrimaryLanguage)">
+                        <option value="">Please select...</option>
+                    </select>
+                    <span asp-validation-for="FamilyPrimaryLanguage" class="text-danger"></span>
+                </div>
+            </div>
+
+            <partial name="_RadioGroup" model="RequiredRadios(nameof(Model.NeedsLanguageSupport), ReferralChoices.YesNoNotSure, Model.NeedsLanguageSupport)" />
+            <partial name="_RadioGroup" model="RequiredRadios(nameof(Model.Diagnosis), ReferralChoices.Diagnosis, Model.Diagnosis)" />
+            <partial name="_RadioGroup" model="RequiredRadios(nameof(Model.AgeRange), ReferralChoices.AgeRanges, Model.AgeRange)" />
+
+            <div class="form-group mb-3">
+                <label asp-for="AdditionalInformation" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <textarea asp-for="AdditionalInformation" class="form-control" rows="6" aria-required="true"
+                          aria-describedby="additional-information-help"></textarea>
+                <div id="additional-information-help" class="form-text">
+                    Please don't include Social Security numbers, medical records, or other private documents.
+                    Up to @ReferralSubmission.LongTextMaxLength characters.
+                </div>
+                <span asp-validation-for="AdditionalInformation" class="text-danger"></span>
+            </div>
+
+            <partial name="_RadioGroup" model="RequiredRadios(nameof(Model.HasConsent), ReferralChoices.YesNo, Model.HasConsent)" />
+
+            @* Live region so screen readers announce the note when referral.js shows it *@
+            <div aria-live="polite">
+                <div id="no-consent-note" class="alert alert-info" data-show-when="HasConsent" data-show-value="@ReferralChoices.No"
+                     hidden="@(Model.HasConsent != ReferralChoices.No)">
+                    We only ask for the family's contact details when they agree to share them.
+                    PC2 will contact you about this referral.
+                </div>
+            </div>
+
+            @* Shown by referral.js when the family gave consent *@
+            <div data-show-when="HasConsent" data-show-value="@ReferralChoices.Yes" hidden="@(!Model.IsConsentGiven)">
+                <h2 class="h4 mt-4">@ReferralSubmission.ParentSection.Heading</h2>
+                <partial name="_ReferralPerson" for="Parent" view-data="parentSectionData" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send Referral</button>
+        </form>
+    </div>
+</div>
+
+<partial name="_GetHelpContactInfo" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ReCaptchaScriptsPartial" />
+    <script src="~/js/referral.js" asp-append-version="true"></script>
+}

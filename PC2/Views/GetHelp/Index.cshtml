@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Get Help";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p class="lead">
+    PC2 helps people with intellectual and developmental disabilities, and their families, find resources and
+    services in Pierce County. Tell us a little about what you need and a member of our team will contact you.
+</p>
+
+<div class="row g-4 my-2">
+    <div class="col-md-6">
+        <section class="card h-100" aria-labelledby="self-referral-heading">
+            <div class="card-body d-flex flex-column">
+                <h2 id="self-referral-heading" class="h4 card-title">For yourself or your family</h2>
+                <p class="card-text">
+                    Ask for help for yourself, your child, or a family member or friend.
+                </p>
+                <a asp-action="Self" class="btn btn-primary mt-auto align-self-start">Ask for help</a>
+            </div>
+        </section>
+    </div>
+    <div class="col-md-6">
+        <section class="card h-100" aria-labelledby="professional-referral-heading">
+            <div class="card-body d-flex flex-column">
+                <h2 id="professional-referral-heading" class="h4 card-title">For professionals</h2>
+                <p class="card-text">
+                    Refer a person or family you work with, such as a student, patient, or client.
+                    Please get their permission first.
+                </p>
+                <a asp-action="Professional" class="btn btn-primary mt-auto align-self-start">Make a referral</a>
+            </div>
+        </section>
+    </div>
+</div>
+
+<partial name="_GetHelpContactInfo" />

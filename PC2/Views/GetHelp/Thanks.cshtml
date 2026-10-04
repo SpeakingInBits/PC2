@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Thank You";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p class="lead">Your form was sent to PC2.</p>
+<p>A member of our team will review it and reach out using the contact information provided.</p>
+
+<p>
+    <a asp-controller="Resources" asp-action="ResourceGuide" class="btn btn-primary">Search the Resource Guide</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to the home page</a>
+</p>
+
+<partial name="_GetHelpContactInfo" />

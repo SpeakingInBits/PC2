@@ -75,6 +75,9 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<FeedbackDigestService>();
 builder.Services.AddHostedService<FeedbackDigestBackgroundService>();
 
+// Emails Get Help referrals to PC2
+builder.Services.AddScoped<ReferralEmailService>();
+
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US");

@@ -1,0 +1,91 @@
+@using PC2.Controllers
+@using PC2.Models.ViewModels
+@model SelfReferral
+
+@{
+    ViewData["Title"] = "Ask for Help";
+
+    ViewDataDictionary SectionData(ReferralPersonSection section) => new(ViewData) { ["Section"] = section };
+    RadioGroupViewModel YesNo(string name, string? selected, string? requiredMessage) =>
+        new(name, Html.DisplayName(name), ReferralChoices.YesNo, selected, requiredMessage);
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    Fill out this form and a member of the PC2 team will contact you. If you work for a partner, school, or
+    organization and are referring someone, please use the <a asp-action="Professional">professional referral form</a>.
+</p>
+
+<div class="row">
+    <div class="col-lg-9 col-xl-8">
+        <partial name="_ReferralErrorSummary" />
+
+        <form id="referral-form" asp-action="Self" method="post" data-recaptcha-action="@GetHelpController.SelfReCaptchaAction">
+            <input type="hidden" name="ReCaptchaToken" />
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
+
+            <partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.ReferringFor),
+                Html.DisplayNameFor(m => m.ReferringFor), ReferralChoices.ReferringFor, Model.ReferringFor,
+                SelfReferral.ReferringForRequiredMessage)" />
+
+            <partial name="_ReferralQuestions" model="Model" />
+
+            @* Shown by referral.js when "Myself" is chosen *@
+            <div data-show-when="ReferringFor" data-show-value="@ReferralChoices.Myself" hidden="@(Model.ReferringFor != ReferralChoices.Myself)">
+                <h2 class="h4 mt-4">@SelfReferral.SelfSection.Heading</h2>
+                <partial name="_ReferralPerson" for="Self" view-data="SectionData(SelfReferral.SelfSection)" />
+                <partial name="_RadioGroup" model="YesNo(nameof(Model.HasChildWithDisability), Model.HasChildWithDisability,
+                    SelfReferral.HasChildWithDisabilityRequiredMessage)" />
+                <partial name="_RadioGroup" model="YesNo(nameof(Model.CaresForAdult), Model.CaresForAdult,
+                    SelfReferral.CaresForAdultRequiredMessage)" />
+                <partial name="_RadioGroup" model="YesNo(nameof(Model.PaidToCareForAdultChild), Model.PaidToCareForAdultChild,
+                    SelfReferral.PaidToCareForAdultChildRequiredMessage)" />
+            </div>
+
+            @* Shown by referral.js when "My child" is chosen *@
+            <div data-show-when="ReferringFor" data-show-value="@ReferralChoices.MyChild" hidden="@(Model.ReferringFor != ReferralChoices.MyChild)">
+                <h2 class="h4 mt-4">@ReferralSubmission.ParentSection.Heading</h2>
+                <partial name="_ReferralPerson" for="Parent" view-data="SectionData(ReferralSubmission.ParentSection)" />
+                <partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.AgeRange),
+                    Html.DisplayNameFor(m => m.AgeRange), ReferralChoices.AgeRanges, Model.AgeRange, SelfReferral.AgeRangeRequiredMessage)" />
+
+                <h2 class="h4 mt-4">@SelfReferral.ChildSection.Heading</h2>
+                <partial name="_ReferralPerson" for="Child" view-data="SectionData(SelfReferral.ChildSection)" />
+                <partial name="_RadioGroup" model="YesNo(nameof(Model.ChildIsAdultWithPaidCaregiver), Model.ChildIsAdultWithPaidCaregiver, null)" />
+            </div>
+
+            @* Shown by referral.js when "Family member or friend" is chosen *@
+            <div data-show-when="ReferringFor" data-show-value="@ReferralChoices.FamilyMemberOrFriend"
+                 hidden="@(Model.ReferringFor != ReferralChoices.FamilyMemberOrFriend)">
+                <h2 class="h4 mt-4">@SelfReferral.ReferrerSection.Heading</h2>
+                <partial name="_ReferralPerson" for="Referrer" view-data="SectionData(SelfReferral.ReferrerSection)" />
+
+                <h2 class="h4 mt-4">@SelfReferral.FamilyMemberSection.Heading</h2>
+                <partial name="_ReferralPerson" for="FamilyMember" view-data="SectionData(SelfReferral.FamilyMemberSection)" />
+                <partial name="_RadioGroup" model="YesNo(nameof(Model.CaringWithoutPay), Model.CaringWithoutPay,
+                    SelfReferral.CaringWithoutPayRequiredMessage)" />
+            </div>
+
+            <div class="form-group mb-3 mt-4">
+                <label asp-for="Situation" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <textarea asp-for="Situation" class="form-control" rows="6" aria-required="true" aria-describedby="situation-help"></textarea>
+                <div id="situation-help" class="form-text">
+                    Please don't include Social Security numbers, medical records, or other private documents.
+                    Up to @ReferralSubmission.LongTextMaxLength characters.
+                </div>
+                <span asp-validation-for="Situation" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+</div>
+
+<partial name="_GetHelpContactInfo" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ReCaptchaScriptsPartial" />
+    <script src="~/js/referral.js" asp-append-version="true"></script>
+}

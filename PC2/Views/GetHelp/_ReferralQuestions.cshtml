@@ -1,0 +1,34 @@
+@model ReferralSubmission
+@* The questions at the top of both referral forms *@
+@{
+    const string emptyOption = "Please select...";
+}
+
+<div class="row">
+    <div class="col-md-8 form-group mb-3">
+        <label asp-for="Purpose" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+        <select asp-for="Purpose" class="form-select" asp-items="new SelectList(ReferralChoices.Purposes, Model.Purpose)" aria-required="true">
+            <option value="">@emptyOption</option>
+        </select>
+        <span asp-validation-for="Purpose" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 form-group mb-3">
+        <label asp-for="BestTimesToContact" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+        <input asp-for="BestTimesToContact" class="form-control" aria-required="true" aria-describedby="best-times-help" />
+        <div id="best-times-help" class="form-text">For example, weekday mornings.</div>
+        <span asp-validation-for="BestTimesToContact" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 form-group mb-3">
+        <label asp-for="HowHeard" class="form-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+        <select asp-for="HowHeard" class="form-select" asp-items="new SelectList(ReferralChoices.HowHeard, Model.HowHeard)" aria-required="true">
+            <option value="">@emptyOption</option>
+        </select>
+        <span asp-validation-for="HowHeard" class="text-danger"></span>
+    </div>
+</div>

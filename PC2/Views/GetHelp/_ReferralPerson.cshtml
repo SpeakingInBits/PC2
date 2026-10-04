@@ -1,0 +1,94 @@
+@using PC2.Models.ViewModels
+@model ReferralPerson
+@*
+    The questions about one person, such as the parent or the child. Render with
+    <partial name="_ReferralPerson" for="Parent" view-data="..." /> and a "Section" (ReferralPersonSection) in
+    view-data. "for" makes asp-for names include the prefix, e.g. "Parent.FirstName".
+
+    Required questions use the "required" attribute instead of [Required], because they are only required while
+    their section is shown. jQuery Validation uses the attribute and skips hidden fields; the server checks the
+    section with ReferralPersonSection.Validate. (Razor leaves out required="False", but always writes data-*
+    attributes, so data-msg-required is empty on optional questions.)
+*@
+@{
+    var section = (ReferralPersonSection)ViewData["Section"]!;
+    string prefix = ViewData.TemplateInfo.HtmlFieldPrefix;
+    string today = DateTime.Today.ToString("yyyy-MM-dd");
+    const string emptyOption = "Please select...";
+}
+
+@foreach (string field in section.Fields)
+{
+    string name = $"{prefix}.{field}";
+    string label = section.GetLabel(field);
+    IReadOnlyList<string>? choices = ReferralPerson.GetChoices(field);
+    bool isRequired = section.IsRequired(field);
+    string? requiredMessage = isRequired ? section.GetRequiredMessage(field) : null;
+
+    if (field is nameof(ReferralPerson.OkToText) or nameof(ReferralPerson.Diagnosis))
+    {
+        <partial name="_RadioGroup" model="new RadioGroupViewModel(name, label, choices!, Model.GetValue(field), requiredMessage)" />
+        continue;
+    }
+
+    string? error = ViewData.ModelState[name]?.Errors.FirstOrDefault()?.ErrorMessage;
+
+    <div class="row">
+        <div class="form-group mb-3 col-md-8">
+            <label for="@name.Replace('.', '_')" class="form-label">@label</label>
+            @if (isRequired)
+            {
+                <span class="text-danger" aria-hidden="true"> *</span>
+            }
+
+            @switch (field)
+            {
+                case nameof(ReferralPerson.FirstName):
+                    <input asp-for="FirstName" class="form-control" autocomplete="off"
+                           required="@isRequired" data-msg-required="@requiredMessage" />
+                    break;
+                case nameof(ReferralPerson.LastName):
+                    <input asp-for="LastName" class="form-control" autocomplete="off"
+                           required="@isRequired" data-msg-required="@requiredMessage" />
+                    break;
+                case nameof(ReferralPerson.DateOfBirth):
+                    <input asp-for="DateOfBirth" class="form-control" type="date" max="@today"
+                           required="@isRequired" data-msg-required="@requiredMessage" />
+                    break;
+                case nameof(ReferralPerson.ZipCode):
+                    <input asp-for="ZipCode" class="form-control" inputmode="numeric" autocomplete="off"
+                           required="@isRequired" data-msg-required="@requiredMessage" />
+                    break;
+                case nameof(ReferralPerson.MobileNumber):
+                    <input asp-for="MobileNumber" class="form-control" type="tel" autocomplete="off"
+                           required="@isRequired" data-msg-required="@requiredMessage" />
+                    break;
+                case nameof(ReferralPerson.Email):
+                    <input asp-for="Email" class="form-control" type="email" autocomplete="off"
+                           required="@isRequired" data-msg-required="@requiredMessage" />
+                    break;
+                case nameof(ReferralPerson.Race):
+                    <select asp-for="Race" class="form-select" asp-items="new SelectList(choices!, Model.Race)"
+                            required="@isRequired" data-msg-required="@requiredMessage">
+                        <option value="">@emptyOption</option>
+                    </select>
+                    break;
+                case nameof(ReferralPerson.PrimaryLanguage):
+                    <select asp-for="PrimaryLanguage" class="form-select" asp-items="new SelectList(choices!, Model.PrimaryLanguage)"
+                            required="@isRequired" data-msg-required="@requiredMessage">
+                        <option value="">@emptyOption</option>
+                    </select>
+                    break;
+                case nameof(ReferralPerson.CountryOfOrigin):
+                    <select asp-for="CountryOfOrigin" class="form-select" asp-items="new SelectList(choices!, Model.CountryOfOrigin)"
+                            required="@isRequired" data-msg-required="@requiredMessage">
+                        <option value="">@emptyOption</option>
+                    </select>
+                    break;
+            }
+            @* Filled in by the server, or by jQuery Validation *@
+            <span class="d-block text-danger @(error == null ? "field-validation-valid" : "field-validation-error")"
+                  data-valmsg-for="@name" data-valmsg-replace="true">@error</span>
+        </div>
+    </div>
+}
