@@ -1,0 +1,33 @@
+@model PC2.Models.AgencyCategory
+
+@{
+    ViewData["Title"] = "Delete Agency Category";
+    int agencyCount = (int)(ViewData["AgencyCount"] ?? 0);
+}
+
+<h1>Delete "@Model.AgencyCategoryName"</h1>
+
+<h2 class="h3">Are you sure you want to delete "@Model.AgencyCategoryName"?</h2>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Category Name</dt>
+        <dd class="col-sm-9">@Model.AgencyCategoryName</dd>
+        <dt class="col-sm-3">Agencies</dt>
+        <dd class="col-sm-9">@agencyCount</dd>
+    </dl>
+
+    @if (agencyCount > 0)
+    {
+        <p>
+            @(agencyCount == 1 ? "1 agency is" : $"{agencyCount} agencies are") listed under this category.
+            @(agencyCount == 1 ? "It" : "They") will not be deleted, but will no longer be listed under "@Model.AgencyCategoryName" in the Resource Guide.
+        </p>
+    }
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="AgencyCategoryId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Manage">Back to List</a>
+    </form>
+</div>

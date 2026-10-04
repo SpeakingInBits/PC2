@@ -36,7 +36,12 @@ namespace PC2.Controllers
                 string[] serviceArray = JsonConvert.DeserializeObject<string[]>(services);
                 for (int i = 0; i < serviceArray.Length; i++)
                 {
-                    agency.AgencyCategories.Add(await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]));
+                    // Skips categories renamed or deleted while the form was open
+                    AgencyCategory? category = await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]);
+                    if (category != null)
+                    {
+                        agency.AgencyCategories.Add(category);
+                    }
                 }
                 await AgencyDB.AddAgencyAsync(_context, agency);
             }
@@ -72,15 +77,20 @@ namespace PC2.Controllers
                 List<AgencyCategory> removedCategories = new List<AgencyCategory>();
                 for (int i = 0; i < serviceArray.Length; i++)
                 {
-                    AgencyCategory temp = await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]);
+                    // Skips categories renamed or deleted while the form was open
+                    AgencyCategory? temp = await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]);
+                    if (temp == null)
+                    {
+                        continue;
+                    }
                     removedCategories.Add(temp);
                     agency.AgencyCategories.Add(temp);
                 }
                 serviceArray = JsonConvert.DeserializeObject<string[]>(servicesAdded);
                 for (int i = 0; i < serviceArray.Length; i++)
                 {
-                    AgencyCategory temp = await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]);
-                    if (!agency.AgencyCategories.Contains(temp))
+                    AgencyCategory? temp = await AgencyCategoryDB.GetAgencyCategory(_context, serviceArray[i]);
+                    if (temp != null && !agency.AgencyCategories.Contains(temp))
                     {
                         agency.AgencyCategories.Add(temp);
                     }

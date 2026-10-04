@@ -1,0 +1,32 @@
+@model PC2.Models.AgencyCategory
+
+@{
+    ViewData["Title"] = "Add Agency Category";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
+
+            <div class="form-group mb-3">
+                <label asp-for="AgencyCategoryName" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="AgencyCategoryName" class="form-control" aria-required="true" />
+                <span asp-validation-for="AgencyCategoryName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Add Category" class="btn btn-primary" />
+                <a asp-action="Manage" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

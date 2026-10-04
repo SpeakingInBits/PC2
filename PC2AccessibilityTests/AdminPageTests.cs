@@ -16,6 +16,8 @@ public class AdminPageTests
     [DataRow("/About/UploadNewsletter")]
     [DataRow("/Agency")]
     [DataRow("/Agency/Create")]
+    [DataRow("/AgencyCategory/Manage")]
+    [DataRow("/AgencyCategory/Create")]
     [DataRow("/Calendar")]
     [DataRow("/Calendar/Create")]
     [DataRow("/Feedback")]

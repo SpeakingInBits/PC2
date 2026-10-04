@@ -1,0 +1,48 @@
+@model IEnumerable<PC2.Models.AgencyCategoryDisplayViewModel>
+
+@{
+    ViewData["Title"] = "Manage Agency Categories";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@{
+    if (TempData["Message"] is string message)
+    {
+        bool isError = message.StartsWith("Error");
+        <div class="alert @(isError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="@(isError ? "alert" : "status")">
+            @message
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+}
+
+<p>Categories are the services agencies are listed under in the Resource Guide. Choose an agency's categories on the agency's Edit page.</p>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Category</a>
+    <a asp-controller="Resources" asp-action="ResourceGuide" class="btn btn-secondary">View Resource Guide</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Category Name</th>
+            <th scope="col">Agencies</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.AgencyCategoryName</td>
+                <td>@category.AgencyCount</td>
+                <td class="text-nowrap">
+                    <a asp-action="Edit" asp-route-id="@category.AgencyCategoryId" class="btn btn-sm btn-outline-primary">Edit<span class="visually-hidden"> @category.AgencyCategoryName</span></a>
+                    <a asp-action="Delete" asp-route-id="@category.AgencyCategoryId" class="btn btn-sm btn-outline-danger">Delete<span class="visually-hidden"> @category.AgencyCategoryName</span></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
