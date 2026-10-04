@@ -19,6 +19,29 @@
                 });
             });
         }
+
+        // Shows the "I'm not a robot" checkbox in container after a low score. Resolves with the widget id for
+        // grecaptcha.getResponse and grecaptcha.reset. Google supports this v2 widget on a page loaded with a v3 key
+        // as long as it's rendered explicitly.
+        function renderReCaptchaCheckbox(container) {
+            @if (options.IsCheckboxConfigured)
+            {
+                <text>
+                if (typeof grecaptcha === 'undefined') {
+                    return Promise.reject(new Error('reCAPTCHA failed to load'));
+                }
+                return new Promise(function (resolve) {
+                    grecaptcha.ready(function () {
+                        resolve(grecaptcha.render(container, { sitekey: '@options.CheckboxSiteKey' }));
+                    });
+                });
+                </text>
+            }
+            else
+            {
+                <text>return Promise.reject(new Error('The reCAPTCHA checkbox is not configured'));</text>
+            }
+        }
     </script>
 }
 else
@@ -27,6 +50,10 @@ else
         // Keep the same contract when reCAPTCHA isn't configured (e.g. local dev without secrets)
         // so callers can handle it with the same rejection path as a blocked or failed script load.
         function getReCaptchaToken(action) {
+            return Promise.reject(new Error('reCAPTCHA is not configured'));
+        }
+
+        function renderReCaptchaCheckbox(container) {
             return Promise.reject(new Error('reCAPTCHA is not configured'));
         }
     </script>

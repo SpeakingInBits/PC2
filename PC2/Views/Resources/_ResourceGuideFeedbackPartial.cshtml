@@ -33,6 +33,9 @@
                 </div>
             </div>
 
+            @* Shown by resource-guide-feedback.js after a low reCAPTCHA score *@
+            <partial name="_ReCaptchaCheckboxPartial" model="false" />
+
             <button type="submit" class="btn btn-primary">Send Feedback</button>
         </form>
         @* Outside the form so it stays on the page (and keeps announcing) after the form is hidden *@

@@ -14,6 +14,11 @@ namespace PC2.Controllers
         public const string SelfReCaptchaAction = "self_referral";
         public const string ProfessionalReCaptchaAction = "professional_referral";
 
+        /// <summary>
+        /// ViewData key that shows the "I'm not a robot" checkbox on a referral form after a low reCAPTCHA score
+        /// </summary>
+        public const string ShowReCaptchaCheckboxKey = "ShowReCaptchaCheckbox";
+
         private readonly IReCaptchaService _reCaptchaService;
         private readonly ReferralEmailService _referralEmailService;
         private readonly ILogger<GetHelpController> _logger;
@@ -78,8 +83,17 @@ namespace PC2.Controllers
                 return View(referral);
             }
 
-            ReCaptchaVerificationResult reCaptchaResult =
-                await _reCaptchaService.VerifyAsync(referral.ReCaptchaToken ?? "", reCaptchaAction, cancellationToken);
+            // After a low score the form comes back with the "I'm not a robot" checkbox, and its token is sent instead
+            ReCaptchaVerificationResult reCaptchaResult = string.IsNullOrEmpty(referral.ReCaptchaCheckboxToken)
+                ? await _reCaptchaService.VerifyAsync(referral.ReCaptchaToken ?? "", reCaptchaAction, cancellationToken)
+                : await _reCaptchaService.VerifyCheckboxAsync(referral.ReCaptchaCheckboxToken, cancellationToken);
+            if (reCaptchaResult == ReCaptchaVerificationResult.ChallengeRequired)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "Please check the \"I'm not a robot\" box at the end of the form, then send it again.");
+                ViewData[ShowReCaptchaCheckboxKey] = true;
+                return View(referral);
+            }
             if (reCaptchaResult == ReCaptchaVerificationResult.Failed)
             {
                 ModelState.AddModelError(string.Empty,

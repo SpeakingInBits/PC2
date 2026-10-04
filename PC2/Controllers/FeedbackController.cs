@@ -49,8 +49,18 @@ namespace PC2.Controllers
                 return BadRequest(new { message });
             }
 
-            ReCaptchaVerificationResult reCaptchaResult =
-                await _reCaptchaService.VerifyAsync(submission.ReCaptchaToken ?? "", ReCaptchaAction, cancellationToken);
+            // After a low score resource-guide-feedback.js shows the "I'm not a robot" checkbox and sends its token instead
+            ReCaptchaVerificationResult reCaptchaResult = string.IsNullOrEmpty(submission.ReCaptchaCheckboxToken)
+                ? await _reCaptchaService.VerifyAsync(submission.ReCaptchaToken ?? "", ReCaptchaAction, cancellationToken)
+                : await _reCaptchaService.VerifyCheckboxAsync(submission.ReCaptchaCheckboxToken, cancellationToken);
+            if (reCaptchaResult == ReCaptchaVerificationResult.ChallengeRequired)
+            {
+                return BadRequest(new
+                {
+                    message = "Please check the \"I'm not a robot\" box, then send your feedback again.",
+                    challengeRequired = true
+                });
+            }
             if (reCaptchaResult == ReCaptchaVerificationResult.Failed)
             {
                 return BadRequest(new { message = "We couldn't verify your feedback. Please refresh the page and try again." });

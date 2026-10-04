@@ -13,6 +13,8 @@ namespace PC2.Services.Tests;
 public class ReCaptchaServiceTests
 {
     private const string TestSecretKey = "test-secret-key";
+    private const string TestCheckboxSiteKey = "test-checkbox-site-key";
+    private const string TestCheckboxSecretKey = "test-checkbox-secret-key";
 
     /// <summary>
     /// Returns a canned response (or throws) instead of calling Google's API.
@@ -22,6 +24,9 @@ public class ReCaptchaServiceTests
         private readonly HttpStatusCode _statusCode;
         private readonly string _responseBody;
         private readonly Exception? _exception;
+
+        /// <summary>The form sent to Google by the last request</summary>
+        public string? LastRequestBody { get; private set; }
 
         public StubHttpMessageHandler(HttpStatusCode statusCode, string responseBody)
         {
@@ -35,26 +40,30 @@ public class ReCaptchaServiceTests
             _responseBody = string.Empty;
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if (_exception is not null)
             {
                 throw _exception;
             }
 
-            return Task.FromResult(new HttpResponseMessage(_statusCode)
+            LastRequestBody = request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken);
+            return new HttpResponseMessage(_statusCode)
             {
                 Content = new StringContent(_responseBody, Encoding.UTF8, "application/json")
-            });
+            };
         }
     }
 
-    private static ReCaptchaService CreateService(HttpMessageHandler handler, string? secretKey = TestSecretKey, double minimumScore = 0.5)
+    private static ReCaptchaService CreateService(HttpMessageHandler handler, string? secretKey = TestSecretKey, double minimumScore = 0.5,
+        bool isCheckboxConfigured = false)
     {
         var options = Options.Create(new ReCaptchaOptions
         {
             SecretKey = secretKey,
-            MinimumScore = minimumScore
+            MinimumScore = minimumScore,
+            CheckboxSiteKey = isCheckboxConfigured ? TestCheckboxSiteKey : null,
+            CheckboxSecretKey = isCheckboxConfigured ? TestCheckboxSecretKey : null
         });
 
         return new ReCaptchaService(new HttpClient(handler), options, Mock.Of<ILogger<ReCaptchaService>>());
@@ -63,6 +72,15 @@ public class ReCaptchaServiceTests
     private static StubHttpMessageHandler GoogleResponse(bool success, double score = 0.9, string action = "submit")
     {
         var body = $$"""{"success": {{success.ToString().ToLowerInvariant()}}, "score": {{score.ToString(System.Globalization.CultureInfo.InvariantCulture)}}, "action": "{{action}}"}""";
+        return new StubHttpMessageHandler(HttpStatusCode.OK, body);
+    }
+
+    /// <summary>
+    /// A reCAPTCHA v2 checkbox response, which has no score or action
+    /// </summary>
+    private static StubHttpMessageHandler GoogleCheckboxResponse(bool success)
+    {
+        var body = $$"""{"success": {{success.ToString().ToLowerInvariant()}}, "hostname": "localhost"}""";
         return new StubHttpMessageHandler(HttpStatusCode.OK, body);
     }
 
@@ -157,6 +175,37 @@ public class ReCaptchaServiceTests
     }
 
     [TestMethod]
+    public async Task VerifyAsync_ScoreBelowThresholdWithCheckboxConfigured_ReturnsChallengeRequired()
+    {
+        var service = CreateService(GoogleResponse(success: true, score: 0.3), isCheckboxConfigured: true);
+
+        var result = await service.VerifyAsync("valid-token", "submit");
+
+        Assert.AreEqual(ReCaptchaVerificationResult.ChallengeRequired, result);
+    }
+
+    [TestMethod]
+    public async Task VerifyAsync_InvalidTokenWithCheckboxConfigured_ReturnsFailed()
+    {
+        // Only low scores get the checkbox; real browsers don't send invalid tokens
+        var service = CreateService(GoogleResponse(success: false), isCheckboxConfigured: true);
+
+        var result = await service.VerifyAsync("invalid-token", "submit");
+
+        Assert.AreEqual(ReCaptchaVerificationResult.Failed, result);
+    }
+
+    [TestMethod]
+    public async Task VerifyAsync_ActionMismatchWithCheckboxConfigured_ReturnsFailed()
+    {
+        var service = CreateService(GoogleResponse(success: true, score: 0.3, action: "login"), isCheckboxConfigured: true);
+
+        var result = await service.VerifyAsync("valid-token", "submit");
+
+        Assert.AreEqual(ReCaptchaVerificationResult.Failed, result);
+    }
+
+    [TestMethod]
     public async Task VerifyAsync_HttpErrorStatus_ReturnsUnavailable()
     {
         var service = CreateService(new StubHttpMessageHandler(HttpStatusCode.InternalServerError, ""));
@@ -198,6 +247,63 @@ public class ReCaptchaServiceTests
     }
 
     [TestMethod]
+    public async Task VerifyCheckboxAsync_GoogleReportsSuccess_ReturnsPassedUsingCheckboxSecretKey()
+    {
+        var handler = GoogleCheckboxResponse(success: true);
+        var service = CreateService(handler, isCheckboxConfigured: true);
+
+        var result = await service.VerifyCheckboxAsync("checkbox-token");
+
+        Assert.AreEqual(ReCaptchaVerificationResult.Passed, result);
+        StringAssert.Contains(handler.LastRequestBody, "secret=" + TestCheckboxSecretKey);
+        StringAssert.Contains(handler.LastRequestBody, "response=checkbox-token");
+    }
+
+    [TestMethod]
+    public async Task VerifyCheckboxAsync_GoogleReportsFailure_ReturnsChallengeRequired()
+    {
+        // e.g. the token expired, so the visitor can check the box again
+        var service = CreateService(GoogleCheckboxResponse(success: false), isCheckboxConfigured: true);
+
+        var result = await service.VerifyCheckboxAsync("expired-token");
+
+        Assert.AreEqual(ReCaptchaVerificationResult.ChallengeRequired, result);
+    }
+
+    [TestMethod]
+    public async Task VerifyCheckboxAsync_EmptyToken_ReturnsChallengeRequired()
+    {
+        var service = CreateService(GoogleCheckboxResponse(success: true), isCheckboxConfigured: true);
+
+        var result = await service.VerifyCheckboxAsync("");
+
+        Assert.AreEqual(ReCaptchaVerificationResult.ChallengeRequired, result);
+    }
+
+    [TestMethod]
+    public async Task VerifyCheckboxAsync_CheckboxNotConfigured_ReturnsFailed()
+    {
+        // A checkbox token can't be genuine when the checkbox is never shown, so it mustn't be accepted as Unavailable
+        var handler = GoogleCheckboxResponse(success: true);
+        var service = CreateService(handler, isCheckboxConfigured: false);
+
+        var result = await service.VerifyCheckboxAsync("checkbox-token");
+
+        Assert.AreEqual(ReCaptchaVerificationResult.Failed, result);
+        Assert.IsNull(handler.LastRequestBody);
+    }
+
+    [TestMethod]
+    public async Task VerifyCheckboxAsync_NetworkError_ReturnsUnavailable()
+    {
+        var service = CreateService(new StubHttpMessageHandler(new HttpRequestException("Network unreachable")), isCheckboxConfigured: true);
+
+        var result = await service.VerifyCheckboxAsync("checkbox-token");
+
+        Assert.AreEqual(ReCaptchaVerificationResult.Unavailable, result);
+    }
+
+    [TestMethod]
     [DataRow(-0.1)]
     [DataRow(5.0)]
     public void Options_MinimumScoreOutOfRange_FailsValidation(double minimumScore)
@@ -219,5 +325,18 @@ public class ReCaptchaServiceTests
         var options = new ReCaptchaOptions { SiteKey = siteKey };
 
         Assert.AreEqual(expected, options.IsSiteKeyConfigured);
+    }
+
+    [TestMethod]
+    [DataRow(null, null, false)]
+    [DataRow("Set in secrets", "Set in secrets", false)]
+    [DataRow("6LcAbCdEfGhIjKlMnOpQrStUvWxYz", null, false)]
+    [DataRow(null, "6LcAbCdEfGhIjKlMnOpQrStUvWxYz", false)]
+    [DataRow("6LcAbCdEfGhIjKlMnOpQrStUvWxYz", "6LcZyXwVuTsRqPoNmLkJiHgFeDcBa", true)]
+    public void Options_IsCheckboxConfigured_RequiresBothKeys(string? siteKey, string? secretKey, bool expected)
+    {
+        var options = new ReCaptchaOptions { CheckboxSiteKey = siteKey, CheckboxSecretKey = secretKey };
+
+        Assert.AreEqual(expected, options.IsCheckboxConfigured);
     }
 }

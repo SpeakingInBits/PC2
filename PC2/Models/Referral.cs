@@ -286,6 +286,11 @@ namespace PC2.Models
         public string? ReCaptchaToken { get; set; }
 
         /// <summary>
+        /// The token from the "I'm not a robot" checkbox, sent instead of a v3 token after a low score
+        /// </summary>
+        public string? ReCaptchaCheckboxToken { get; set; }
+
+        /// <summary>
         /// The groups of questions about a person that apply, based on the answers that show or hide them
         /// </summary>
         public abstract IEnumerable<ReferralPersonSection> GetActivePersonSections();

@@ -51,6 +51,13 @@ public class GetHelpControllerTests
             .ReturnsAsync(result);
     }
 
+    private void SetupCheckbox(ReCaptchaVerificationResult result)
+    {
+        _reCaptchaMock
+            .Setup(r => r.VerifyCheckboxAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(result);
+    }
+
     private void SetupEmailResponse(HttpStatusCode statusCode)
     {
         _emailSenderMock
@@ -139,6 +146,76 @@ public class GetHelpControllerTests
         var view = (ViewResult)result;
         Assert.AreSame(referral, view.Model);
         Assert.IsFalse(_controller.ModelState.IsValid);
+        VerifyEmailSent(Times.Never());
+    }
+
+    [TestMethod]
+    public async Task Self_ReCaptchaChallengeRequired_ShowsFormWithCheckboxAndDoesNotSend()
+    {
+        SetupReCaptcha(ReCaptchaVerificationResult.ChallengeRequired);
+        SelfReferral referral = ValidSelfReferral();
+
+        IActionResult result = await _controller.Self(referral, CancellationToken.None);
+
+        Assert.IsInstanceOfType<ViewResult>(result);
+        var view = (ViewResult)result;
+        Assert.AreSame(referral, view.Model);
+        Assert.AreEqual(true, view.ViewData[GetHelpController.ShowReCaptchaCheckboxKey]);
+        Assert.IsTrue(_controller.ModelState[string.Empty]!.Errors.Count > 0);
+        VerifyEmailSent(Times.Never());
+    }
+
+    [TestMethod]
+    public async Task Self_ReCaptchaFailed_DoesNotShowCheckbox()
+    {
+        SetupReCaptcha(ReCaptchaVerificationResult.Failed);
+
+        IActionResult result = await _controller.Self(ValidSelfReferral(), CancellationToken.None);
+
+        var view = (ViewResult)result;
+        Assert.IsNull(view.ViewData[GetHelpController.ShowReCaptchaCheckboxKey]);
+    }
+
+    [TestMethod]
+    public async Task Self_CheckboxToken_VerifiesCheckboxInsteadOfScoreAndSends()
+    {
+        SetupCheckbox(ReCaptchaVerificationResult.Passed);
+        SelfReferral referral = ValidSelfReferral();
+        referral.ReCaptchaCheckboxToken = "checkbox-token";
+
+        IActionResult result = await _controller.Self(referral, CancellationToken.None);
+
+        Assert.IsInstanceOfType<RedirectToActionResult>(result);
+        VerifyEmailSent(Times.Once());
+        _reCaptchaMock.Verify(r => r.VerifyCheckboxAsync("checkbox-token", It.IsAny<CancellationToken>()), Times.Once());
+        _reCaptchaMock.Verify(r => r.VerifyAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never());
+    }
+
+    [TestMethod]
+    public async Task Professional_CheckboxNotVerified_ShowsCheckboxAgain()
+    {
+        SetupCheckbox(ReCaptchaVerificationResult.ChallengeRequired);
+        ProfessionalReferral referral = ValidProfessionalReferral();
+        referral.ReCaptchaCheckboxToken = "expired-token";
+
+        IActionResult result = await _controller.Professional(referral, CancellationToken.None);
+
+        Assert.IsInstanceOfType<ViewResult>(result);
+        Assert.AreEqual(true, ((ViewResult)result).ViewData[GetHelpController.ShowReCaptchaCheckboxKey]);
+        VerifyEmailSent(Times.Never());
+    }
+
+    [TestMethod]
+    public async Task Self_CheckboxTokenRejected_DoesNotSend()
+    {
+        // e.g. a forged checkbox token when the checkbox isn't configured
+        SetupCheckbox(ReCaptchaVerificationResult.Failed);
+        SelfReferral referral = ValidSelfReferral();
+        referral.ReCaptchaCheckboxToken = "forged-token";
+
+        IActionResult result = await _controller.Self(referral, CancellationToken.None);
+
+        Assert.IsInstanceOfType<ViewResult>(result);
         VerifyEmailSent(Times.Never());
     }
 

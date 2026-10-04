@@ -122,6 +122,11 @@ namespace PC2.Models
         /// The Google reCAPTCHA v3 token generated when the form was submitted
         /// </summary>
         public string? ReCaptchaToken { get; set; }
+
+        /// <summary>
+        /// The token from the "I'm not a robot" checkbox, sent instead of a v3 token after a low score
+        /// </summary>
+        public string? ReCaptchaCheckboxToken { get; set; }
     }
 
     /// <summary>
