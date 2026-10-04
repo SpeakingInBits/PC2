@@ -98,6 +98,16 @@
 
             <partial name="_RadioGroup" model="RequiredRadios(nameof(Model.HasConsent), ReferralChoices.YesNo, Model.HasConsent)" />
 
+            @* Live region so screen readers announce the note when referral.js shows it *@
+            <div aria-live="polite">
+                <div id="no-consent-note" class="alert alert-warning" data-show-when="HasConsent" data-show-value="@ReferralChoices.No"
+                     hidden="@(Model.HasConsent != ReferralChoices.No)">
+                    <strong>The family's contact details won't be sent.</strong>
+                    Without their consent, PC2 will only receive your information and will contact you about this referral.
+                    If the family agrees later, you can send a new referral with their details.
+                </div>
+            </div>
+
             @* Shown by referral.js when the family gave consent *@
             <div data-show-when="HasConsent" data-show-value="@ReferralChoices.Yes" hidden="@(!Model.IsConsentGiven)">
                 <h2 class="h4 mt-4">@ReferralSubmission.ParentSection.Heading</h2>

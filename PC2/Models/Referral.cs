@@ -14,6 +14,7 @@ namespace PC2.Models
         public const string MyChild = "My child";
         public const string FamilyMemberOrFriend = "Family member or friend";
         public const string Yes = "Yes";
+        public const string No = "No";
 
         public static readonly IReadOnlyList<string> ReferringFor = [Myself, MyChild, FamilyMemberOrFriend];
 
@@ -46,11 +47,11 @@ namespace PC2.Models
             "Website or internet search"
         ];
 
-        public static readonly IReadOnlyList<string> YesNo = [Yes, "No"];
+        public static readonly IReadOnlyList<string> YesNo = [Yes, No];
 
-        public static readonly IReadOnlyList<string> YesNoNotSure = [Yes, "No", "Not sure"];
+        public static readonly IReadOnlyList<string> YesNoNotSure = [Yes, No, "Not sure"];
 
-        public static readonly IReadOnlyList<string> Diagnosis = [Yes, "No", "Suspected", "I don't know"];
+        public static readonly IReadOnlyList<string> Diagnosis = [Yes, No, "Suspected", "I don't know"];
 
         public static readonly IReadOnlyList<string> AgeRanges = ["0-5", "6-18", "19-26", "27+"];
 

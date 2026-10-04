@@ -47,6 +47,7 @@ public class PublicPageTests
     [DataRow("/GetHelp/Self", "#ReferringFor-1")]
     [DataRow("/GetHelp/Self", "#ReferringFor-2")]
     [DataRow("/GetHelp/Professional", "#HasConsent-0")]
+    [DataRow("/GetHelp/Professional", "#HasConsent-1")]
     public async Task GetHelp_SectionsShownByAnswers_MeetWcag(string path, string answerSelector)
     {
         IPage page = await AccessibilityTestSite.NewPageAsync();
