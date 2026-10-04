@@ -111,9 +111,9 @@
                             <a class="nav-link" asp-controller="Resources" asp-action="FocusNewsletters" aria-current="@AriaCurrent("Resources", "FocusNewsletters")">Focus Newsletters</a>
                         </li>
                         <li id="housing-program" class="nav-item menu-item dropdown">
+                            @* site.css lets this label wrap on wide screens so the menu fits. No space before </a>, so the arrow stays with "Services". *@
                             <a class="nav-link dropdown-toggle" href="#" id="housingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Other Program Services
-                            </a>
+                                Other Program Services</a>
                             <ul class="dropdown-menu" aria-labelledby="housingDropdown">
                                 <li><a class="dropdown-item" asp-controller="Home" asp-action="HousingProgram" aria-current="@AriaCurrent("Home", "HousingProgram")">PC2's Housing Program</a></li>
                                 <li><a class="dropdown-item" asp-controller="Home" asp-action="PersonCenteredPlanning" aria-current="@AriaCurrent("Home", "PersonCenteredPlanning")">Person Centered Planning</a></li>
@@ -123,7 +123,8 @@
                             <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 About Us
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                            @* On wide screens, lines up with the right edge of "About Us", near the end of the menu, so it doesn't open past the edge of the window *@
+                            <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="aboutDropdown">
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="About" aria-current="@AriaCurrent("Home", "About")">About Us</a></li>
                                 <li><a class="dropdown-item" asp-controller="Jobs" asp-action="Index" aria-current="@AriaCurrent("Jobs", "Index")">Job Opportunities</a></li>
                                 <li><a class="dropdown-item" asp-controller="Home" asp-action="ContactPage" aria-current="@AriaCurrent("Home", "ContactPage")">Contact Us</a></li>
