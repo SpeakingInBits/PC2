@@ -105,15 +105,15 @@
             }
 
             var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-                initialView: isMobile ? 'listMonth' : 'dayGridMonth',
+                initialView: 'listMonth',
                 headerToolbar: isMobile ? {
                     left: 'prev,next',
                     center: 'title',
-                    right: 'dayGridMonth,listMonth'
+                    right: 'listMonth,dayGridMonth'
                 } : {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,listMonth'
+                    right: 'listMonth,dayGridMonth'
                 },
                 buttonText: {
                     today:  'Today',
