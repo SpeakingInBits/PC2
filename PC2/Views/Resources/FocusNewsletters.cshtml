@@ -33,11 +33,20 @@
                                 <small class="text-muted">PDF Newsletter</small>
                             </div>
                         </div>
-                        <div class="mt-auto">
-                            <a href="@Model.ElementAt(i).Location" 
-                               target="_blank" 
-                               class="btn btn-primary text-white w-100 d-flex align-items-center justify-content-center"
-                               onclick="trackExternalLink(this.href); return false;"
+                        <div class="mt-auto d-flex flex-column flex-sm-row gap-2">
+                            <a asp-action="Newsletter" asp-route-id="@Model.ElementAt(i).NewsletterId"
+                               target="_blank"
+                               class="btn btn-primary text-white flex-fill d-flex align-items-center justify-content-center"
+                               data-track-url="@Model.ElementAt(i).Location"
+                               onclick="trackNewsletter(this.dataset.trackUrl, 'Preview')"
+                               aria-label="Preview PDF: @Model.ElementAt(i).Name (opens in a new tab)">
+                                <i class="bi bi-eye me-2" aria-hidden="true"></i>
+                                Preview
+                            </a>
+                            <a asp-action="Newsletter" asp-route-id="@Model.ElementAt(i).NewsletterId" asp-route-download="true"
+                               class="btn btn-outline-primary flex-fill d-flex align-items-center justify-content-center"
+                               data-track-url="@Model.ElementAt(i).Location"
+                               onclick="trackNewsletter(this.dataset.trackUrl, 'Download')"
                                aria-label="Download PDF: @Model.ElementAt(i).Name">
                                 <i class="bi bi-download me-2" aria-hidden="true"></i>
                                 Download PDF
@@ -60,24 +69,23 @@ else
 @section Scripts
 {
     <script>
-        function trackExternalLink(url) {
-            // Track the download via AJAX call to the server
+        // Records a preview or download for the analytics dashboard. The link itself
+        // opens the PDF, so keepalive lets the request finish if the page navigates.
+        function trackNewsletter(url, type) {
             fetch('@Url.Action("TrackNewsletterDownload", "Resources")', {
                 method: 'POST',
+                keepalive: true,
                 headers: {
                     'Content-Type': 'application/json',
                     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
                 },
                 body: JSON.stringify({
                     linkUrl: url,
-                    searchType: 'Download'
+                    searchType: type
                 })
             }).catch(error => {
-                console.error('Error tracking download:', error);
+                console.error('Error tracking newsletter ' + type.toLowerCase() + ':', error);
             });
-            
-            // Open the PDF in a new window
-            window.open(url);
         }
     </script>
 }

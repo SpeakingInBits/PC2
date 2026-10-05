@@ -1,5 +1,6 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using PC2.Data;
 using PC2.Models;
 
@@ -162,10 +163,48 @@ namespace PC2.Controllers
         }
 
         /// <summary>
+        /// Shows a Focus newsletter in the browser's PDF viewer, or downloads it.
+        /// The stored blobs have no PDF content type, so linking to them directly always downloads.
+        /// </summary>
+        /// <param name="id">The NewsletterId of the newsletter</param>
+        /// <param name="download">True to download the file instead of previewing it</param>
+        [HttpGet]
+        public async Task<IActionResult> Newsletter(int id, bool download, [FromServices] AzureBlobUploader azureBlobUploader)
+        {
+            NewsletterFile? newsletter = await NewsletterFileDB.GetFileAsync(_context, id);
+            if (newsletter == null)
+            {
+                return NotFound();
+            }
+
+            Stream? pdf = await azureBlobUploader.OpenReadAsync(newsletter.Location);
+            if (pdf == null)
+            {
+                return NotFound();
+            }
+
+            // Admins can rename newsletters, so the name may not end in .pdf
+            string fileName = newsletter.Name.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase)
+                ? newsletter.Name
+                : newsletter.Name + ".pdf";
+
+            if (download)
+            {
+                return File(pdf, "application/pdf", fileName);
+            }
+
+            // Inline shows the PDF in the browser; the file name is still used if the reader saves it
+            ContentDispositionHeaderValue disposition = new("inline");
+            disposition.SetHttpFileName(fileName);
+            Response.Headers.ContentDisposition = disposition.ToString();
+            return File(pdf, "application/pdf");
+        }
+
+        /// <summary>
         /// Tracks newsletter download events via AJAX
         /// </summary>
         /// <param name="linkUrl">The URL of the newsletter being downloaded</param>
-        /// <param name="searchType">The type of action (e.g., "Download")</param>
+        /// <param name="searchType">The type of action ("Preview" or "Download")</param>
         [HttpPost]
         public IActionResult TrackNewsletterDownload([FromBody] NewsletterDownloadRequest request)
         {

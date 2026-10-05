@@ -65,6 +65,30 @@ namespace PC2.Models
             return response.Value;
         }
 
+        /// <summary>
+        /// Opens a stored file (blob) for reading.
+        /// </summary>
+        /// <param name="blobUrl">The URL returned by <see cref="UploadFileAsync"/> when the file was uploaded.</param>
+        /// <returns>A read-only stream of the file, or null if it no longer exists.</returns>
+        public async Task<Stream?> OpenReadAsync(string blobUrl)
+        {
+            string? blobName = blobUrl.Split('/').LastOrDefault();
+            if (string.IsNullOrEmpty(blobName))
+                return null;
+
+            // Decode the blob name to match the expected format in Azure Blob Storage
+            blobName = Uri.UnescapeDataString(blobName);
+
+            BlobServiceClient blobServiceClient = CreateBlobServiceClient();
+            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
+            var blobClient = containerClient.GetBlobClient(blobName);
+
+            if (!await blobClient.ExistsAsync())
+                return null;
+
+            return await blobClient.OpenReadAsync();
+        }
+
         private BlobServiceClient CreateBlobServiceClient()
         {
 #if DEBUG
