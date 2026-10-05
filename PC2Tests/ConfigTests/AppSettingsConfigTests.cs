@@ -104,4 +104,19 @@ public class AppSettingsConfigTests
         Assert.IsNotNull(value, "GoogleReCaptcha:MinimumScore is missing in appsettings.json");
         Assert.IsTrue(float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _), "GoogleReCaptcha:MinimumScore must be a valid number in appsettings.json");
     }
+
+    [TestMethod]
+    public void SenderNet_AccountId_IsPresentAndNotEmpty()
+    {
+        // Only appsettings.Development.json leaves it blank; in production the mailing list form would disappear
+        var value = _config["SenderNet:AccountId"];
+        Assert.IsFalse(string.IsNullOrWhiteSpace(value), "SenderNet:AccountId is missing or empty in appsettings.json");
+    }
+
+    [TestMethod]
+    public void SenderNet_SignupFormId_IsPresentAndNotEmpty()
+    {
+        var value = _config["SenderNet:SignupFormId"];
+        Assert.IsFalse(string.IsNullOrWhiteSpace(value), "SenderNet:SignupFormId is missing or empty in appsettings.json");
+    }
 }

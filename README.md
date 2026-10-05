@@ -94,12 +94,21 @@ PC2 manages its mailing list and email campaigns on [Sender.net](https://www.sen
 in the Sender.net dashboard, so its fields, wording, and colors are changed there rather than in this repository. Sign-ups go straight to
 Sender.net and are not saved in our database.
 
-- `wwwroot/js/sender-snippet.js` loads Sender.net on every page (as Sender.net asks), using PC2's Sender.net account ID.
-- `Views/Shared/_MailingListSignupPartial.cshtml` marks where the form appears. Add `<partial name="_MailingListSignupPartial" />`
-  to a view to show the form on another page. A different Sender.net form needs its own form ID in `data-sender-form-id`.
+Settings are in the `SenderNet` section of `appsettings.json`:
+- `AccountId` - PC2's Sender.net account ID, from the JavaScript snippet Sender.net provides.
+- `SignupFormId` - the sign-up form's `data-sender-form-id`.
 
-The form won't appear if the browser can't reach `cdn.sender.net` (e.g. an ad blocker). Sign-ups made while testing locally
-go to PC2's real mailing list.
+Both are blank in `appsettings.Development.json`, so **local runs never load Sender.net** and test sign-ups can't reach PC2's real
+mailing list. A dashed placeholder box shows where the form would appear. To try the real form locally, create a free Sender.net
+account of your own, copy the form there, and put your IDs in user secrets. Don't use PC2's IDs:
+```
+dotnet user-secrets set "SenderNet:AccountId" "<your-account-id>"
+dotnet user-secrets set "SenderNet:SignupFormId" "<your-form-id>"
+```
+
+`Views/Shared/_SenderNetScriptPartial.cshtml` loads Sender.net on every page, as Sender.net asks. To show the form on another page,
+add `<partial name="_MailingListSignupPartial" />` to its view. The form won't appear if the browser can't reach `cdn.sender.net`
+(e.g. an ad blocker).
 
 ### Accessibility Testing
 The website should meet [WCAG 2.2 Level AA](https://www.w3.org/WAI/WCAG22/quickref/?levels=aaa). The `PC2AccessibilityTests` project scans each page with

@@ -44,7 +44,7 @@
     </style>
     @await RenderSectionAsync("Head", false)
     @* Sender.net asks for this on every page, before </head>, even with several sign-up forms *@
-    <script src="~/js/sender-snippet.js" asp-append-version="true"></script>
+    <partial name="_SenderNetScriptPartial" />
 </head>
 <body id="bootstrap-override">
     <a class="skip-link visually-hidden-focusable" href="#main-content">Skip to main content</a>
