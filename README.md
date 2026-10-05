@@ -89,6 +89,18 @@ after choosing "My child". The answer choices are in `ReferralChoices`, and the 
 
 In development, referral emails are saved to `PC2/DevEmails/` like other emails (see above).
 
+### Mailing List Sign-up
+PC2 manages its mailing list and email campaigns on [Sender.net](https://www.sender.net/). The sign-up form on the home page is designed
+in the Sender.net dashboard, so its fields, wording, and colors are changed there rather than in this repository. Sign-ups go straight to
+Sender.net and are not saved in our database.
+
+- `wwwroot/js/sender-snippet.js` loads Sender.net on every page (as Sender.net asks), using PC2's Sender.net account ID.
+- `Views/Shared/_MailingListSignupPartial.cshtml` marks where the form appears. Add `<partial name="_MailingListSignupPartial" />`
+  to a view to show the form on another page. A different Sender.net form needs its own form ID in `data-sender-form-id`.
+
+The form won't appear if the browser can't reach `cdn.sender.net` (e.g. an ad blocker). Sign-ups made while testing locally
+go to PC2's real mailing list.
+
 ### Accessibility Testing
 The website should meet [WCAG 2.2 Level AA](https://www.w3.org/WAI/WCAG22/quickref/?levels=aaa). The `PC2AccessibilityTests` project scans each page with
 [axe-core](https://github.com/dequelabs/axe-core) in a headless browser. It checks the public pages, the Resource Guide search results, and
