@@ -83,6 +83,18 @@ public class ResourcesControllerTests
     }
 
     [TestMethod]
+    public void VirtualCloset_RedirectsPermanentlyToEquipmentExchange()
+    {
+        // Act
+        IActionResult result = _controller.VirtualCloset();
+
+        // Assert
+        Assert.IsInstanceOfType<RedirectToActionResult>(result, out RedirectToActionResult redirect);
+        Assert.IsTrue(redirect.Permanent);
+        Assert.AreEqual(nameof(ResourcesController.EquipmentExchange), redirect.ActionName);
+    }
+
+    [TestMethod]
     public async Task Newsletter_UnknownId_ReturnsNotFound()
     {
         // Act - the newsletter lookup fails before storage is touched

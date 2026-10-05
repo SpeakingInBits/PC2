@@ -150,9 +150,17 @@ namespace PC2.Controllers
             return View();
         }
 
-        public IActionResult VirtualCloset()
+        public IActionResult EquipmentExchange()
         {
             return View();
+        }
+
+        /// <summary>
+        /// The Virtual Closet was renamed to Emma's Exceptional Equipment Exchange; keeps old links and bookmarks working
+        /// </summary>
+        public IActionResult VirtualCloset()
+        {
+            return RedirectToActionPermanent(nameof(EquipmentExchange));
         }
 
         public async Task <IActionResult> FocusNewsletters()
