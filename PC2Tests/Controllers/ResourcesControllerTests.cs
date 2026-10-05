@@ -81,4 +81,14 @@ public class ResourcesControllerTests
         Assert.IsNull(model.Category);
         Assert.IsEmpty(model.Agencies);
     }
+
+    [TestMethod]
+    public async Task Newsletter_UnknownId_ReturnsNotFound()
+    {
+        // Act - the newsletter lookup fails before storage is touched
+        IActionResult result = await _controller.Newsletter(id: 999, download: false, azureBlobUploader: null!);
+
+        // Assert
+        Assert.IsInstanceOfType<NotFoundResult>(result);
+    }
 }
