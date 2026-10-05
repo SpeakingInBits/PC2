@@ -27,7 +27,7 @@ public class PublicPageTests
     [DataRow("/Resources/AgeSpecificIssues")]
     [DataRow("/Resources/LegislativeLinksAndEvents")]
     [DataRow("/Resources/EmergencyPreparedness")]
-    [DataRow("/Resources/VirtualCloset")]
+    [DataRow("/Resources/EquipmentExchange")]
     [DataRow("/Events")]
     [DataRow("/NewsToKnow")]
     [DataRow("/ProgramVideos")]

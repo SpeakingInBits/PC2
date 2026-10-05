@@ -81,4 +81,16 @@ public class ResourcesControllerTests
         Assert.IsNull(model.Category);
         Assert.IsEmpty(model.Agencies);
     }
+
+    [TestMethod]
+    public void VirtualCloset_RedirectsPermanentlyToEquipmentExchange()
+    {
+        // Act
+        IActionResult result = _controller.VirtualCloset();
+
+        // Assert
+        Assert.IsInstanceOfType<RedirectToActionResult>(result, out RedirectToActionResult redirect);
+        Assert.IsTrue(redirect.Permanent);
+        Assert.AreEqual(nameof(ResourcesController.EquipmentExchange), redirect.ActionName);
+    }
 }
