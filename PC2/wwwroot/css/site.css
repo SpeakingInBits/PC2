@@ -580,6 +580,13 @@ main p {
     margin: 1.2em auto;
 }
 
+/* Stands in for the Sender.net sign-up form when Sender.net isn't configured, e.g. in development */
+.mailing-list-signup-placeholder {
+    border: 2px dashed currentColor;
+    padding: 2em 1em;
+    text-align: center;
+}
+
 #content {
     /* min() stops the extra 80px from making content wider than very small screens */
     width: min(100%, calc(75% + 80px));

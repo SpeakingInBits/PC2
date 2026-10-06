@@ -1,0 +1,24 @@
+@using Microsoft.Extensions.Options
+@using PC2.Services
+@inject IOptions<SenderNetOptions> SenderNetOptions
+@inject IWebHostEnvironment Environment
+@{
+    var options = SenderNetOptions.Value;
+}
+
+@* Sender.net replaces the div with the mailing list sign-up form designed in the Sender.net dashboard.
+   The form's fields, wording, and colors are edited there, not here. Needs _SenderNetScriptPartial from _Layout. *@
+@if (options.IsConfigured)
+{
+    <section class="mailing-list-signup" aria-label="Join our mailing list">
+        <div style="text-align: left" class="sender-form-field" data-sender-form-id="@options.SignupFormId"></div>
+    </section>
+}
+else if (Environment.IsDevelopment())
+{
+    @* Shows where the form goes without loading Sender.net, so nothing can reach the real mailing list.
+       Visitors to a site missing the IDs see nothing rather than this box. *@
+    <section class="mailing-list-signup" aria-label="Join our mailing list">
+        <p class="mailing-list-signup-placeholder">Mailing list sign-up appears here.</p>
+    </section>
+}

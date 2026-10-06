@@ -104,4 +104,18 @@ public class AppSettingsConfigTests
         Assert.IsNotNull(value, "GoogleReCaptcha:MinimumScore is missing in appsettings.json");
         Assert.IsTrue(float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _), "GoogleReCaptcha:MinimumScore must be a valid number in appsettings.json");
     }
+
+    [TestMethod]
+    public void SenderNet_AccountId_IsPresent()
+    {
+        var value = _config["SenderNet:AccountId"];
+        Assert.IsNotNull(value, "SenderNet:AccountId is missing in appsettings.json");
+    }
+
+    [TestMethod]
+    public void SenderNet_SignupFormId_IsPresent()
+    {
+        var value = _config["SenderNet:SignupFormId"];
+        Assert.IsNotNull(value, "SenderNet:SignupFormId is missing in appsettings.json");
+    }
 }

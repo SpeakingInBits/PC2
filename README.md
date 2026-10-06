@@ -89,6 +89,30 @@ after choosing "My child". The answer choices are in `ReferralChoices`, and the 
 
 In development, referral emails are saved to `PC2/DevEmails/` like other emails (see above).
 
+### Mailing List Sign-up
+PC2 manages its mailing list and email campaigns on [Sender.net](https://www.sender.net/). The sign-up form on the home page is designed
+in the Sender.net dashboard, so its fields, wording, and colors are changed there rather than in this repository. Sign-ups go straight to
+Sender.net and are not saved in our database.
+
+Settings are in the `SenderNet` section of `appsettings.json`:
+- `AccountId` - PC2's Sender.net account ID, from the JavaScript snippet Sender.net provides.
+- `SignupFormId` - the sign-up form's `data-sender-form-id`.
+
+Both are blank in the repository, so **local runs never load Sender.net** and test sign-ups can't reach PC2's real mailing list.
+In development, a dashed placeholder box shows where the form would appear; anywhere else, nothing is shown until the IDs are set.
+PC2's IDs are set only in the production App Service configuration, as the application settings `SenderNet__AccountId` and
+`SenderNet__SignupFormId`. Don't add them to `appsettings.json` or your user secrets.
+
+To try the real form locally, create a free Sender.net account of your own, copy the form there, and put your IDs in user secrets:
+```
+dotnet user-secrets set "SenderNet:AccountId" "<your-account-id>"
+dotnet user-secrets set "SenderNet:SignupFormId" "<your-form-id>"
+```
+
+`Views/Shared/_SenderNetScriptPartial.cshtml` loads Sender.net on every page, as Sender.net asks. To show the form on another page,
+add `<partial name="_MailingListSignupPartial" />` to its view. The form won't appear if the browser can't reach `cdn.sender.net`
+(e.g. an ad blocker).
+
 ### Accessibility Testing
 The website should meet [WCAG 2.2 Level AA](https://www.w3.org/WAI/WCAG22/quickref/?levels=aaa). The `PC2AccessibilityTests` project scans each page with
 [axe-core](https://github.com/dequelabs/axe-core) in a headless browser. It checks the public pages, the Resource Guide search results, and
