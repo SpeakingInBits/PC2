@@ -98,9 +98,12 @@ Settings are in the `SenderNet` section of `appsettings.json`:
 - `AccountId` - PC2's Sender.net account ID, from the JavaScript snippet Sender.net provides.
 - `SignupFormId` - the sign-up form's `data-sender-form-id`.
 
-Both are blank in `appsettings.Development.json`, so **local runs never load Sender.net** and test sign-ups can't reach PC2's real
-mailing list. A dashed placeholder box shows where the form would appear. To try the real form locally, create a free Sender.net
-account of your own, copy the form there, and put your IDs in user secrets. Don't use PC2's IDs:
+Both are blank in the repository, so **local runs never load Sender.net** and test sign-ups can't reach PC2's real mailing list.
+In development, a dashed placeholder box shows where the form would appear; anywhere else, nothing is shown until the IDs are set.
+PC2's IDs are set only in the production App Service configuration, as the application settings `SenderNet__AccountId` and
+`SenderNet__SignupFormId`. Don't add them to `appsettings.json` or your user secrets.
+
+To try the real form locally, create a free Sender.net account of your own, copy the form there, and put your IDs in user secrets:
 ```
 dotnet user-secrets set "SenderNet:AccountId" "<your-account-id>"
 dotnet user-secrets set "SenderNet:SignupFormId" "<your-form-id>"

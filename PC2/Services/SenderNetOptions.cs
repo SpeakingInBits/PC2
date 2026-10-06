@@ -4,8 +4,8 @@ namespace PC2.Services;
 
 /// <summary>
 /// Sender.net mailing list settings, bound from the "SenderNet" configuration section.
-/// Leave them blank to keep the site from loading Sender.net, e.g. in development, so test sign-ups
-/// can't reach PC2's real mailing list.
+/// PC2's IDs are only set in the production App Service configuration. While they're blank the site
+/// doesn't load Sender.net, so local test sign-ups can't reach PC2's real mailing list.
 /// </summary>
 public class SenderNetOptions
 {
@@ -29,7 +29,7 @@ public class SenderNetOptions
     public string? SignupFormId { get; set; }
 
     /// <summary>
-    /// True when both IDs are set. Until then, a placeholder is shown where the sign-up form goes.
+    /// True when both IDs are set. Until then, the sign-up form is left out (with a placeholder in development).
     /// </summary>
     public bool IsConfigured => !string.IsNullOrWhiteSpace(AccountId) && !string.IsNullOrWhiteSpace(SignupFormId);
 }

@@ -106,17 +106,16 @@ public class AppSettingsConfigTests
     }
 
     [TestMethod]
-    public void SenderNet_AccountId_IsPresentAndNotEmpty()
+    public void SenderNet_AccountId_IsPresent()
     {
-        // Only appsettings.Development.json leaves it blank; in production the mailing list form would disappear
         var value = _config["SenderNet:AccountId"];
-        Assert.IsFalse(string.IsNullOrWhiteSpace(value), "SenderNet:AccountId is missing or empty in appsettings.json");
+        Assert.IsNotNull(value, "SenderNet:AccountId is missing in appsettings.json");
     }
 
     [TestMethod]
-    public void SenderNet_SignupFormId_IsPresentAndNotEmpty()
+    public void SenderNet_SignupFormId_IsPresent()
     {
         var value = _config["SenderNet:SignupFormId"];
-        Assert.IsFalse(string.IsNullOrWhiteSpace(value), "SenderNet:SignupFormId is missing or empty in appsettings.json");
+        Assert.IsNotNull(value, "SenderNet:SignupFormId is missing in appsettings.json");
     }
 }
