@@ -46,6 +46,13 @@ public class CalendarEvent : IComparable<CalendarEvent>
     [Display(Name = "County event")]
     public bool CountyEvent {  get; set; }
 
+    /// <summary>
+    /// The series this event is part of, or null for a one time event
+    /// </summary>
+    public int? EventSeriesID { get; set; }
+
+    public EventSeries? EventSeries { get; set; }
+
     // Convert DateOnly and TimeOnly to DateTime
     public DateTime StartingDateTime
     {

@@ -99,16 +99,20 @@ public class CalendarController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        CalendarEvent calendarEvent = new()
+        // Update the existing event so fields not on the form, such as its series, are kept
+        CalendarEvent? calendarEvent = await CalendarEventDB.GetEvent(_context, model.EventId);
+
+        if (calendarEvent == null)
         {
-            CalendarEventID = model.EventId,
-            CountyEvent = model.IsCountyEvent,
-            PC2Event = model.IsPc2Event,
-            StartingTime = TimeOnly.Parse(model.StartingTime),
-            EndingTime = TimeOnly.Parse(model.EndingTime),
-            EventDescription = model.Description,
-            DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent)
-        };
+            return NotFound();
+        }
+
+        calendarEvent.CountyEvent = model.IsCountyEvent;
+        calendarEvent.PC2Event = model.IsPc2Event;
+        calendarEvent.StartingTime = TimeOnly.Parse(model.StartingTime);
+        calendarEvent.EndingTime = TimeOnly.Parse(model.EndingTime);
+        calendarEvent.EventDescription = model.Description;
+        calendarEvent.DateOfEvent = DateOnly.FromDateTime(model.DateOfEvent);
 
         bool success = await CalendarEventDB.UpdateEvent(_context, calendarEvent);
 

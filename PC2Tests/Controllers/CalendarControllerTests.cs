@@ -489,4 +489,72 @@ public class CalendarControllerTests
     }
 
     #endregion
+
+    #region Edit Tests
+
+    [TestMethod]
+    public async Task Edit_EventInSeries_UpdatesEventAndKeepsItInSeries()
+    {
+        // Arrange
+        DateOnly date = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
+        var series = new EventSeries
+        {
+            Frequency = RecurrenceFrequency.Weekly,
+            StartDate = date,
+            StartingTime = new TimeOnly(10, 0),
+            EndingTime = new TimeOnly(11, 0),
+            EventDescription = "Support group",
+            PC2Event = true
+        };
+        await EventSeriesDB.AddSeries(_context, series, new[] { date, date.AddDays(7) });
+        CalendarEvent calendarEvent = series.Events[0];
+        _context.ChangeTracker.Clear();
+
+        var model = new CalendarCreateEventViewModel
+        {
+            EventId = calendarEvent.CalendarEventID,
+            DateOfEvent = date.ToDateTime(TimeOnly.MinValue),
+            StartingTime = "13:00",
+            EndingTime = "14:00",
+            Description = "Support group (moved to afternoon)",
+            IsPc2Event = true
+        };
+
+        // Act
+        var result = await _controller.Edit(model) as RedirectToActionResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("Index", result.ActionName);
+
+        CalendarEvent? updated = await _context.CalendarEvents.AsNoTracking()
+            .FirstOrDefaultAsync(e => e.CalendarEventID == calendarEvent.CalendarEventID);
+        Assert.IsNotNull(updated);
+        Assert.AreEqual(series.EventSeriesID, updated.EventSeriesID);
+        Assert.AreEqual(new TimeOnly(13, 0), updated.StartingTime);
+        Assert.AreEqual("Support group (moved to afternoon)", updated.EventDescription);
+    }
+
+    [TestMethod]
+    public async Task Edit_MissingEvent_ReturnsNotFound()
+    {
+        // Arrange
+        var model = new CalendarCreateEventViewModel
+        {
+            EventId = 999,
+            DateOfEvent = DateTime.Today.AddDays(1),
+            StartingTime = "10:00",
+            EndingTime = "11:00",
+            Description = "Missing",
+            IsPc2Event = true
+        };
+
+        // Act
+        var result = await _controller.Edit(model);
+
+        // Assert
+        Assert.IsInstanceOfType<NotFoundResult>(result);
+    }
+
+    #endregion
 }
