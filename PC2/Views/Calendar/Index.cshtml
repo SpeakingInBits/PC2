@@ -1,41 +1,27 @@
-﻿@model List<CalendarEventViewModel>
+@model List<CalendarEventViewModel>
 @{
     ViewData["Title"] = "Event Calendar";
 
-    List<List<CalendarEventViewModel>> eventDateGroups =
-            Model
-            .GroupBy(vm => vm.Event.DateOfEvent)
-            .Select(group => group.ToList())
-            .ToList();
+    // Events for FullCalendar. The plain description is the title shown on the calendar;
+    // the linkified description is shown in the event panel
+    var calendarEvents = Model.Select(vm => new
+    {
+        id = vm.Event.CalendarEventID.ToString(),
+        title = vm.Event.EventDescription,
+        start = vm.Event.StartingDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+        end = vm.Event.EndingDateTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+        classNames = new[] { vm.Event.PC2Event ? "pc2-event" : "county-event" },
+        extendedProps = new
+        {
+            descriptionHtml = vm.SanitizedDescription,
+            isPc2Event = vm.Event.PC2Event,
+            seriesId = vm.Event.EventSeriesID,
+            seriesSchedule = vm.SeriesSchedule,
+            dateLabel = vm.Event.DateOfEvent.ToString("dddd, MMMM d, yyyy"),
+            timeLabel = $"{vm.Event.StartingTime:h:mm tt} - {vm.Event.EndingTime:h:mm tt}"
+        }
+    });
 }
-
-@section Head{
-	<style>
-		.agenda .agenda-date {
-			width: 170px;
-		}
-
-		.agenda .agenda-date .dayofmonth {
-			width: 40px !important;
-			font-size: 36px !important;
-			line-height: 36px !important;
-			float: left;
-			text-align: right;
-			margin-right: 10px;
-		}
-
-		.agenda .agenda-date .shortdate {
-			font-size: 0.75em;
-		}
-
-
-		/* Times */
-		.agenda .agenda-time {
-			width: 140px;
-		}
-	</style>
-}
-
 
 <h1>@ViewData["Title"]</h1>
 
@@ -66,100 +52,90 @@
     </div>
 }
 
-<div class="agenda">
-    <div class="table-responsive">
-        <table class="table table-condensed table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Event</th>
-                    <th scope="col">Type</th>
-                    <th scope="col"><span class="visually-hidden">Actions</span></th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int currentDate = 0; currentDate < eventDateGroups.Count; currentDate++)
-                {
-                    List<CalendarEventViewModel> dateGroup = eventDateGroups[currentDate];
+<div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+    <a asp-action="Create" class="btn btn-primary">Create Event</a>
+    <fieldset class="d-flex flex-wrap align-items-center gap-3">
+        <legend class="visually-hidden">Show events</legend>
+        <div class="form-check mb-0">
+            <input class="form-check-input" type="checkbox" id="show-pc2-events" checked data-calendar-filter="pc2" />
+            <label class="form-check-label" for="show-pc2-events">
+                <span class="calendar-swatch pc2-event" aria-hidden="true"></span> PC2 events
+            </label>
+        </div>
+        <div class="form-check mb-0">
+            <input class="form-check-input" type="checkbox" id="show-county-events" checked data-calendar-filter="county" />
+            <label class="form-check-label" for="show-county-events">
+                <span class="calendar-swatch county-event" aria-hidden="true"></span> County events
+            </label>
+        </div>
+    </fieldset>
+</div>
+<p class="small text-muted">
+    Choose a day's <strong>+</strong> button to add an event on that date. Choose an event to edit, duplicate, or delete it.
+    <i class="bi bi-arrow-repeat" aria-hidden="true"></i> marks repeating events.
+</p>
 
-                    @*loop through all events on this date; the date cell spans every event row for that date*@
-                    @for (int currentEvent = 0; currentEvent < dateGroup.Count; currentEvent++)
-                    {
-                        CalendarEvent calendarEvent = dateGroup[currentEvent].Event;
-                        string eventContext = calendarEvent.DateOfEvent.ToString("MMMM d, yyyy") + " at " + calendarEvent.StartingTime;
-                        <tr>
-                            @if (currentEvent == 0)
-                            {
-                                <td class="agenda-date" rowspan="@dateGroup.Count">
-                                    <div class="dayofmonth">@calendarEvent.DateOfEvent.Day</div>
-                                    <div class="dayofweek">@calendarEvent.DateOfEvent.DayOfWeek</div>
-                                    <div class="shortdate text-muted">@calendarEvent.DateOfEvent.ToString("MMMM"),&nbsp;@calendarEvent.DateOfEvent.Year</div>
-                                </td>
-                            }
-                            <td class="agenda-time">
-                                @calendarEvent.StartingTime &nbsp;-&nbsp; @calendarEvent.EndingTime
-                            </td>
-                            <td class="agenda-events">
-                                <div class="agenda-event">
-                                    @Html.Raw(dateGroup[currentEvent].SanitizedDescription)
-                                </div>
-                                @if (dateGroup[currentEvent].SeriesSchedule != null)
-                                {
-                                    <div class="small text-muted">
-                                        <span aria-hidden="true">&#x21bb;</span> Repeats: @dateGroup[currentEvent].SeriesSchedule
-                                    </div>
-                                }
-                            </td>
-                            <td>
-                                @if (calendarEvent.PC2Event)
-                                {
-                                    <p>
-                                        PC2 Event
-                                    </p>
-                                }
-                                else
-                                {
-                                    <p>
-                                        County Event
-                                    </p>
-                                }
-                            </td>
-                            <td>
-                                @if (calendarEvent.EventSeriesID.HasValue)
-                                {
-                                    <p class="mb-1">
-                                        <a asp-action="Edit" asp-route-id="@calendarEvent.CalendarEventID">Edit this date<span class="visually-hidden"> of event on @eventContext</span></a> |
-                                        <a asp-action="Delete" onclick="confirmEventDeletion('Delete only this date of the repeating event?');" asp-route-id="@calendarEvent.CalendarEventID">Delete this date<span class="visually-hidden"> of event on @eventContext</span></a>
-                                    </p>
-                                    <p>
-                                        <a asp-action="EditSeries" asp-route-id="@calendarEvent.EventSeriesID">Edit series<span class="visually-hidden"> for event on @eventContext</span></a> |
-                                        <a asp-action="DeleteSeries" asp-route-id="@calendarEvent.EventSeriesID">Delete series<span class="visually-hidden"> for event on @eventContext</span></a>
-                                    </p>
-                                }
-                                else
-                                {
-                                    <p>
-                                        <a asp-action="Edit" asp-route-id="@calendarEvent.CalendarEventID">Edit Event<span class="visually-hidden"> on @eventContext</span></a> |
-                                        <a asp-action="Delete" onclick="confirmEventDeletion();" asp-route-id="@calendarEvent.CalendarEventID">Delete Event<span class="visually-hidden"> on @eventContext</span></a>
-                                    </p>
-                                }
-                            </td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
+<div id="admin-calendar" class="admin-calendar"
+     data-create-url="@Url.Action("Create", "Calendar")"
+     data-edit-url="@Url.Action("Edit", "Calendar")"
+     data-edit-series-url="@Url.Action("EditSeries", "Calendar")"
+     data-delete-series-url="@Url.Action("DeleteSeries", "Calendar")"></div>
+
+<script type="application/json" id="calendar-events">@Json.Serialize(calendarEvents)</script>
+
+<form id="delete-event-form" asp-action="Delete" method="post" hidden>
+    <input type="hidden" name="id" />
+</form>
+
+<div class="modal fade" id="event-actions" tabindex="-1" aria-labelledby="event-actions-title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5 fw-bold" id="event-actions-title">Event</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-1">
+                    <strong data-event-date></strong><br />
+                    <span data-event-time></span> &middot; <span data-event-type></span>
+                </p>
+                <div class="event-actions-description mb-2" data-event-description></div>
+                <p class="small text-muted mb-3" data-event-series>
+                    <i class="bi bi-arrow-repeat" aria-hidden="true"></i> Repeats: <span data-event-schedule></span>
+                </p>
+
+                <div data-single-actions>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-primary btn-sm" data-action="edit">Edit</a>
+                        <a class="btn btn-outline-secondary btn-sm" data-action="duplicate">Duplicate</a>
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-action="delete">Delete</button>
+                    </div>
+                </div>
+
+                <div data-series-actions>
+                    <h3 class="h6 mb-1">This date only</h3>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <a class="btn btn-primary btn-sm" data-action="edit">Edit this date</a>
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-action="delete">Delete this date</button>
+                    </div>
+                    <h3 class="h6 mb-1">Every date in the series</h3>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-primary btn-sm" data-action="edit-series">Edit series</a>
+                        <a class="btn btn-outline-danger btn-sm" data-action="delete-series">Delete series</a>
+                        <a class="btn btn-outline-secondary btn-sm" data-action="duplicate">Duplicate as new event</a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 
-@section Scripts{
-    <script>
-        function confirmEventDeletion(message) {
-            let userConfirmed = confirm(message || "Are you sure you want to delete this event?");
-            if (!userConfirmed) {
-                event.preventDefault();
-            }
-        }
-    </script>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"
+            integrity="sha384-B1OFx8Gy9GjPu8UbUyXbGQpzll9ubAUQ9agInFJ8NnD7nYG1u/CLR+Sqr5yifl4q"
+            crossorigin="anonymous"></script>
+    <script src="~/js/admin-calendar.js" asp-append-version="true"></script>
 }

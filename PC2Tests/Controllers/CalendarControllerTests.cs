@@ -628,6 +628,37 @@ public class CalendarControllerTests
     #region Create Tests
 
     [TestMethod]
+    public async Task Create_Get_CopyFromAndDate_FillsInDetailsAndDate()
+    {
+        // Arrange
+        EventSeries series = await AddWeeklySeries(NextWeekday(DayOfWeek.Monday), 1);
+        DateTime newDate = DateTime.Today.AddDays(3);
+
+        // Act
+        var result = await _controller.Create(newDate, series.Events[0].CalendarEventID) as ViewResult;
+
+        // Assert
+        var model = result?.Model as CalendarCreateEventViewModel;
+        Assert.IsNotNull(model);
+        Assert.AreEqual("Support group", model.Description);
+        Assert.AreEqual("10:00", model.StartingTime);
+        Assert.AreEqual("11:00", model.EndingTime);
+        Assert.IsTrue(model.IsPc2Event);
+        Assert.AreEqual(newDate, model.DateOfEvent);
+        Assert.IsFalse(model.Recurrence.Repeats, "A duplicate starts as a one time event");
+    }
+
+    [TestMethod]
+    public async Task Create_Get_PastDate_IsNotFilledIn()
+    {
+        var result = await _controller.Create(DateTime.Today.AddDays(-1), null) as ViewResult;
+
+        var model = result?.Model as CalendarCreateEventViewModel;
+        Assert.IsNotNull(model);
+        Assert.AreEqual(default, model.DateOfEvent);
+    }
+
+    [TestMethod]
     public async Task Create_NotRepeating_CreatesOneEventWithoutSeries()
     {
         // Arrange

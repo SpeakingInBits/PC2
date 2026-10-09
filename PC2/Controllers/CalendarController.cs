@@ -38,11 +38,25 @@ public class CalendarController : Controller
     /// Creates a calendar event and date
     /// </summary>
     /// <param name="date">Date to fill in on the form, if any</param>
+    /// <param name="copyFrom">Id of an event whose details are filled in on the form, if any</param>
     /// <returns></returns>
     [HttpGet]
-    public IActionResult Create(DateTime? date)
+    public async Task<IActionResult> Create(DateTime? date, int? copyFrom)
     {
         CalendarCreateEventViewModel model = new();
+
+        if (copyFrom.HasValue)
+        {
+            CalendarEvent? original = await CalendarEventDB.GetEvent(_context, copyFrom.Value);
+            if (original != null)
+            {
+                model.Description = original.EventDescription;
+                model.StartingTime = original.StartingTime.ToString("HH:mm");
+                model.EndingTime = original.EndingTime.ToString("HH:mm");
+                model.IsPc2Event = original.PC2Event;
+                model.IsCountyEvent = original.CountyEvent;
+            }
+        }
 
         if (date.HasValue && date.Value.Date >= DateTime.Today)
         {
@@ -346,6 +360,8 @@ public class CalendarController : Controller
         return RedirectToAction("Index");
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
         await CalendarEventDB.DeleteEvent(_context, id);
