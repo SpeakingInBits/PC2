@@ -1,35 +1,25 @@
 @using PC2.Models.ViewModels
-@model CalendarCreateEventViewModel
-
+@model EditSeriesViewModel
 @{
-    ViewData["Title"] = "Edit Event";
+    ViewData["Title"] = "Edit Repeating Event";
+    ViewData["StartDateInputId"] = Html.IdFor(m => m.StartDate);
+    ViewData["AllowNoRepeat"] = false;
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<h2 class="h4">Calendar Event</h2>
-<hr />
-@if (Model.SeriesId.HasValue)
-{
-    <div class="alert alert-info" role="note">
-        <p class="mb-1">
-            This date is part of a repeating event: <strong>@Model.SeriesSchedule</strong>.
-            Changes here only affect this date.
-        </p>
-        <a asp-action="EditSeries" asp-route-id="@Model.SeriesId">Edit every date in the series instead</a>
-    </div>
-}
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+    <div class="col-md-8 col-lg-6">
+        <p>
+            <strong>@Model.CurrentSchedule</strong><br />
+            @Model.UpcomingCount upcoming @(Model.UpcomingCount == 1 ? "date" : "dates").
+            Changes apply to every upcoming date, including dates that were edited individually.
+        </p>
+
+        <form asp-action="EditSeries" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
-            <input type="hidden" asp-for="EventId" />
-            <div class="form-group">
-                <label asp-for="DateOfEvent" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
-                <input asp-for="DateOfEvent" class="form-control" type="date" aria-required="true" />
-                <span asp-validation-for="DateOfEvent" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="SeriesId" />
             <div class="form-group">
                 <label asp-for="StartingTime" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
                 <input asp-for="StartingTime" class="form-control" type="time" aria-required="true" />
@@ -47,6 +37,25 @@
             </div>
             <partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.EventType), Html.DisplayNameFor(m => m.EventType),
                 CalendarEventTypes.All, Model.EventType, CalendarEventTypes.RequiredMessage)" />
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" asp-for="ChangeSchedule" data-recurrence-toggle="schedule-fields" />
+                <label class="form-check-label" asp-for="ChangeSchedule"></label>
+            </div>
+
+            <div id="schedule-fields" class="border rounded p-3 mb-3">
+                <p class="small text-muted">
+                    Upcoming dates are replaced with the dates below. Dates that were moved individually are removed.
+                </p>
+                <div class="form-group mb-3">
+                    <label asp-for="StartDate" class="control-label"></label>
+                    <input asp-for="StartDate" class="form-control" type="date" />
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+
+                <partial name="_RecurrenceFields" for="Recurrence" />
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -60,4 +69,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/event-recurrence.js" asp-append-version="true"></script>
 }

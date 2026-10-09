@@ -1,6 +1,8 @@
-﻿@model CalendarCreateEventViewModel
+@using PC2.Models.ViewModels
+@model CalendarCreateEventViewModel
 @{
     ViewData["Title"] = "Create Event";
+    ViewData["StartDateInputId"] = Html.IdFor(m => m.DateOfEvent);
 }
 
 <div class="justify-content-center">
@@ -8,13 +10,15 @@
 </div>
 
 <div class="row justify-content-center">
-    <div class="col-md-4">
+    <div class="col-md-8 col-lg-6">
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
         <form id="create" class="form" asp-action="Create" method="post">
             <div class="form-group">
                 <label asp-for="DateOfEvent" class="control-label">Set date for event</label><span class="text-danger" aria-hidden="true"> *</span>
-                <input asp-for="DateOfEvent" class="form-control" type="date" aria-required="true" />
+                @* Leave the date blank rather than showing 01/01/0001 when none was chosen *@
+                <input asp-for="DateOfEvent" class="form-control" type="date" aria-required="true"
+                       value="@(Model.DateOfEvent == default ? "" : Model.DateOfEvent.ToString("yyyy-MM-dd"))" />
                 <span asp-validation-for="DateOfEvent" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -32,16 +36,11 @@
                 <textarea asp-for="Description" class="form-control" rows="5" aria-required="true"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <fieldset class="form-group" aria-describedby="event-type-error">
-                <legend class="fs-6 mb-0">Event type (choose one)<span class="text-danger" aria-hidden="true"> *</span></legend>
-                <div class="checkbox">
-                    <input asp-for="IsPc2Event" type="checkbox"/>
-                    <label asp-for="IsPc2Event">PC2 Event</label>
-                    <input asp-for="IsCountyEvent" type="checkbox" />
-                    <label asp-for="IsCountyEvent">County Event</label>
-                </div>
-                <span asp-validation-for="IsCountyEvent" class="text-danger" id="event-type-error"></span>
-            </fieldset>
+            <partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.EventType), Html.DisplayNameFor(m => m.EventType),
+                CalendarEventTypes.All, Model.EventType, CalendarEventTypes.RequiredMessage)" />
+
+            <partial name="_RecurrenceFields" for="Recurrence" />
+
             <div class="form-group">
                 <input id="submit" type="submit" value="Create Event" class="btn btn-primary" />
             </div>
@@ -51,4 +50,5 @@
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/event-recurrence.js" asp-append-version="true"></script>
 }

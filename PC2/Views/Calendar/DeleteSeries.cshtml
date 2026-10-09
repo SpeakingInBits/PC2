@@ -1,0 +1,39 @@
+@model DeleteSeriesViewModel
+@{
+    ViewData["Title"] = "Delete Repeating Event";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>Are you sure you want to delete this repeating event and every one of its dates?</p>
+
+<dl class="row">
+    <dt class="col-sm-3">Event</dt>
+    <dd class="col-sm-9">@Model.Description</dd>
+    <dt class="col-sm-3">Repeats</dt>
+    <dd class="col-sm-9">@Model.Schedule</dd>
+    <dt class="col-sm-3">Time</dt>
+    <dd class="col-sm-9">@Model.StartingTime - @Model.EndingTime</dd>
+    <dt class="col-sm-3">Upcoming dates</dt>
+    <dd class="col-sm-9">
+        @if (Model.UpcomingDates.Count == 0)
+        {
+            <span>None</span>
+        }
+        else
+        {
+            <span>@Model.UpcomingDates.Count:</span>
+            @string.Join(", ", Model.UpcomingDates.Take(10).Select(d => d.ToString("MMM d, yyyy")))
+            @if (Model.UpcomingDates.Count > 10)
+            {
+                <span>and @(Model.UpcomingDates.Count - 10) more</span>
+            }
+        }
+    </dd>
+</dl>
+
+<form asp-action="DeleteSeries" method="post">
+    <input type="hidden" name="seriesId" value="@Model.SeriesId" />
+    <button type="submit" class="btn btn-danger">Delete all dates</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
