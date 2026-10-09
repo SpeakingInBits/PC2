@@ -36,6 +36,62 @@ namespace PC2.Data
         }
 
         /// <summary>
+        /// Saves changes to a series' details and copies them to each of its events on or after
+        /// <paramref name="today"/>. Event dates are not changed
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="series">The series, loaded with <see cref="GetSeries"/>, with its details already changed</param>
+        /// <param name="today">The current date</param>
+        public static async Task UpdateSeriesDetails(ApplicationDbContext context, EventSeries series, DateOnly today)
+        {
+            foreach (CalendarEvent calendarEvent in series.Events.Where(e => e.DateOfEvent >= today))
+            {
+                CopyDetails(series, calendarEvent);
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Saves changes to a series and makes its events on or after <paramref name="today"/> match
+        /// <paramref name="dates"/>: events on other dates are deleted, events are added for missing dates,
+        /// and the series details are copied to the rest
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="series">The series, loaded with <see cref="GetSeries"/>, with its details and pattern already changed</param>
+        /// <param name="dates">The upcoming dates the series should have</param>
+        /// <param name="today">The current date</param>
+        public static async Task RescheduleSeries(ApplicationDbContext context, EventSeries series,
+            IEnumerable<DateOnly> dates, DateOnly today)
+        {
+            HashSet<DateOnly> wantedDates = dates.Where(d => d >= today).ToHashSet();
+            List<CalendarEvent> upcomingEvents = series.Events.Where(e => e.DateOfEvent >= today).ToList();
+
+            foreach (CalendarEvent calendarEvent in upcomingEvents)
+            {
+                if (wantedDates.Remove(calendarEvent.DateOfEvent))
+                {
+                    CopyDetails(series, calendarEvent);
+                }
+                else
+                {
+                    context.CalendarEvents.Remove(calendarEvent);
+                }
+            }
+
+            foreach (DateOnly date in wantedDates.Order())
+            {
+                series.Events.Add(EventRecurrence.CreateOccurrence(series, date));
+            }
+
+            series.GeneratedThrough = series.IsOpenEnded
+                ? EventRecurrence.GetGenerationLimit(series, today)
+                : null;
+
+            await context.SaveChangesAsync();
+        }
+
+        /// <summary>
         /// Deletes a series and all of its events
         /// </summary>
         /// <param name="context"></param>
@@ -105,6 +161,15 @@ namespace PC2.Data
 
             context.EventSeries.RemoveRange(finishedSeries);
             await context.SaveChangesAsync();
+        }
+
+        private static void CopyDetails(EventSeries series, CalendarEvent calendarEvent)
+        {
+            calendarEvent.StartingTime = series.StartingTime;
+            calendarEvent.EndingTime = series.EndingTime;
+            calendarEvent.EventDescription = series.EventDescription;
+            calendarEvent.PC2Event = series.PC2Event;
+            calendarEvent.CountyEvent = series.CountyEvent;
         }
     }
 }

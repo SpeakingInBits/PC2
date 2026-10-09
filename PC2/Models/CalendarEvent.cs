@@ -131,18 +131,10 @@ public class CalendarCreateEventViewModel : IValidatableObject
     /// valid, the collection will be empty.</returns>
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        // At least one, but not both, event type must be selected
-        if (!IsCountyEvent && !IsPc2Event)
+        foreach (ValidationResult result in CalendarEventValidation.ValidateDetails(
+            IsPc2Event, IsCountyEvent, StartingTime, EndingTime, nameof(IsCountyEvent), nameof(StartingTime), nameof(EndingTime)))
         {
-            yield return new ValidationResult(
-                "Please check the PC2 or County Event checkbox",
-                new[] { nameof(IsCountyEvent) });
-        }
-        else if (IsCountyEvent && IsPc2Event)
-        {
-            yield return new ValidationResult(
-                "Please select only one checkbox",
-                new[] { nameof(IsCountyEvent) });
+            yield return result;
         }
 
         // Date must be today or in the future
@@ -151,24 +143,34 @@ public class CalendarCreateEventViewModel : IValidatableObject
             yield return new ValidationResult(
                 "Starting day must be at a current or future date",
                 new[] { nameof(DateOfEvent) });
+            yield break;
         }
 
-        // Start time must be before end time
-        if (TimeOnly.TryParse(StartingTime, out var start) &&
-            TimeOnly.TryParse(EndingTime, out var end))
+        // Repeating is only offered when creating an event
+        if (EventId == 0)
         {
-            if (start >= end)
+            foreach (ValidationResult result in Recurrence.Validate(
+                DateOnly.FromDateTime(DateOfEvent), DateOnly.FromDateTime(DateTime.Today), nameof(Recurrence)))
             {
-                yield return new ValidationResult(
-                    "Starting time must be before ending time",
-                    new[] { nameof(StartingTime) });
-
-                yield return new ValidationResult(
-                    "Ending time must be after starting time",
-                    new[] { nameof(EndingTime) });
+                yield return result;
             }
         }
     }
+
+    /// <summary>
+    /// How the event repeats. Only used when creating an event
+    /// </summary>
+    public RecurrenceInputModel Recurrence { get; set; } = new();
+
+    /// <summary>
+    /// The series the event is part of, if any. Shown when editing a single date
+    /// </summary>
+    public int? SeriesId { get; set; }
+
+    /// <summary>
+    /// Plain English description of the series the event is part of, if any
+    /// </summary>
+    public string? SeriesSchedule { get; set; }
 }
 
 /// <summary>
@@ -186,4 +188,9 @@ public class CalendarEventViewModel
     /// Safe to render using @Html.Raw()
     /// </summary>
     public string SanitizedDescription { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Plain English description of the series the event is part of, or null for a one time event
+    /// </summary>
+    public string? SeriesSchedule { get; set; }
 }

@@ -8,6 +8,16 @@
 
 <h2 class="h4">Calendar Event</h2>
 <hr />
+@if (Model.SeriesId.HasValue)
+{
+    <div class="alert alert-info" role="note">
+        <p class="mb-1">
+            This date is part of a repeating event: <strong>@Model.SeriesSchedule</strong>.
+            Changes here only affect this date.
+        </p>
+        <a asp-action="EditSeries" asp-route-id="@Model.SeriesId">Edit every date in the series instead</a>
+    </div>
+}
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">

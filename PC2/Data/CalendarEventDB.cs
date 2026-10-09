@@ -16,7 +16,7 @@ namespace PC2.Data
         /// <returns></returns>
         public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context)
         {        
-            return await (from calEvents in context.CalendarEvents
+            return await (from calEvents in context.CalendarEvents.Include(e => e.EventSeries)
                           where calEvents.DateOfEvent >= today
                           orderby calEvents.DateOfEvent ascending, calEvents.StartingTime ascending
                           select calEvents).ToListAsync();
@@ -54,7 +54,7 @@ namespace PC2.Data
         /// <returns></returns>
         public static async Task<CalendarEvent?> GetEvent(ApplicationDbContext context, int id)
         {
-            return await (from c in context.CalendarEvents
+            return await (from c in context.CalendarEvents.Include(e => e.EventSeries)
                           where c.CalendarEventID == id
                           select c).FirstOrDefaultAsync();
         }

@@ -1,0 +1,82 @@
+@model EditSeriesViewModel
+@{
+    ViewData["Title"] = "Edit Repeating Event";
+    ViewData["StartDateInputId"] = Html.IdFor(m => m.StartDate);
+    ViewData["AllowNoRepeat"] = false;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-8 col-lg-6">
+        <p>
+            <strong>@Model.CurrentSchedule</strong><br />
+            @Model.UpcomingCount upcoming @(Model.UpcomingCount == 1 ? "date" : "dates").
+            Changes apply to every upcoming date, including dates that were edited individually.
+        </p>
+
+        <form asp-action="EditSeries" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <p class="small"><span class="text-danger" aria-hidden="true">*</span> Required field</p>
+            <input type="hidden" asp-for="SeriesId" />
+            <div class="form-group">
+                <label asp-for="StartingTime" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="StartingTime" class="form-control" type="time" aria-required="true" />
+                <span asp-validation-for="StartingTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndingTime" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <input asp-for="EndingTime" class="form-control" type="time" aria-required="true" />
+                <span asp-validation-for="EndingTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label><span class="text-danger" aria-hidden="true"> *</span>
+                <textarea asp-for="Description" class="form-control" rows="5" aria-required="true"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <fieldset class="mb-3" aria-describedby="event-type-error">
+                <legend class="fs-6 mb-0">Event type (choose one)<span class="text-danger" aria-hidden="true"> *</span></legend>
+                <div class="form-check">
+                    <input class="form-check-input" asp-for="IsPc2Event" />
+                    <label class="form-check-label" asp-for="IsPc2Event"></label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" asp-for="IsCountyEvent" />
+                    <label class="form-check-label" asp-for="IsCountyEvent"></label>
+                </div>
+                <span asp-validation-for="IsCountyEvent" class="text-danger" id="event-type-error"></span>
+            </fieldset>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" asp-for="ChangeSchedule" data-recurrence-toggle="schedule-fields" />
+                <label class="form-check-label" asp-for="ChangeSchedule"></label>
+            </div>
+
+            <div id="schedule-fields" class="border rounded p-3 mb-3">
+                <p class="small text-muted">
+                    Upcoming dates are replaced with the dates below. Dates that were moved individually are removed.
+                </p>
+                <div class="form-group mb-3">
+                    <label asp-for="StartDate" class="control-label"></label>
+                    <input asp-for="StartDate" class="form-control" type="date" />
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+
+                <partial name="_RecurrenceFields" for="Recurrence" />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/event-recurrence.js" asp-append-version="true"></script>
+}
