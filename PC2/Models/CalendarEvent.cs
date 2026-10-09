@@ -123,6 +123,17 @@ public class CalendarCreateEventViewModel : IValidatableObject
     public bool IsCountyEvent { get; set; }
 
     /// <summary>
+    /// The event type chosen on the form, one of <see cref="CalendarEventTypes.All"/>.
+    /// Sets <see cref="IsPc2Event"/> and <see cref="IsCountyEvent"/>
+    /// </summary>
+    [Display(Name = "Event type")]
+    public string? EventType
+    {
+        get => CalendarEventTypes.FromFlags(IsPc2Event, IsCountyEvent);
+        set => (IsPc2Event, IsCountyEvent) = CalendarEventTypes.ToFlags(value);
+    }
+
+    /// <summary>
     /// Validates the current object based on a set of predefined rules.
     /// </summary>
     /// <param name="validationContext">The context in which the validation is performed. This parameter provides additional information  about the
@@ -132,7 +143,7 @@ public class CalendarCreateEventViewModel : IValidatableObject
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         foreach (ValidationResult result in CalendarEventValidation.ValidateDetails(
-            IsPc2Event, IsCountyEvent, StartingTime, EndingTime, nameof(IsCountyEvent), nameof(StartingTime), nameof(EndingTime)))
+            IsPc2Event, IsCountyEvent, StartingTime, EndingTime, nameof(EventType), nameof(StartingTime), nameof(EndingTime)))
         {
             yield return result;
         }

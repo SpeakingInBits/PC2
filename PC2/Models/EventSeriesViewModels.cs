@@ -375,6 +375,17 @@ public class EditSeriesViewModel : IValidatableObject
     public bool IsCountyEvent { get; set; }
 
     /// <summary>
+    /// The event type chosen on the form, one of <see cref="CalendarEventTypes.All"/>.
+    /// Sets <see cref="IsPc2Event"/> and <see cref="IsCountyEvent"/>
+    /// </summary>
+    [Display(Name = "Event type")]
+    public string? EventType
+    {
+        get => CalendarEventTypes.FromFlags(IsPc2Event, IsCountyEvent);
+        set => (IsPc2Event, IsCountyEvent) = CalendarEventTypes.ToFlags(value);
+    }
+
+    /// <summary>
     /// True to change the dates of the series. Otherwise only the details of upcoming dates are changed
     /// </summary>
     [Display(Name = "Change the dates of this series")]
@@ -402,7 +413,7 @@ public class EditSeriesViewModel : IValidatableObject
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         foreach (ValidationResult result in CalendarEventValidation.ValidateDetails(
-            IsPc2Event, IsCountyEvent, StartingTime, EndingTime, nameof(IsCountyEvent), nameof(StartingTime), nameof(EndingTime)))
+            IsPc2Event, IsCountyEvent, StartingTime, EndingTime, nameof(EventType), nameof(StartingTime), nameof(EndingTime)))
         {
             yield return result;
         }
@@ -455,6 +466,43 @@ public class DeleteSeriesViewModel
 }
 
 /// <summary>
+/// The event type choices shown as radio buttons on the event forms
+/// </summary>
+public static class CalendarEventTypes
+{
+    public const string Pc2 = "PC2 event";
+    public const string County = "County event";
+
+    public static readonly IReadOnlyList<string> All = [Pc2, County];
+
+    /// <summary>
+    /// Error shown when no event type is chosen
+    /// </summary>
+    public const string RequiredMessage = "Choose PC2 event or County event";
+
+    /// <summary>
+    /// Gets the choice matching an event's type flags, or null if neither or both are set
+    /// </summary>
+    public static string? FromFlags(bool isPc2Event, bool isCountyEvent)
+    {
+        return (isPc2Event, isCountyEvent) switch
+        {
+            (true, false) => Pc2,
+            (false, true) => County,
+            _ => null
+        };
+    }
+
+    /// <summary>
+    /// Gets the type flags for a choice. Neither flag is set for an unrecognized choice
+    /// </summary>
+    public static (bool IsPc2Event, bool IsCountyEvent) ToFlags(string? eventType)
+    {
+        return (eventType == Pc2, eventType == County);
+    }
+}
+
+/// <summary>
 /// Validation shared by the event forms
 /// </summary>
 public static class CalendarEventValidation
@@ -465,18 +513,10 @@ public static class CalendarEventValidation
     public static IEnumerable<ValidationResult> ValidateDetails(bool isPc2Event, bool isCountyEvent,
         string? startingTime, string? endingTime, string eventTypeField, string startingTimeField, string endingTimeField)
     {
-        // At least one, but not both, event type must be selected
-        if (!isCountyEvent && !isPc2Event)
+        // Exactly one event type must be chosen
+        if (isCountyEvent == isPc2Event)
         {
-            yield return new ValidationResult(
-                "Please check the PC2 or County Event checkbox",
-                new[] { eventTypeField });
-        }
-        else if (isCountyEvent && isPc2Event)
-        {
-            yield return new ValidationResult(
-                "Please select only one checkbox",
-                new[] { eventTypeField });
+            yield return new ValidationResult(CalendarEventTypes.RequiredMessage, new[] { eventTypeField });
         }
 
         // Start time must be before end time

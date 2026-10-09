@@ -1,3 +1,4 @@
+@using PC2.Models.ViewModels
 @model CalendarCreateEventViewModel
 @{
     ViewData["Title"] = "Create Event";
@@ -35,16 +36,8 @@
                 <textarea asp-for="Description" class="form-control" rows="5" aria-required="true"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <fieldset class="form-group mb-3" aria-describedby="event-type-error">
-                <legend class="fs-6 mb-0">Event type (choose one)<span class="text-danger" aria-hidden="true"> *</span></legend>
-                <div class="checkbox">
-                    <input asp-for="IsPc2Event" type="checkbox"/>
-                    <label asp-for="IsPc2Event">PC2 Event</label>
-                    <input asp-for="IsCountyEvent" type="checkbox" />
-                    <label asp-for="IsCountyEvent">County Event</label>
-                </div>
-                <span asp-validation-for="IsCountyEvent" class="text-danger" id="event-type-error"></span>
-            </fieldset>
+            <partial name="_RadioGroup" model="new RadioGroupViewModel(nameof(Model.EventType), Html.DisplayNameFor(m => m.EventType),
+                CalendarEventTypes.All, Model.EventType, CalendarEventTypes.RequiredMessage)" />
 
             <partial name="_RecurrenceFields" for="Recurrence" />
 
