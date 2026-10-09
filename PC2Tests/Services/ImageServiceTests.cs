@@ -16,13 +16,15 @@ public class ImageServiceTests
     [DataRow(SKEncodedImageFormat.Jpeg)]
     [DataRow(SKEncodedImageFormat.Png)]
     [DataRow(SKEncodedImageFormat.Webp)]
-    public async Task ResizeImageAsync_LargeImage_IsScaledToFitAndReencodedAsJpeg(SKEncodedImageFormat format)
+    public async Task ResizeImageAsync_OpaqueLargeImage_IsScaledToFitAndSavedAsJpeg(SKEncodedImageFormat format)
     {
         var input = EncodeSolid(1000, 500, SKColors.CornflowerBlue, format);
 
         using var output = await _service.ResizeImageAsync(new MemoryStream(input), 350, 350);
 
-        using var codec = SKCodec.Create(output);
+        Assert.AreEqual("image/jpeg", output.ContentType);
+        Assert.AreEqual(".jpg", output.FileExtension);
+        using var codec = SKCodec.Create(output.Content);
         Assert.IsNotNull(codec);
         Assert.AreEqual(SKEncodedImageFormat.Jpeg, codec.EncodedFormat);
         Assert.AreEqual(350, codec.Info.Width);
@@ -36,18 +38,58 @@ public class ImageServiceTests
 
         using var output = await _service.ResizeImageAsync(new MemoryStream(input), 350, 350);
 
-        using var bitmap = SKBitmap.Decode(output);
+        using var bitmap = SKBitmap.Decode(output.Content);
         Assert.AreEqual(150, bitmap.Width);
         Assert.AreEqual(350, bitmap.Height);
     }
 
     [TestMethod]
-    [DataRow("png")]
-    [DataRow("jpeg")]
-    [DataRow("webp")]
-    [DataRow("gif")]
-    [DataRow("bmp")]
-    public async Task ResizeImageAsync_ImageWithinBounds_IsReturnedUnchanged(string format)
+    [DataRow(SKEncodedImageFormat.Png)]
+    [DataRow(SKEncodedImageFormat.Webp)]
+    public async Task ResizeImageAsync_TransparentLargeImage_IsSavedAsPngKeepingTransparency(SKEncodedImageFormat format)
+    {
+        // Left half fully transparent, right half opaque red
+        using var source = new SKBitmap(1000, 500);
+        source.Erase(SKColors.Transparent);
+        using (var canvas = new SKCanvas(source))
+        using (var paint = new SKPaint { Color = SKColors.Red })
+            canvas.DrawRect(500, 0, 500, 500, paint);
+        using var encoded = source.Encode(format, 100);
+
+        using var output = await _service.ResizeImageAsync(new MemoryStream(encoded.ToArray()), 350, 350);
+
+        Assert.AreEqual("image/png", output.ContentType);
+        Assert.AreEqual(".png", output.FileExtension);
+        using var codec = SKCodec.Create(output.Content);
+        Assert.AreEqual(SKEncodedImageFormat.Png, codec.EncodedFormat);
+        using var bitmap = SKBitmap.Decode(codec);
+        Assert.AreEqual(350, bitmap.Width);
+        Assert.AreEqual(175, bitmap.Height);
+        Assert.AreEqual(0, bitmap.GetPixel(80, 87).Alpha, "transparent half should stay transparent");
+        AssertColorNear(SKColors.Red, bitmap.GetPixel(270, 87), "opaque half");
+        Assert.AreEqual(255, bitmap.GetPixel(270, 87).Alpha);
+    }
+
+    [TestMethod]
+    public async Task ResizeImageAsync_PngWithUnusedAlphaChannel_IsSavedAsJpeg()
+    {
+        var input = EncodeSolid(1000, 500, SKColors.CornflowerBlue, SKEncodedImageFormat.Png);
+        using (var inputCodec = SKCodec.Create(new MemoryStream(input)))
+            Assert.AreNotEqual(SKAlphaType.Opaque, inputCodec.Info.AlphaType, "test PNG should have an alpha channel");
+
+        using var output = await _service.ResizeImageAsync(new MemoryStream(input), 350, 350);
+
+        Assert.AreEqual("image/jpeg", output.ContentType);
+        Assert.AreEqual(".jpg", output.FileExtension);
+    }
+
+    [TestMethod]
+    [DataRow("png", "image/png", ".png")]
+    [DataRow("jpeg", "image/jpeg", ".jpg")]
+    [DataRow("webp", "image/webp", ".webp")]
+    [DataRow("gif", "image/gif", ".gif")]
+    [DataRow("bmp", "image/bmp", ".bmp")]
+    public async Task ResizeImageAsync_ImageWithinBounds_IsReturnedUnchanged(string format, string expectedContentType, string expectedExtension)
     {
         var input = format switch
         {
@@ -61,8 +103,24 @@ public class ImageServiceTests
 
         using var output = await _service.ResizeImageAsync(new MemoryStream(input), 350, 350);
 
-        CollectionAssert.AreEqual(input, output.ToArray());
-        Assert.AreEqual(0, output.Position);
+        CollectionAssert.AreEqual(input, output.Content.ToArray());
+        Assert.AreEqual(0, output.Content.Position);
+        Assert.AreEqual(expectedContentType, output.ContentType);
+        Assert.AreEqual(expectedExtension, output.FileExtension);
+    }
+
+    [TestMethod]
+    public async Task ResizeImageAsync_ImageWithinBoundsInNonWebFormat_IsReencoded()
+    {
+        var input = CreateIco(EncodeSolid(16, 16, SKColors.Orange, SKEncodedImageFormat.Png));
+
+        using var output = await _service.ResizeImageAsync(new MemoryStream(input), 350, 350);
+
+        Assert.AreEqual("image/jpeg", output.ContentType);
+        Assert.AreEqual(".jpg", output.FileExtension);
+        using var codec = SKCodec.Create(output.Content);
+        Assert.AreEqual(SKEncodedImageFormat.Jpeg, codec.EncodedFormat);
+        Assert.AreEqual(16, codec.Info.Width);
     }
 
     [TestMethod]
@@ -72,6 +130,14 @@ public class ImageServiceTests
 
         await Assert.ThrowsExactlyAsync<InvalidOperationException>(
             () => _service.ResizeImageAsync(new MemoryStream(input), 350, 350));
+    }
+
+    [TestMethod]
+    public void GetSafeImageFileName_UsesGivenExtension()
+    {
+        var fileName = ImageService.GetSafeImageFileName(7, ".png");
+
+        StringAssert.Matches(fileName, new System.Text.RegularExpressions.Regex(@"^person_7_\d{14}\.png$"));
     }
 
     /// <summary>
@@ -93,7 +159,7 @@ public class ImageServiceTests
 
         using var output = await _service.ResizeImageAsync(new MemoryStream(input), 100, 100);
 
-        using var bitmap = SKBitmap.Decode(output);
+        using var bitmap = SKBitmap.Decode(output.Content);
         Assert.AreEqual(portrait ? 50 : 100, bitmap.Width);
         Assert.AreEqual(portrait ? 100 : 50, bitmap.Height);
 
@@ -165,6 +231,21 @@ public class ImageServiceTests
             for (int x = 0; x < width; x++) { writer.Write((byte)0x20); writer.Write((byte)0x80); writer.Write((byte)0xE0); }
             for (int p = width * 3; p < rowSize; p++) writer.Write((byte)0);
         }
+        writer.Flush();
+        return ms.ToArray();
+    }
+
+    /// <summary>
+    /// Wraps a PNG in a single-image ICO file; Skia can't encode ICOs.
+    /// </summary>
+    private static byte[] CreateIco(byte[] png)
+    {
+        using var ms = new MemoryStream();
+        using var writer = new BinaryWriter(ms);
+        writer.Write((short)0); writer.Write((short)1); writer.Write((short)1); // reserved, type icon, 1 image
+        writer.Write((byte)16); writer.Write((byte)16); writer.Write((byte)0); writer.Write((byte)0);
+        writer.Write((short)1); writer.Write((short)32); writer.Write(png.Length); writer.Write(22);
+        writer.Write(png);
         writer.Flush();
         return ms.ToArray();
     }

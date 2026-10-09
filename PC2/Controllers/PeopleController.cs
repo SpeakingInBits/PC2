@@ -266,10 +266,11 @@ public class PeopleController : Controller
         if (personId.HasValue && !string.IsNullOrEmpty(person.ImageUrl))
             await RemovePersonPhoto(person);
 
-        var safeFileName = ImageService.GetSafeImageFileName(photoFile.FileName, personId ?? 0);
-        using var resizedImageStream = await _imageService.ResizeImageAsync(photoFile.OpenReadStream(), 350, 350);
-        var resizedFormFile = new FormFileFromStream(resizedImageStream, safeFileName, photoFile.ContentType);
-        person.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName);
+        // Name and serve the photo by the format ImageService actually wrote, which can differ from the upload
+        using var resizedImage = await _imageService.ResizeImageAsync(photoFile.OpenReadStream(), 350, 350);
+        var safeFileName = ImageService.GetSafeImageFileName(personId ?? 0, resizedImage.FileExtension);
+        var resizedFormFile = new FormFileFromStream(resizedImage.Content, safeFileName, resizedImage.ContentType);
+        person.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName, resizedImage.ContentType);
     }
 
     private async Task RemovePersonPhoto(People person)

@@ -28,8 +28,12 @@ namespace PC2.Models
         /// </summary>
         /// <param name="file">The file to upload.</param>
         /// <param name="blobName">The name to use for the blob in storage.</param>
+        /// <param name="contentType">
+        /// Content type to serve the blob with. Only pass one the server has verified, never the
+        /// browser-supplied IFormFile.ContentType. Without one, Azure serves application/octet-stream.
+        /// </param>
         /// <returns>The URL of the uploaded blob.</returns>
-        public async Task<string> UploadFileAsync(IFormFile file, string blobName)
+        public async Task<string> UploadFileAsync(IFormFile file, string blobName, string? contentType = null)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is null or empty.");
@@ -42,7 +46,18 @@ namespace PC2.Models
 
             // UploadFileAsync - caller owns the stream lifetime
             var stream = file.OpenReadStream();
-            await blobClient.UploadAsync(stream, overwrite: true);
+            if (contentType is null)
+            {
+                await blobClient.UploadAsync(stream, overwrite: true);
+            }
+            else
+            {
+                // No conditions on the options, so this overwrites like the call above
+                await blobClient.UploadAsync(stream, new BlobUploadOptions
+                {
+                    HttpHeaders = new BlobHttpHeaders { ContentType = contentType }
+                });
+            }
 
             return blobClient.Uri.ToString();
         }
