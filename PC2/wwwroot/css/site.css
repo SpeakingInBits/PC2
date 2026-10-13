@@ -692,3 +692,117 @@ div.results:hover, div.results:hover #agencyName2, div.results:hover .agency-nam
 
 
 
+
+/* "Repeats" section of the calendar event forms */
+.recurrence-interval {
+    max-width: 14rem;
+}
+
+.recurrence-end-input {
+    width: auto;
+    max-width: 11rem;
+}
+
+.recurrence-dates {
+    max-height: 22rem;
+    overflow-y: auto;
+}
+
+.recurrence-dates:not(:empty) {
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    padding: 0.5rem 0.75rem;
+}
+
+.recurrence-month + .recurrence-month {
+    margin-top: 0.5rem;
+}
+
+/* Admin event calendar (Views/Calendar/Index.cshtml) */
+.admin-calendar .pc2-event,
+.calendar-swatch.pc2-event {
+    background-color: #d1e7dd !important; /* Light green, matches the public calendar */
+    border-color: #a3cfbb !important;
+    color: #212529 !important;
+}
+
+.admin-calendar .county-event,
+.calendar-swatch.county-event {
+    background-color: #f8d7da !important; /* Light red, matches the public calendar */
+    border-color: #f1aeb5 !important;
+    color: #212529 !important;
+}
+
+.calendar-swatch {
+    display: inline-block;
+    width: 0.9em;
+    height: 0.9em;
+    border: 1px solid;
+    vertical-align: -0.1em;
+}
+
+/* FullCalendar keeps month view events on one line and cuts off the rest; let long titles wrap */
+.admin-calendar .fc-daygrid-event {
+    white-space: normal;
+}
+
+.admin-calendar .fc-h-event .fc-event-main {
+    color: #212529;
+}
+
+.admin-calendar .fc-daygrid-block-event .fc-event-main-frame {
+    flex-wrap: wrap;
+}
+
+/* Up to three lines per title in month view; the full description is in the event panel */
+.admin-calendar .fc-daygrid-block-event .fc-event-title {
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+}
+
+/* Long words such as web addresses would otherwise push the list wider than a phone screen */
+.admin-calendar .fc-list-event-title {
+    overflow-wrap: anywhere;
+}
+
+.admin-calendar .fc-daygrid-block-event .fc-event-time {
+    margin-right: 0.25em;
+}
+
+/* "+" link to add an event on a day. Highlighted when the day is hovered or the link is focused */
+.admin-calendar .fc-daygrid-day-top {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar-add-link {
+    margin-left: 0.25rem;
+    padding: 0 0.4rem;
+    border-radius: var(--bs-border-radius);
+    color: #6c757d;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.fc-daygrid-day:hover .calendar-add-link,
+.calendar-add-link:focus-visible {
+    color: #212529;
+    background-color: var(--bs-secondary-bg);
+}
+
+/* FullCalendar fades days from the previous and next month too much to read */
+.admin-calendar .fc-day-other .fc-daygrid-day-top {
+    opacity: 1;
+}
+
+.admin-calendar .fc-day-other .fc-daygrid-day-number {
+    color: #6c757d;
+}
+
+.event-actions-description {
+    overflow-wrap: anywhere;
+}

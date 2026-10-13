@@ -1,0 +1,114 @@
+@model RecurrenceInputModel
+@*
+    The "Repeats" section of the event forms. Render with <partial name="_RecurrenceFields" for="Recurrence" />
+    and set ViewData["StartDateInputId"] to the id of the date input the series starts on.
+    Set ViewData["AllowNoRepeat"] to false to leave out "Does not repeat".
+    event-recurrence.js shows the fields for the chosen option and fills in the date preview.
+*@
+@{
+    string prefix = ViewData.TemplateInfo.HtmlFieldPrefix;
+    string idPrefix = prefix.Replace('.', '_');
+    string startDateInputId = (string)ViewData["StartDateInputId"]!;
+    bool allowNoRepeat = ViewData["AllowNoRepeat"] as bool? ?? true;
+
+    RepeatOption[] repeatOptions = Enum.GetValues<RepeatOption>()
+        .Where(option => allowNoRepeat || option != RepeatOption.None)
+        .ToArray();
+    DayOfWeek[] days = Enum.GetValues<DayOfWeek>();
+}
+
+<div class="recurrence" data-recurrence data-start-input="@startDateInputId"
+     data-preview-url="@Url.Action("PreviewDates", "Calendar")" data-prefix="@prefix">
+
+    <div class="form-group mb-3">
+        <label asp-for="Repeat" class="control-label"></label>
+        <select asp-for="Repeat" class="form-select" data-recurrence-repeat>
+            @foreach (RepeatOption option in repeatOptions)
+            {
+                <option value="@option" selected="@(Model.Repeat == option)">@RecurrenceInputModel.GetLabel(option)</option>
+            }
+        </select>
+        <span asp-validation-for="Repeat" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3" data-recurrence-section="interval">
+        <label asp-for="Interval" class="control-label"></label>
+        <div class="input-group recurrence-interval">
+            <input asp-for="Interval" class="form-control" type="number" min="1" max="@RecurrenceInputModel.MaxInterval"
+                   aria-describedby="@(idPrefix)_IntervalUnit" />
+            <span class="input-group-text" id="@(idPrefix)_IntervalUnit" data-recurrence-unit>weeks or months</span>
+        </div>
+        <span asp-validation-for="Interval" class="text-danger"></span>
+    </div>
+
+    <fieldset class="mb-3" data-recurrence-section="weekly" aria-describedby="@(idPrefix)_WeeklyDays-error">
+        <legend class="fs-6 mb-1">Repeat on</legend>
+        @foreach (DayOfWeek day in days)
+        {
+            string id = $"{idPrefix}_WeeklyDays_{day}";
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="@id" name="@(prefix).WeeklyDays" value="@day"
+                       checked="@Model.WeeklyDays.Contains(day)" data-recurrence-day="@((int)day)" />
+                <label class="form-check-label" for="@id">@day</label>
+            </div>
+        }
+        <span asp-validation-for="WeeklyDays" class="d-block text-danger" id="@(idPrefix)_WeeklyDays-error"></span>
+    </fieldset>
+
+    <div class="mb-3" data-recurrence-section="specific">
+        <p class="mb-1" id="@(idPrefix)_SpecificDates-help">The event takes place on the date above and on these dates:</p>
+        <ul class="list-unstyled mb-2" data-recurrence-specific-list>
+            @for (int i = 0; i < Model.SpecificDates.Count; i++)
+            {
+                <li class="d-flex gap-2 mb-2">
+                    <input class="form-control recurrence-specific-date" type="date" name="@(prefix).SpecificDates"
+                           value="@Model.SpecificDates[i].ToString("yyyy-MM-dd")" aria-label="Additional date @(i + 1)" />
+                    <button type="button" class="btn btn-outline-danger btn-sm" data-recurrence-remove-date>
+                        Remove<span class="visually-hidden"> additional date @(i + 1)</span>
+                    </button>
+                </li>
+            }
+        </ul>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-recurrence-add-date>Add a date</button>
+        <span asp-validation-for="SpecificDates" class="d-block text-danger"></span>
+    </div>
+
+    <fieldset class="mb-3" data-recurrence-section="end">
+        <legend class="fs-6 mb-1">@Html.DisplayNameFor(m => m.End)</legend>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="End" id="@(idPrefix)_End_Never" value="@RepeatEnd.Never" />
+            <label class="form-check-label" for="@(idPrefix)_End_Never">Never (dates are added a year ahead as time goes on)</label>
+        </div>
+        <div class="form-check d-flex flex-wrap align-items-center gap-2">
+            <input class="form-check-input" type="radio" asp-for="End" id="@(idPrefix)_End_OnDate" value="@RepeatEnd.OnDate" />
+            <label class="form-check-label" for="@(idPrefix)_End_OnDate">On</label>
+            <input asp-for="EndDate" class="form-control form-control-sm recurrence-end-input" type="date"
+                   aria-label="End date" data-recurrence-end-for="@RepeatEnd.OnDate" />
+        </div>
+        <span asp-validation-for="EndDate" class="d-block text-danger"></span>
+        <div class="form-check d-flex flex-wrap align-items-center gap-2 mt-1">
+            <input class="form-check-input" type="radio" asp-for="End" id="@(idPrefix)_End_AfterCount" value="@RepeatEnd.AfterCount" />
+            <label class="form-check-label" for="@(idPrefix)_End_AfterCount">After</label>
+            <input asp-for="OccurrenceCount" class="form-control form-control-sm recurrence-end-input" type="number"
+                   min="1" max="@RecurrenceInputModel.MaxOccurrences" aria-label="Number of times"
+                   data-recurrence-end-for="@RepeatEnd.AfterCount" />
+            <span>times</span>
+        </div>
+        <span asp-validation-for="OccurrenceCount" class="d-block text-danger"></span>
+    </fieldset>
+
+    <section class="mb-3" data-recurrence-section="preview" aria-labelledby="@(idPrefix)_PreviewHeading">
+        <h2 class="h6 mb-1" id="@(idPrefix)_PreviewHeading">Dates</h2>
+        <p class="small text-muted mb-1">Uncheck any date the event will not take place, such as a holiday.</p>
+        <p class="mb-1 fw-semibold" data-recurrence-summary></p>
+        <p class="mb-1" role="status" data-recurrence-status></p>
+        <ul class="text-danger mb-1" data-recurrence-errors></ul>
+        <div class="recurrence-dates" data-recurrence-dates></div>
+        <div data-recurrence-excluded>
+            @foreach (DateTime excluded in Model.ExcludedDates)
+            {
+                <input type="hidden" name="@(prefix).ExcludedDates" value="@excluded.ToString("yyyy-MM-dd")" />
+            }
+        </div>
+    </section>
+</div>

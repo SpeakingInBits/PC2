@@ -346,6 +346,9 @@ namespace PC2.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("EventSeriesID")
+                        .HasColumnType("int");
+
                     b.Property<bool>("PC2Event")
                         .HasColumnType("bit");
 
@@ -354,7 +357,62 @@ namespace PC2.Data.Migrations
 
                     b.HasKey("CalendarEventID");
 
+                    b.HasIndex("EventSeriesID");
+
                     b.ToTable("CalendarEvents");
+                });
+
+            modelBuilder.Entity("PC2.Models.EventSeries", b =>
+                {
+                    b.Property<int>("EventSeriesID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventSeriesID"));
+
+                    b.Property<bool>("CountyEvent")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeSpan>("EndingTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("EventDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("GeneratedThrough")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Interval")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OccurrenceCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("PC2Event")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeSpan>("StartingTime")
+                        .HasColumnType("time");
+
+                    b.Property<int?>("WeekOfMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WeeklyDays")
+                        .HasColumnType("int");
+
+                    b.HasKey("EventSeriesID");
+
+                    b.ToTable("EventSeries");
                 });
 
             modelBuilder.Entity("PC2.Models.Feedback", b =>
@@ -675,6 +733,16 @@ namespace PC2.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PC2.Models.CalendarEvent", b =>
+                {
+                    b.HasOne("PC2.Models.EventSeries", "EventSeries")
+                        .WithMany("Events")
+                        .HasForeignKey("EventSeriesID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("EventSeries");
+                });
+
             modelBuilder.Entity("PC2.Models.Feedback", b =>
                 {
                     b.HasOne("PC2.Models.FeedbackDigest", "FeedbackDigest")
@@ -682,6 +750,11 @@ namespace PC2.Data.Migrations
                         .HasForeignKey("FeedbackDigestId");
 
                     b.Navigation("FeedbackDigest");
+                });
+
+            modelBuilder.Entity("PC2.Models.EventSeries", b =>
+                {
+                    b.Navigation("Events");
                 });
 
             modelBuilder.Entity("PC2.Models.FeedbackDigest", b =>
