@@ -25,10 +25,10 @@
 
 @if (enableAppInsights)
 {
-    <script src="~/js/appinsights-snippet.js"></script>
+    @* defer: doesn't hold up showing the page. Nothing else on the site calls appInsights directly. *@
+    <script src="~/js/appinsights-snippet.js" defer></script>
 }
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" 
-        integrity="sha256-pdY4ejLKO67E0CM2tbPtq1DJ3VGDVVdqAR6j3ZwdiE4=" crossorigin="anonymous">
+    @* Bootstrap Icons are loaded only by the pages that use them, with <partial name="_BootstrapIconsPartial" /> *@
     <link rel="icon" type="image/x-icon" href="~/images/pc2_logo_icon.ico" />
     <link rel="stylesheet" href="~/sass/customBootStrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
