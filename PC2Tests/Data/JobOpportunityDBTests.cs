@@ -10,7 +10,9 @@ public class JobOpportunityDBTests
     private ApplicationDbContext _context = null!;
     private DbContextOptions<ApplicationDbContext> _options = null!;
 
-    private static readonly DateOnly Today = DateOnly.FromDateTime(DateTime.Today);
+    private static readonly DateOnly Today = PacificTime.Today();
+
+    private static readonly DateOnly ClosingDate = new(2026, 10, 22);
 
     [TestInitialize]
     public void Setup()
@@ -217,6 +219,46 @@ public class JobOpportunityDBTests
 
         // Assert
         Assert.HasCount(1, result);
+    }
+
+    [TestMethod]
+    public async Task GetOpenAsync_At8PmPacificOnClosingDate_IncludesJob()
+    {
+        // Arrange - 8 PM PDT on the closing date, when UTC is already the next day
+        var clock = new FixedTimeProvider("2026-10-23T03:00:00Z");
+        _context.JobOpportunities.Add(new JobOpportunity
+        {
+            Title = "Closing Today",
+            Description = "Last day to apply",
+            ClosingDate = ClosingDate
+        });
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await JobOpportunityDB.GetOpenAsync(_context, clock);
+
+        // Assert
+        Assert.HasCount(1, result);
+    }
+
+    [TestMethod]
+    public async Task GetOpenAsync_AfterMidnightPacific_ExcludesJob()
+    {
+        // Arrange - 12:30 AM PDT the day after the closing date
+        var clock = new FixedTimeProvider("2026-10-23T07:30:00Z");
+        _context.JobOpportunities.Add(new JobOpportunity
+        {
+            Title = "Closed Yesterday",
+            Description = "Applications have closed",
+            ClosingDate = ClosingDate
+        });
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await JobOpportunityDB.GetOpenAsync(_context, clock);
+
+        // Assert
+        Assert.IsEmpty(result);
     }
 
     #endregion

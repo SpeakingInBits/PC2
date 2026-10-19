@@ -40,10 +40,11 @@ public class JobOpportunityDB
     /// the closing date (if any) has not passed
     /// </summary>
     /// <param name="context"></param>
+    /// <param name="timeProvider">The clock to use; the system clock when null</param>
     /// <returns></returns>
-    public static async Task<List<JobOpportunity>> GetOpenAsync(ApplicationDbContext context)
+    public static async Task<List<JobOpportunity>> GetOpenAsync(ApplicationDbContext context, TimeProvider? timeProvider = null)
     {
-        DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+        DateOnly today = PacificTime.Today(timeProvider);
 
         return await (from j in context.JobOpportunities
                       where !j.IsClosed && (j.ClosingDate == null || j.ClosingDate >= today)

@@ -10,11 +10,13 @@ namespace PC2.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly AzureBlobUploader _azureBlobUploader;
+        private readonly TimeProvider _timeProvider;
 
-        public JobsController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader)
+        public JobsController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader, TimeProvider timeProvider)
         {
             _context = context;
             _azureBlobUploader = azureBlobUploader;
+            _timeProvider = timeProvider;
         }
 
         /// <summary>
@@ -23,7 +25,7 @@ namespace PC2.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            List<JobOpportunity> jobs = await JobOpportunityDB.GetOpenAsync(_context);
+            List<JobOpportunity> jobs = await JobOpportunityDB.GetOpenAsync(_context, _timeProvider);
 
             List<JobOpportunityViewModel> viewModels = jobs.Select(j => new JobOpportunityViewModel
             {
@@ -215,7 +217,7 @@ namespace PC2.Controllers
             }
 
             job.IsClosed = false;
-            if (job.ClosingDate != null && job.ClosingDate < DateOnly.FromDateTime(DateTime.Today))
+            if (job.ClosingDate != null && job.ClosingDate < PacificTime.Today(_timeProvider))
             {
                 job.ClosingDate = null;
             }
