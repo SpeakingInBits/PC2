@@ -120,6 +120,7 @@ public class CalendarController : Controller
         return RedirectToAction("Index");
     }
 
+    [HttpPost]
     public async Task<IActionResult> Delete(int id)
     {
         await CalendarEventDB.DeleteEvent(_context, id);
