@@ -1,5 +1,6 @@
 ﻿using IdentityLogin.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Models;
@@ -59,7 +60,9 @@ builder.Services.AddApplicationInsightsTelemetry(options =>
 builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOptions)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+// Every POST, PUT, PATCH and DELETE must carry a valid antiforgery token
+builder.Services.AddControllersWithViews(options =>
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
 // email provider. "File" saves emails to disk instead of sending them (used in development)
 if (builder.Configuration.GetSection("EmailSender").Value == "File")
