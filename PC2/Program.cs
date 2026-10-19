@@ -21,8 +21,9 @@ builder.Services.AddSingleton<AzureBlobUploader>();
 // Register ImageService for DI
 builder.Services.AddScoped<PC2.Services.ImageService>();
 
-// Register AnalyticsService for DI
-builder.Services.AddScoped<AnalyticsService>();
+// Register AnalyticsService for DI. A singleton, so its Log Analytics client is created once and its results cache is shared.
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<AnalyticsService>();
 
 // Sender.net mailing list sign-up form settings
 builder.Services.AddOptions<SenderNetOptions>()
