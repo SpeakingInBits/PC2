@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using PC2.Controllers;
@@ -23,7 +24,7 @@ public class AgencyCategoryControllerTests
                       .Options;
         _context = new ApplicationDbContext(options);
 
-        _controller = new AgencyCategoryController(_context);
+        _controller = new AgencyCategoryController(_context, NullLogger<AgencyCategoryController>.Instance);
         _controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
         _controller.TempData = new TempDataDictionary(_controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
     }

@@ -10,11 +10,13 @@ namespace PC2.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly AzureBlobUploader _azureBlobUploader;
+        private readonly ILogger<JobsController> _logger;
 
-        public JobsController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader)
+        public JobsController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader, ILogger<JobsController> logger)
         {
             _context = context;
             _azureBlobUploader = azureBlobUploader;
+            _logger = logger;
         }
 
         /// <summary>
@@ -80,7 +82,8 @@ namespace PC2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    TempData["Message"] = $"Error uploading attachment: {ex.Message}";
+                    _logger.LogError(ex, "Error uploading attachment {FileName} for new job {Title}", attachmentFile.FileName, job.Title);
+                    TempData["Message"] = $"Error uploading {attachmentFile.FileName}. Please try again.";
                     return View(job);
                 }
             }
@@ -144,7 +147,8 @@ namespace PC2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    TempData["Message"] = $"Error uploading attachment: {ex.Message}";
+                    _logger.LogError(ex, "Error uploading attachment {FileName} for job {JobOpportunityId}", attachmentFile.FileName, existing.JobOpportunityId);
+                    TempData["Message"] = $"Error uploading {attachmentFile.FileName}. Please try again.";
                     return View(job);
                 }
             }
@@ -164,7 +168,8 @@ namespace PC2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    TempData["Message"] = $"Error removing the previous attachment: {ex.Message}. The job \"{existing.Title}\" was updated.";
+                    _logger.LogError(ex, "Error removing previous attachment {BlobName} for job {JobOpportunityId}", oldBlobName, existing.JobOpportunityId);
+                    TempData["Message"] = $"The job \"{existing.Title}\" was updated, but its previous attachment couldn't be removed from storage.";
                 }
             }
 
@@ -206,7 +211,8 @@ namespace PC2.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Message"] = $"Error deleting job: {ex.Message}";
+                _logger.LogError(ex, "Error deleting job {JobOpportunityId}", id);
+                TempData["Message"] = "Error deleting the job. Please try again.";
             }
 
             return RedirectToAction("Manage");

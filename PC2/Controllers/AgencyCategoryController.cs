@@ -14,10 +14,12 @@ namespace PC2.Controllers
         public const string DuplicateNameMessage = "A category with this name already exists.";
 
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<AgencyCategoryController> _logger;
 
-        public AgencyCategoryController(ApplicationDbContext context)
+        public AgencyCategoryController(ApplicationDbContext context, ILogger<AgencyCategoryController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Manage()
@@ -116,7 +118,8 @@ namespace PC2.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Message"] = $"Error deleting category: {ex.Message}";
+                _logger.LogError(ex, "Error deleting agency category {AgencyCategoryId}", id);
+                TempData["Message"] = "Error deleting the category. Please try again.";
             }
 
             return RedirectToAction("Manage");

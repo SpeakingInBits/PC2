@@ -120,7 +120,11 @@ namespace PC2.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            Agency agency = await AgencyDB.GetAgencyAsync(_context, id);
+            Agency? agency = await AgencyDB.GetAgencyAsync(_context, id);
+            if (agency == null)
+            {
+                return NotFound();
+            }
             return View(agency);
         }
             
