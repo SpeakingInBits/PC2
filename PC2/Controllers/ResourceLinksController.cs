@@ -15,11 +15,13 @@ namespace PC2.Controllers
 
         private readonly ApplicationDbContext _context;
         private readonly AzureBlobUploader _azureBlobUploader;
+        private readonly ILogger<ResourceLinksController> _logger;
 
-        public ResourceLinksController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader)
+        public ResourceLinksController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader, ILogger<ResourceLinksController> logger)
         {
             _context = context;
             _azureBlobUploader = azureBlobUploader;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Manage()
@@ -66,7 +68,8 @@ namespace PC2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    TempData["Message"] = $"Error uploading file: {ex.Message}";
+                    _logger.LogError(ex, "Error uploading file {FileName} for new resource link {Name}", uploadedFile.FileName, resourceLink.Name);
+                    TempData["Message"] = $"Error uploading {uploadedFile.FileName}. Please try again.";
                     return View(resourceLink);
                 }
             }
@@ -136,7 +139,8 @@ namespace PC2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    TempData["Message"] = $"Error uploading file: {ex.Message}";
+                    _logger.LogError(ex, "Error uploading file {FileName} for resource link {ResourceLinkId}", uploadedFile.FileName, existing.ResourceLinkId);
+                    TempData["Message"] = $"Error uploading {uploadedFile.FileName}. Please try again.";
                     return View(resourceLink);
                 }
             }
@@ -160,7 +164,8 @@ namespace PC2.Controllers
                 }
                 catch (Exception ex)
                 {
-                    TempData["Message"] = $"Error removing the previous file: {ex.Message}. The link \"{existing.Name}\" was updated.";
+                    _logger.LogError(ex, "Error removing previous file {BlobName} for resource link {ResourceLinkId}", oldBlobName, existing.ResourceLinkId);
+                    TempData["Message"] = $"The link \"{existing.Name}\" was updated, but its previous file couldn't be removed from storage.";
                 }
             }
 
@@ -199,7 +204,8 @@ namespace PC2.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Message"] = $"Error deleting link: {ex.Message}";
+                _logger.LogError(ex, "Error deleting resource link {ResourceLinkId}", id);
+                TempData["Message"] = "Error deleting the link. Please try again.";
             }
 
             return RedirectToAction("Manage");

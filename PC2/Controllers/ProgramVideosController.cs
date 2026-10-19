@@ -10,11 +10,13 @@ namespace PC2.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly AzureBlobUploader _azureBlobUploader;
+        private readonly ILogger<ProgramVideosController> _logger;
 
-        public ProgramVideosController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader)
+        public ProgramVideosController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader, ILogger<ProgramVideosController> logger)
         {
             _context = context;
             _azureBlobUploader = azureBlobUploader;
+            _logger = logger;
         }
 
         [AllowAnonymous]
@@ -64,7 +66,8 @@ namespace PC2.Controllers
                     }
                     catch (Exception ex)
                     {
-                        TempData["Message"] = $"Error uploading PDF: {ex.Message}";
+                        _logger.LogError(ex, "Error uploading PDF {FileName} for new video {Title}", pdfFile.FileName, programVideo.Title);
+                        TempData["Message"] = $"Error uploading {pdfFile.FileName}. Please try again.";
                         return View(programVideo);
                     }
                 }
@@ -126,7 +129,8 @@ namespace PC2.Controllers
                     }
                     catch (Exception ex)
                     {
-                        TempData["Message"] = $"Error uploading PDF: {ex.Message}";
+                        _logger.LogError(ex, "Error uploading PDF {FileName} for video {ProgramVideoId}", pdfFile.FileName, existing.ProgramVideoId);
+                        TempData["Message"] = $"Error uploading {pdfFile.FileName}. Please try again.";
                         return View(programVideo);
                     }
                 }
@@ -145,7 +149,8 @@ namespace PC2.Controllers
                     }
                     catch (Exception ex)
                     {
-                        TempData["Message"] = $"Error removing the previous PDF: {ex.Message}. The video \"{existing.Title}\" was updated.";
+                        _logger.LogError(ex, "Error removing previous PDF {BlobName} for video {ProgramVideoId}", oldBlobName, existing.ProgramVideoId);
+                        TempData["Message"] = $"The video \"{existing.Title}\" was updated, but its previous PDF couldn't be removed from storage.";
                     }
                 }
 
@@ -190,7 +195,8 @@ namespace PC2.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Message"] = $"Error deleting video: {ex.Message}";
+                _logger.LogError(ex, "Error deleting video {ProgramVideoId}", id);
+                TempData["Message"] = "Error deleting the video. Please try again.";
             }
 
             return RedirectToAction("ManageVideos");
