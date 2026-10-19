@@ -102,9 +102,29 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50 MB
+    // Don't advertise the web server in a "Server: Kestrel" header
+    options.AddServerHeader = false;
 });
 
+// Browsers only use HTTPS for the site for a year after each visit (the default is 30 days)
+builder.Services.AddHsts(options => options.MaxAge = TimeSpan.FromDays(365));
+
 var app = builder.Build();
+
+// Standard browser security headers on every response, including static files and error pages
+app.Use(async (context, next) =>
+{
+    IHeaderDictionary headers = context.Response.Headers;
+    // Don't guess a file's type from its contents
+    headers.XContentTypeOptions = "nosniff";
+    // Only other pages on this site may show it in a frame
+    headers.XFrameOptions = "SAMEORIGIN";
+    // Other sites see only "pc2online.org" as the referrer, not the full address
+    headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    // Features the site never uses, for its own pages and anything they embed
+    headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=(), usb=()";
+    await next();
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -114,7 +134,7 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // The max age is set by AddHsts above, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
