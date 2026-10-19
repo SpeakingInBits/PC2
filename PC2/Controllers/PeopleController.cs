@@ -142,6 +142,7 @@ public class PeopleController : Controller
         {
             try
             {
+                string? replacedImageUrl = null;
                 switch (model.Type)
                 {
                     case PersonType.Staff:
@@ -153,8 +154,7 @@ public class PeopleController : Controller
                         staff.Extension = model.Extension;
                         staff.Email = model.Email!;
                         staff.PriorityOrder = model.PriorityOrder;
-                        if (model.RemovePhoto) await RemovePersonPhoto(staff);
-                        else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, staff, model.ID);
+                        replacedImageUrl = await UpdatePhoto(model, staff);
                         await StaffDB.SaveChanges(_context, staff);
                         break;
 
@@ -165,8 +165,7 @@ public class PeopleController : Controller
                         board.Title = model.Title;
                         board.MembershipStart = model.MembershipStart!;
                         board.PriorityOrder = model.PriorityOrder;
-                        if (model.RemovePhoto) await RemovePersonPhoto(board);
-                        else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, board, model.ID);
+                        replacedImageUrl = await UpdatePhoto(model, board);
                         await BoardDB.EditBoardMember(_context, board);
                         break;
 
@@ -176,11 +175,13 @@ public class PeopleController : Controller
                         sc.Name = model.Name;
                         sc.Title = model.Title;
                         sc.PriorityOrder = model.PriorityOrder;
-                        if (model.RemovePhoto) await RemovePersonPhoto(sc);
-                        else if (model.PhotoFile != null) await HandlePhotoUpload(model.PhotoFile, sc, model.ID);
+                        replacedImageUrl = await UpdatePhoto(model, sc);
                         await SteeringCommitteeDB.EditSteeringCommittee(_context, sc);
                         break;
                 }
+
+                // Only deleted once the record is saved, so a failed upload or save keeps the current photo
+                await DeleteStoredPhoto(replacedImageUrl);
                 return RedirectToAction(nameof(Index), new { type = model.Type });
             }
             catch (Exception ex)
@@ -215,27 +216,28 @@ public class PeopleController : Controller
     {
         try
         {
+            // Photos are deleted after the record, so a failed delete keeps the record's photo
             switch (type)
             {
                 case PersonType.Staff:
                     var staff = await StaffDB.GetStaffMember(_context, id);
                     if (staff == null) return NotFound();
-                    await RemovePersonPhoto(staff);
                     await StaffDB.Delete(_context, staff);
+                    await DeleteStoredPhoto(staff.ImageUrl);
                     break;
 
                 case PersonType.Board:
                     var board = await BoardDB.GetBoardMember(_context, id);
                     if (board == null) return NotFound();
-                    await RemovePersonPhoto(board);
                     await BoardDB.Delete(_context, board);
+                    await DeleteStoredPhoto(board.ImageUrl);
                     break;
 
                 case PersonType.SteeringCommittee:
                     var sc = await SteeringCommitteeDB.GetSteeringCommitteeMember(_context, id);
                     if (sc == null) return NotFound();
-                    await RemovePersonPhoto(sc);
                     await SteeringCommitteeDB.Delete(_context, sc);
+                    await DeleteStoredPhoto(sc.ImageUrl);
                     break;
             }
         }
@@ -256,15 +258,28 @@ public class PeopleController : Controller
             ModelState.AddModelError(nameof(PersonViewModel.MembershipStart), "Membership start year is required.");
     }
 
+    /// <summary>
+    /// Applies the edit form's photo changes to the person: uploads the new photo, or clears the
+    /// current one if it is being removed. The current photo stays in storage.
+    /// </summary>
+    /// <returns>The URL of the photo that was replaced or removed, to delete once the record is saved</returns>
+    private async Task<string?> UpdatePhoto(PersonViewModel model, People person)
+    {
+        var currentImageUrl = person.ImageUrl;
+
+        if (model.RemovePhoto) person.ImageUrl = null;
+        else await HandlePhotoUpload(model.PhotoFile, person, model.ID);
+
+        // A new photo stored under the same name overwrote the current one, so it must not be deleted
+        return person.ImageUrl != currentImageUrl ? currentImageUrl : null;
+    }
+
     private async Task HandlePhotoUpload(IFormFile? photoFile, People person, int? personId = null)
     {
         if (photoFile == null || photoFile.Length == 0) return;
 
         if (!ImageService.IsValidImageFile(photoFile))
             throw new InvalidOperationException("Please upload a valid image file (JPEG, PNG, GIF, or BMP).");
-
-        if (personId.HasValue && !string.IsNullOrEmpty(person.ImageUrl))
-            await RemovePersonPhoto(person);
 
         // Name and serve the photo by the format ImageService actually wrote, which can differ from the upload
         using var resizedImage = await _imageService.ResizeImageAsync(photoFile.OpenReadStream(), 350, 350);
@@ -273,22 +288,22 @@ public class PeopleController : Controller
         person.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName, resizedImage.ContentType);
     }
 
-    private async Task RemovePersonPhoto(People person)
+    /// <summary>
+    /// Deletes a photo from blob storage once no saved record points at it. A failure is only
+    /// logged, because the record is already saved and the photo is just left unused.
+    /// </summary>
+    private async Task DeleteStoredPhoto(string? imageUrl)
     {
-        if (string.IsNullOrEmpty(person.ImageUrl)) return;
+        var fileName = imageUrl?.Split('/').LastOrDefault();
+        if (string.IsNullOrEmpty(fileName)) return;
 
         try
         {
-            var fileName = person.ImageUrl.Split('/').LastOrDefault();
-            if (!string.IsNullOrEmpty(fileName))
-                await _azureBlobUploader.DeleteFileAsync(fileName);
+            await _azureBlobUploader.DeleteFileAsync(fileName);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting photo.");
-            throw;
+            _logger.LogError(ex, "Error deleting photo {FileName}.", fileName);
         }
-
-        person.ImageUrl = null;
     }
 }
