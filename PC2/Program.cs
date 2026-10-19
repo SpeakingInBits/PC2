@@ -81,6 +81,9 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<FeedbackDigestService>();
 builder.Services.AddHostedService<FeedbackDigestBackgroundService>();
 
+// Keeps repeating calendar events with no end date filled in a year ahead
+builder.Services.AddHostedService<EventSeriesBackgroundService>();
+
 // Emails Get Help referrals to PC2
 builder.Services.AddScoped<ReferralEmailService>();
 

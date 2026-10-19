@@ -46,6 +46,13 @@ public class CalendarEvent : IComparable<CalendarEvent>
     [Display(Name = "County event")]
     public bool CountyEvent {  get; set; }
 
+    /// <summary>
+    /// The series this event is part of, or null for a one time event
+    /// </summary>
+    public int? EventSeriesID { get; set; }
+
+    public EventSeries? EventSeries { get; set; }
+
     // Convert DateOnly and TimeOnly to DateTime
     public DateTime StartingDateTime
     {
@@ -116,6 +123,17 @@ public class CalendarCreateEventViewModel : IValidatableObject
     public bool IsCountyEvent { get; set; }
 
     /// <summary>
+    /// The event type chosen on the form, one of <see cref="CalendarEventTypes.All"/>.
+    /// Sets <see cref="IsPc2Event"/> and <see cref="IsCountyEvent"/>
+    /// </summary>
+    [Display(Name = "Event type")]
+    public string? EventType
+    {
+        get => CalendarEventTypes.FromFlags(IsPc2Event, IsCountyEvent);
+        set => (IsPc2Event, IsCountyEvent) = CalendarEventTypes.ToFlags(value);
+    }
+
+    /// <summary>
     /// Validates the current object based on a set of predefined rules.
     /// </summary>
     /// <param name="validationContext">The context in which the validation is performed. This parameter provides additional information  about the
@@ -124,18 +142,10 @@ public class CalendarCreateEventViewModel : IValidatableObject
     /// valid, the collection will be empty.</returns>
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        // At least one, but not both, event type must be selected
-        if (!IsCountyEvent && !IsPc2Event)
+        foreach (ValidationResult result in CalendarEventValidation.ValidateDetails(
+            IsPc2Event, IsCountyEvent, StartingTime, EndingTime, nameof(EventType), nameof(StartingTime), nameof(EndingTime)))
         {
-            yield return new ValidationResult(
-                "Please check the PC2 or County Event checkbox",
-                new[] { nameof(IsCountyEvent) });
-        }
-        else if (IsCountyEvent && IsPc2Event)
-        {
-            yield return new ValidationResult(
-                "Please select only one checkbox",
-                new[] { nameof(IsCountyEvent) });
+            yield return result;
         }
 
         // Date must be today or in the future
@@ -144,24 +154,34 @@ public class CalendarCreateEventViewModel : IValidatableObject
             yield return new ValidationResult(
                 "Starting day must be at a current or future date",
                 new[] { nameof(DateOfEvent) });
+            yield break;
         }
 
-        // Start time must be before end time
-        if (TimeOnly.TryParse(StartingTime, out var start) &&
-            TimeOnly.TryParse(EndingTime, out var end))
+        // Repeating is only offered when creating an event
+        if (EventId == 0)
         {
-            if (start >= end)
+            foreach (ValidationResult result in Recurrence.Validate(
+                DateOnly.FromDateTime(DateOfEvent), DateOnly.FromDateTime(DateTime.Today), nameof(Recurrence)))
             {
-                yield return new ValidationResult(
-                    "Starting time must be before ending time",
-                    new[] { nameof(StartingTime) });
-
-                yield return new ValidationResult(
-                    "Ending time must be after starting time",
-                    new[] { nameof(EndingTime) });
+                yield return result;
             }
         }
     }
+
+    /// <summary>
+    /// How the event repeats. Only used when creating an event
+    /// </summary>
+    public RecurrenceInputModel Recurrence { get; set; } = new();
+
+    /// <summary>
+    /// The series the event is part of, if any. Shown when editing a single date
+    /// </summary>
+    public int? SeriesId { get; set; }
+
+    /// <summary>
+    /// Plain English description of the series the event is part of, if any
+    /// </summary>
+    public string? SeriesSchedule { get; set; }
 }
 
 /// <summary>
@@ -179,4 +199,9 @@ public class CalendarEventViewModel
     /// Safe to render using @Html.Raw()
     /// </summary>
     public string SanitizedDescription { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Plain English description of the series the event is part of, or null for a one time event
+    /// </summary>
+    public string? SeriesSchedule { get; set; }
 }

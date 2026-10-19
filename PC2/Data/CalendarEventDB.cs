@@ -6,7 +6,8 @@ namespace PC2.Data
 {
     public static class CalendarEventDB
     {
-        private static DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+        // Evaluated on each use so a long-running app does not keep using the day it started
+        private static DateOnly today => DateOnly.FromDateTime(DateTime.Today);
 
         /// <summary>
         /// Retrieve all events for the current day and future dates
@@ -15,7 +16,7 @@ namespace PC2.Data
         /// <returns></returns>
         public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context)
         {        
-            return await (from calEvents in context.CalendarEvents
+            return await (from calEvents in context.CalendarEvents.Include(e => e.EventSeries)
                           where calEvents.DateOfEvent >= today
                           orderby calEvents.DateOfEvent ascending, calEvents.StartingTime ascending
                           select calEvents).ToListAsync();
@@ -53,7 +54,7 @@ namespace PC2.Data
         /// <returns></returns>
         public static async Task<CalendarEvent?> GetEvent(ApplicationDbContext context, int id)
         {
-            return await (from c in context.CalendarEvents
+            return await (from c in context.CalendarEvents.Include(e => e.EventSeries)
                           where c.CalendarEventID == id
                           select c).FirstOrDefaultAsync();
         }
@@ -96,7 +97,7 @@ namespace PC2.Data
         }
 
         /// <summary>
-        /// Delete all past events from the database
+        /// Delete all past events from the database, along with any series that have no events left
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -108,6 +109,8 @@ namespace PC2.Data
             {
                 await DeleteEvent(context, calendarEvent.CalendarEventID);
             }
+
+            await EventSeriesDB.DeleteFinishedSeries(context);
         }
     }
 }
