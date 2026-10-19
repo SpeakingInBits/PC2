@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 
 namespace PC2.Models
 {
@@ -122,8 +121,7 @@ namespace PC2.Models
         /// <returns>A formatted phone number string to be displayed</returns>
         public string PhoneToString()
         {
-            Regex regex = new Regex(@"^\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}[\s]?$");
-            if (regex.IsMatch(Phone))
+            if (RegexHelpers.WholeFieldPhoneNumber().IsMatch(Phone))
             {
                 return "tel:" + Phone;
             }
@@ -138,8 +136,7 @@ namespace PC2.Models
         /// <returns>A formatted CrisisHelpHotline phone number to be displayed</returns>
         public string CrisisToString()
         {
-            Regex regex = new Regex(@"^\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$");
-            if (regex.IsMatch(CrisisHelpHotline))
+            if (RegexHelpers.ExactPhoneNumber().IsMatch(CrisisHelpHotline))
             {
                 return "tel:" + CrisisHelpHotline;
             }

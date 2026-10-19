@@ -5,9 +5,9 @@ namespace PC2.Models
     public class ResourceGuideModel
     {
         /// <summary>
-        /// A list of the agency data
+        /// The distinct agency names, for the agency name suggestions
         /// </summary>
-        public List<Agency> AgenciesForDataList = new List<Agency>();
+        public List<string> AgencyNamesForDataList = new List<string>();
         /// <summary>
         /// A list of the agency category data
         /// </summary>
