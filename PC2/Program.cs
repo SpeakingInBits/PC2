@@ -43,6 +43,10 @@ builder.Services.AddHttpClient<IReCaptchaService, ReCaptchaService>(client =>
     client.Timeout = TimeSpan.FromSeconds(10);
 });
 
+// Compresses pages (Brotli or Gzip). Static files are already compressed at build time by MapStaticAssets.
+// Safe over HTTPS here: the only secret in pages, the antiforgery token, is different in every response.
+builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
+
 // Configure Application Insights - only add if connection string is provided
 var appInsightsConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value;
 builder.Services.AddApplicationInsightsTelemetry(options =>
@@ -139,6 +143,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseResponseCompression();
 app.MapStaticAssets();
 app.UseRequestLocalization();
 app.UseRouting();
