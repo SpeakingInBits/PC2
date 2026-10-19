@@ -13,14 +13,12 @@ namespace PC2.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        /// <summary>
+        /// The events calendar. It loads its events from <see cref="GetEvents"/>.
+        /// </summary>
+        public IActionResult Index()
         {
-            EventsModel eventsModel = new()
-            {
-                CalendarEvents = await CalendarEventDB.GetAllEvents(_context)
-            };
-
-            return View(eventsModel);
+            return View();
         }
 
         /// <summary>
@@ -30,12 +28,14 @@ namespace PC2.Controllers
         /// <remarks>This method is intended for use by pages that require event data
         /// formatted for the FullCalendar JavaScript library. The returned list will be empty if no events are
         /// found.</remarks>
+        /// <param name="start">The first date the calendar is showing. Past events are never included.</param>
+        /// <param name="end">The date after the last one the calendar is showing (exclusive)</param>
         /// <returns>A JSON result containing a list of event objects, where each object includes the sanitized event title with clickable links,
         /// start and end date-times in ISO 8601 format, and a flag indicating whether the event is a PC2 event.</returns>
-        public async Task<IActionResult> GetEvents()
+        public async Task<IActionResult> GetEvents(DateOnly? start = null, DateOnly? end = null)
         {
-            // Get events from the database
-            List<CalendarEvent> events = await CalendarEventDB.GetAllEvents(_context);
+            // Get the upcoming events in the range the calendar is showing
+            List<CalendarEvent> events = await CalendarEventDB.GetUpcomingEventsAsync(_context, start, end);
 
             // Create a list to hold FullCalendar-compatible events
             List<object> fullCalendarEvents = new List<object>();
