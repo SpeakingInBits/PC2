@@ -1,5 +1,6 @@
 ﻿using IdentityLogin.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Models;
@@ -21,8 +22,9 @@ builder.Services.AddSingleton<AzureBlobUploader>();
 // Register ImageService for DI
 builder.Services.AddScoped<PC2.Services.ImageService>();
 
-// Register AnalyticsService for DI
-builder.Services.AddScoped<AnalyticsService>();
+// Register AnalyticsService for DI. A singleton, so its Log Analytics client is created once and its results cache is shared.
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<AnalyticsService>();
 
 // Sender.net mailing list sign-up form settings
 builder.Services.AddOptions<SenderNetOptions>()
@@ -59,7 +61,9 @@ builder.Services.AddApplicationInsightsTelemetry(options =>
 builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOptions)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+// Every POST, PUT, PATCH and DELETE must carry a valid antiforgery token
+builder.Services.AddControllersWithViews(options =>
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
 // email provider. "File" saves emails to disk instead of sending them (used in development)
 if (builder.Configuration.GetSection("EmailSender").Value == "File")

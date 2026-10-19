@@ -15,15 +15,18 @@ namespace PC2.Services
         private const int JpegQuality = 85;
 
         /// <summary>
-        /// Formats browsers display that an upload can be stored in as-is
+        /// Images with more pixels than this are rejected before they're decoded, because decoding takes
+        /// 4 bytes per pixel (200 MB at this limit). Phone cameras save 12–48 megapixel photos by default.
         /// </summary>
-        private static readonly Dictionary<SKEncodedImageFormat, (string ContentType, string FileExtension)> WebFormats = new()
+        public const long MaxPixels = 50_000_000;
+
+        /// <summary>
+        /// The formats photos are saved in
+        /// </summary>
+        private static readonly Dictionary<SKEncodedImageFormat, (string ContentType, string FileExtension)> OutputFormats = new()
         {
             [SKEncodedImageFormat.Jpeg] = ("image/jpeg", ".jpg"),
             [SKEncodedImageFormat.Png] = ("image/png", ".png"),
-            [SKEncodedImageFormat.Gif] = ("image/gif", ".gif"),
-            [SKEncodedImageFormat.Bmp] = ("image/bmp", ".bmp"),
-            [SKEncodedImageFormat.Webp] = ("image/webp", ".webp"),
         };
 
         private readonly ILogger<ImageService> _logger;
@@ -35,8 +38,9 @@ namespace PC2.Services
 
         /// <summary>
         /// Resizes an image to the specified maximum dimensions while maintaining aspect ratio.
-        /// Images that already fit are returned unchanged; resized images are saved as PNG if they
-        /// have transparency (JPEG would turn it black) and as JPEG otherwise.
+        /// Every image is re-encoded, even one that already fits, so camera metadata such as GPS location
+        /// is never published. Images are saved as PNG if they have transparency (JPEG would turn it black)
+        /// and as JPEG otherwise.
         /// </summary>
         /// <param name="imageStream">The input image stream</param>
         /// <param name="maxWidth">Maximum width</param>
@@ -48,11 +52,15 @@ namespace PC2.Services
             {
                 using var inputBuffer = new MemoryStream();
                 await imageStream.CopyToAsync(inputBuffer);
-                byte[] originalBytes = inputBuffer.ToArray();
 
-                using var data = SKData.CreateCopy(originalBytes);
+                using var data = SKData.CreateCopy(inputBuffer.ToArray());
                 using var codec = SKCodec.Create(data)
                     ?? throw new InvalidDataException("Unsupported or corrupt image data.");
+
+                // The codec reads the size from the file header without decoding the pixels
+                if ((long)codec.Info.Width * codec.Info.Height > MaxPixels)
+                    throw new InvalidDataException($"The image is {codec.Info.Width} × {codec.Info.Height} pixels, more than the {MaxPixels:N0} allowed.");
+
                 using var decoded = SKBitmap.Decode(codec)
                     ?? throw new InvalidDataException("Unable to decode image data.");
 
@@ -66,13 +74,7 @@ namespace PC2.Services
 
                 bool fits = newWidth == image.Width && newHeight == image.Height;
 
-                // If image is already smaller than max dimensions, return original
-                if (fits && WebFormats.TryGetValue(codec.EncodedFormat, out var originalFormat))
-                {
-                    return new ResizedImage(new MemoryStream(originalBytes), originalFormat.ContentType, originalFormat.FileExtension);
-                }
-
-                // Resize the image (an image that fits but isn't in a web format is just re-encoded)
+                // Resize the image (an image that already fits is just re-encoded)
                 using var resized = fits ? null : image.Resize(image.Info.WithSize(newWidth, newHeight), DownscaleSampling)
                     ?? throw new InvalidOperationException("Unable to resize image.");
                 var output = resized ?? image;
@@ -84,7 +86,7 @@ namespace PC2.Services
                     throw new InvalidOperationException($"Unable to encode resized image as {format}.");
 
                 outputStream.Position = 0;
-                var (contentType, fileExtension) = WebFormats[format];
+                var (contentType, fileExtension) = OutputFormats[format];
                 return new ResizedImage(outputStream, contentType, fileExtension);
             }
             catch (Exception ex)

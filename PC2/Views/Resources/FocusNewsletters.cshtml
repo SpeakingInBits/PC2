@@ -66,6 +66,9 @@ else
     </div>
 }
 
+@* Sent with the tracking request below; the page has no form to provide one *@
+@Html.AntiForgeryToken()
+
 @section Scripts
 {
     <script>
