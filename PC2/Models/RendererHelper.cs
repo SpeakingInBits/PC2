@@ -18,8 +18,8 @@ namespace PC2.Models
                 if (string.IsNullOrWhiteSpace(complexPhoneNumber))
                     return string.Empty;
 
-                // Regex for US phone numbers: (xxx) xxx-xxxx, xxx-xxx-xxxx, xxx.xxx.xxxx, xxx xxx xxxx
-                Regex phoneRegex = new Regex(@"\(?\d{3}\)?[\s\-.]?\d{3}[\s\-.]?\d{4}");
+                // US phone numbers: (xxx) xxx-xxxx, xxx-xxx-xxxx, xxx.xxx.xxxx, xxx xxx xxxx
+                Regex phoneRegex = RegexHelpers.PhoneNumberInText();
                 var sb = new StringBuilder();
 
                 int lastIndex = 0;
