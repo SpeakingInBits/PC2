@@ -263,14 +263,18 @@ public class PeopleController : Controller
         if (!ImageService.IsValidImageFile(photoFile))
             throw new InvalidOperationException("Please upload a valid image file (JPEG, PNG, GIF, or BMP).");
 
-        if (personId.HasValue && !string.IsNullOrEmpty(person.ImageUrl))
-            await RemovePersonPhoto(person);
-
         // Name and serve the photo by the format ImageService actually wrote, which can differ from the upload
         using var resizedImage = await _imageService.ResizeImageAsync(photoFile.OpenReadStream(), 350, 350);
         var safeFileName = ImageService.GetSafeImageFileName(personId ?? 0, resizedImage.FileExtension);
         var resizedFormFile = new FormFileFromStream(resizedImage.Content, safeFileName, resizedImage.ContentType);
-        person.ImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName, resizedImage.ContentType);
+        var newImageUrl = await _azureBlobUploader.UploadFileAsync(resizedFormFile, safeFileName, resizedImage.ContentType);
+
+        // Remove the old photo only once the new one is stored, so a rejected image leaves the record's photo intact.
+        // A replacement within the same second gets the same blob name and has already overwritten the old photo.
+        if (personId.HasValue && !string.IsNullOrEmpty(person.ImageUrl) && person.ImageUrl != newImageUrl)
+            await RemovePersonPhoto(person);
+
+        person.ImageUrl = newImageUrl;
     }
 
     private async Task RemovePersonPhoto(People person)
