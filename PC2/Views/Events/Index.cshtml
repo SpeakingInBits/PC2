@@ -1,5 +1,3 @@
-@model PC2.Models.EventsModel
-
 @{
     ViewData["Title"] = "Event Calendar";
 }
@@ -127,7 +125,9 @@
                     setTimeout(hideToolbarIcons, 0);
                 },
                 events: function(info, successCallback, failureCallback) {
-                    fetch('@Url.Action("GetEvents", "Events")')
+                    // Only the dates the calendar is showing (yyyy-mm-dd; end is exclusive)
+                    const range = new URLSearchParams({ start: info.startStr.slice(0, 10), end: info.endStr.slice(0, 10) });
+                    fetch('@Url.Action("GetEvents", "Events")?' + range)
                         .then(function(response) {
                             return response.json();
                         })
