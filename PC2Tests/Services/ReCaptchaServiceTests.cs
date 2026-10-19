@@ -281,6 +281,42 @@ public class ReCaptchaServiceTests
     }
 
     [TestMethod]
+    public async Task VerifyAsync_TokenLongerThanMaximum_ReturnsFailedWithoutAskingGoogle()
+    {
+        var handler = GoogleResponse(success: true, action: "submit");
+        var service = CreateService(handler);
+
+        var result = await service.VerifyAsync(new string('a', ReCaptchaService.MaxTokenLength + 1), "submit");
+
+        Assert.AreEqual(ReCaptchaVerificationResult.Failed, result);
+        Assert.IsNull(handler.LastRequestBody);
+    }
+
+    [TestMethod]
+    public async Task VerifyAsync_TokenAtMaximumLength_IsSentToGoogle()
+    {
+        var handler = GoogleResponse(success: true, action: "submit");
+        var service = CreateService(handler);
+
+        var result = await service.VerifyAsync(new string('a', ReCaptchaService.MaxTokenLength), "submit");
+
+        Assert.AreEqual(ReCaptchaVerificationResult.Passed, result);
+        Assert.IsNotNull(handler.LastRequestBody);
+    }
+
+    [TestMethod]
+    public async Task VerifyCheckboxAsync_TokenLongerThanMaximum_ReturnsFailedWithoutAskingGoogle()
+    {
+        var handler = GoogleCheckboxResponse(success: true);
+        var service = CreateService(handler, isCheckboxConfigured: true);
+
+        var result = await service.VerifyCheckboxAsync(new string('a', ReCaptchaService.MaxTokenLength + 1));
+
+        Assert.AreEqual(ReCaptchaVerificationResult.Failed, result);
+        Assert.IsNull(handler.LastRequestBody);
+    }
+
+    [TestMethod]
     public async Task VerifyCheckboxAsync_CheckboxNotConfigured_ReturnsFailed()
     {
         // A checkbox token can't be genuine when the checkbox is never shown, so it mustn't be accepted as Unavailable

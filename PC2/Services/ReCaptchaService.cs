@@ -52,6 +52,12 @@ public class ReCaptchaService : IReCaptchaService
 {
     private const string VerifyUrl = "https://www.google.com/recaptcha/api/siteverify";
 
+    /// <summary>
+    /// Google's tokens are a few thousand characters at most, so anything longer isn't genuine.
+    /// Rejecting it here means it's never sent to Google, where an error would be treated as Unavailable.
+    /// </summary>
+    public const int MaxTokenLength = 10_000;
+
     private readonly HttpClient _httpClient;
     private readonly ReCaptchaOptions _options;
     private readonly ILogger<ReCaptchaService> _logger;
@@ -74,6 +80,12 @@ public class ReCaptchaService : IReCaptchaService
         if (string.IsNullOrEmpty(token))
         {
             _logger.LogWarning("reCAPTCHA verification failed: no token was submitted.");
+            return ReCaptchaVerificationResult.Failed;
+        }
+
+        if (token.Length > MaxTokenLength)
+        {
+            _logger.LogWarning("reCAPTCHA verification failed: the token is {Length} characters long.", token.Length);
             return ReCaptchaVerificationResult.Failed;
         }
 
@@ -122,6 +134,12 @@ public class ReCaptchaService : IReCaptchaService
         {
             _logger.LogWarning("reCAPTCHA checkbox verification failed: no token was submitted.");
             return ReCaptchaVerificationResult.ChallengeRequired;
+        }
+
+        if (token.Length > MaxTokenLength)
+        {
+            _logger.LogWarning("reCAPTCHA checkbox verification failed: the token is {Length} characters long.", token.Length);
+            return ReCaptchaVerificationResult.Failed;
         }
 
         ReCaptchaResponse? result = await RequestVerificationAsync(_options.CheckboxSecretKey!, token, cancellationToken);
