@@ -21,6 +21,10 @@ builder.Services.AddSingleton<AzureBlobUploader>();
 // Register ImageService for DI
 builder.Services.AddScoped<PC2.Services.ImageService>();
 
+// Signed-in users' roles are reloaded from the database every minute (the default is 30 minutes),
+// so promoting, demoting or deleting a user takes effect almost straight away. Deleted users are signed out.
+builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromMinutes(1));
+
 // Register AnalyticsService for DI
 builder.Services.AddScoped<AnalyticsService>();
 
