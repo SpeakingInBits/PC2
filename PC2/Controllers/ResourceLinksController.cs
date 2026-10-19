@@ -61,7 +61,7 @@ namespace PC2.Controllers
 
                 try
                 {
-                    resourceLink.Url = await _azureBlobUploader.UploadFileAsync(uploadedFile, uploadedFile.FileName);
+                    resourceLink.Url = await _azureBlobUploader.UploadPdfAsync(uploadedFile);
                     resourceLink.FileName = uploadedFile.FileName;
                 }
                 catch (Exception ex)
@@ -131,7 +131,7 @@ namespace PC2.Controllers
             {
                 try
                 {
-                    existing.Url = await _azureBlobUploader.UploadFileAsync(uploadedFile, uploadedFile.FileName);
+                    existing.Url = await _azureBlobUploader.UploadPdfAsync(uploadedFile);
                     existing.FileName = uploadedFile.FileName;
                 }
                 catch (Exception ex)
@@ -152,8 +152,7 @@ namespace PC2.Controllers
             await ResourceLinkDB.UpdateAsync(_context, existing);
             TempData["Message"] = $"Link \"{existing.Name}\" updated successfully";
 
-            // A new file with the same name overwrote the old one, so there is nothing to remove
-            if (oldBlobName != null && oldBlobName != existing.Url.Split('/').Last())
+            if (oldBlobName != null)
             {
                 try
                 {

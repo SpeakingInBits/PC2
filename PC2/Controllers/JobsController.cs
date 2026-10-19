@@ -61,6 +61,10 @@ namespace PC2.Controllers
                 return View(job);
             }
 
+            // The attachment is only ever set by an upload, never by the form
+            job.AttachmentLocation = null;
+            job.AttachmentName = null;
+
             if (attachmentFile != null)
             {
                 if (!PdfFileValidator.IsPdf(attachmentFile))
@@ -71,8 +75,7 @@ namespace PC2.Controllers
 
                 try
                 {
-                    string filePath = await _azureBlobUploader.UploadFileAsync(attachmentFile, attachmentFile.FileName);
-                    job.AttachmentLocation = filePath;
+                    job.AttachmentLocation = await _azureBlobUploader.UploadPdfAsync(attachmentFile);
                     job.AttachmentName = attachmentFile.FileName;
                 }
                 catch (Exception ex)
@@ -104,11 +107,24 @@ namespace PC2.Controllers
             ModelState.Remove(nameof(JobOpportunity.AttachmentLocation));
             ModelState.Remove(nameof(JobOpportunity.AttachmentName));
 
+            JobOpportunity? existing = await JobOpportunityDB.GetJobAsync(_context, job.JobOpportunityId);
+            if (existing == null)
+            {
+                return NotFound();
+            }
+
+            // The attachment and closed state come from the database, never the form.
+            // They're also shown again if the form is redisplayed.
+            job.AttachmentLocation = existing.AttachmentLocation;
+            job.AttachmentName = existing.AttachmentName;
+            job.IsClosed = existing.IsClosed;
+
             if (!ModelState.IsValid)
             {
                 return View(job);
             }
 
+            string? oldBlobName = null;
             if (attachmentFile != null)
             {
                 if (!PdfFileValidator.IsPdf(attachmentFile))
@@ -119,16 +135,12 @@ namespace PC2.Controllers
 
                 try
                 {
-                    // Remove the old attachment from blob storage when it is being replaced
-                    string? oldBlobName = job.AttachmentLocation?.Split('/').LastOrDefault();
-                    if (oldBlobName != null && oldBlobName != attachmentFile.FileName)
-                    {
-                        await _azureBlobUploader.DeleteFileAsync(oldBlobName);
-                    }
+                    string filePath = await _azureBlobUploader.UploadPdfAsync(attachmentFile);
 
-                    string filePath = await _azureBlobUploader.UploadFileAsync(attachmentFile, attachmentFile.FileName);
-                    job.AttachmentLocation = filePath;
-                    job.AttachmentName = attachmentFile.FileName;
+                    // The old attachment is removed from blob storage once the job is saved
+                    oldBlobName = existing.AttachmentLocation?.Split('/').LastOrDefault();
+                    existing.AttachmentLocation = filePath;
+                    existing.AttachmentName = attachmentFile.FileName;
                 }
                 catch (Exception ex)
                 {
@@ -137,8 +149,25 @@ namespace PC2.Controllers
                 }
             }
 
-            await JobOpportunityDB.UpdateAsync(_context, job);
-            TempData["Message"] = $"Job \"{job.Title}\" updated successfully";
+            existing.Title = job.Title;
+            existing.Description = job.Description;
+            existing.ClosingDate = job.ClosingDate;
+
+            await JobOpportunityDB.UpdateAsync(_context, existing);
+            TempData["Message"] = $"Job \"{existing.Title}\" updated successfully";
+
+            if (oldBlobName != null)
+            {
+                try
+                {
+                    await _azureBlobUploader.DeleteFileAsync(oldBlobName);
+                }
+                catch (Exception ex)
+                {
+                    TempData["Message"] = $"Error removing the previous attachment: {ex.Message}. The job \"{existing.Title}\" was updated.";
+                }
+            }
+
             return RedirectToAction("Manage");
         }
 

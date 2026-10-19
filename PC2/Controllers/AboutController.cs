@@ -67,7 +67,7 @@ public class AboutController : Controller
 
             try
             {
-                string filePath = await _azureBlobUploader.UploadFileAsync(userFile, userFile.FileName);
+                string filePath = await _azureBlobUploader.UploadPdfAsync(userFile);
                 TempData["Message"] = $"{userFile.FileName} uploaded successfully";
 
                 NewsletterFile newsLetterFile = new()
