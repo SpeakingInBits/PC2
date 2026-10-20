@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using PC2.Data;
 using PC2.Models;
@@ -40,6 +41,7 @@ namespace PC2.Controllers
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting(RateLimitPolicies.PublicForms)]
         public async Task<IActionResult> Submit(FeedbackSubmission submission, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)

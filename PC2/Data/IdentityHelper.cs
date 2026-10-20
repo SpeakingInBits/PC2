@@ -36,6 +36,11 @@ namespace PC2.Data
             options.Password.RequireUppercase = true;
             options.Password.RequireNonAlphanumeric = true;
             options.Password.RequiredUniqueChars = 1;
+
+            // Lock an account for 15 minutes after 5 wrong passwords in a row
+            options.Lockout.AllowedForNewUsers = true;
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
         }
 
         internal static async Task CreateDefaultAdmin(IServiceProvider serviceProvider, string adminRoleName)
