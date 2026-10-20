@@ -84,29 +84,66 @@ public class ImageServiceTests
     }
 
     [TestMethod]
-    [DataRow("png", "image/png", ".png")]
-    [DataRow("jpeg", "image/jpeg", ".jpg")]
-    [DataRow("webp", "image/webp", ".webp")]
-    [DataRow("gif", "image/gif", ".gif")]
-    [DataRow("bmp", "image/bmp", ".bmp")]
-    public async Task ResizeImageAsync_ImageWithinBounds_IsReturnedUnchanged(string format, string expectedContentType, string expectedExtension)
+    [DataRow("png", 100, 50)]
+    [DataRow("jpeg", 100, 50)]
+    [DataRow("webp", 100, 50)]
+    [DataRow("bmp", 3, 2)]
+    public async Task ResizeImageAsync_OpaqueImageWithinBounds_IsReencodedAsJpegAtSameSize(string format, int width, int height)
     {
         var input = format switch
         {
-            "png" => EncodeSolid(100, 50, SKColors.Orange, SKEncodedImageFormat.Png),
-            "jpeg" => EncodeSolid(100, 50, SKColors.Orange, SKEncodedImageFormat.Jpeg),
-            "webp" => EncodeSolid(100, 50, SKColors.Orange, SKEncodedImageFormat.Webp),
-            "gif" => TinyGif,
-            "bmp" => CreateBmp(3, 2),
+            "png" => EncodeSolid(width, height, SKColors.Orange, SKEncodedImageFormat.Png),
+            "jpeg" => EncodeSolid(width, height, SKColors.Orange, SKEncodedImageFormat.Jpeg),
+            "webp" => EncodeSolid(width, height, SKColors.Orange, SKEncodedImageFormat.Webp),
+            "bmp" => CreateBmp(width, height),
             _ => throw new ArgumentOutOfRangeException(nameof(format))
         };
 
         using var output = await _service.ResizeImageAsync(new MemoryStream(input), 350, 350);
 
-        CollectionAssert.AreEqual(input, output.Content.ToArray());
         Assert.AreEqual(0, output.Content.Position);
-        Assert.AreEqual(expectedContentType, output.ContentType);
-        Assert.AreEqual(expectedExtension, output.FileExtension);
+        Assert.AreEqual("image/jpeg", output.ContentType);
+        Assert.AreEqual(".jpg", output.FileExtension);
+        using var codec = SKCodec.Create(new MemoryStream(output.Content.ToArray()));
+        Assert.AreEqual(SKEncodedImageFormat.Jpeg, codec.EncodedFormat);
+        Assert.AreEqual(width, codec.Info.Width);
+        Assert.AreEqual(height, codec.Info.Height);
+    }
+
+    [TestMethod]
+    public async Task ResizeImageAsync_GifWithinBounds_IsReencoded()
+    {
+        using var output = await _service.ResizeImageAsync(new MemoryStream(TinyGif), 350, 350);
+
+        CollectionAssert.AreNotEqual(TinyGif, output.Content.ToArray());
+        using var codec = SKCodec.Create(new MemoryStream(output.Content.ToArray()));
+        Assert.AreNotEqual(SKEncodedImageFormat.Gif, codec.EncodedFormat);
+        Assert.AreEqual(1, codec.Info.Width);
+        Assert.AreEqual(1, codec.Info.Height);
+    }
+
+    [TestMethod]
+    public async Task ResizeImageAsync_JpegWithinBoundsWithExifMetadata_DropsTheMetadata()
+    {
+        var input = WithExifOrientation(EncodeSolid(100, 50, SKColors.Orange, SKEncodedImageFormat.Jpeg), orientation: 1);
+        Assert.IsTrue(ContainsExif(input), "test JPEG should have EXIF metadata");
+
+        using var output = await _service.ResizeImageAsync(new MemoryStream(input), 350, 350);
+
+        Assert.IsFalse(ContainsExif(output.Content.ToArray()));
+    }
+
+    [TestMethod]
+    public async Task ResizeImageAsync_MorePixelsThanAllowed_ThrowsBeforeDecoding()
+    {
+        // 10,000 × 10,000 is 100 megapixels; only the header is needed to reject it
+        var input = CreateBmpHeader(10_000, 10_000);
+
+        var ex = await Assert.ThrowsExactlyAsync<InvalidOperationException>(
+            () => _service.ResizeImageAsync(new MemoryStream(input), 350, 350));
+
+        Assert.IsInstanceOfType<InvalidDataException>(ex.InnerException);
+        StringAssert.Contains(ex.InnerException.Message, "more than");
     }
 
     [TestMethod]
@@ -210,6 +247,37 @@ public class ImageServiceTests
             0x00, 0x00, 0x00, 0x00                          // no next IFD
         ];
         return [.. jpeg[..2], .. app1, .. jpeg[2..]];
+    }
+
+    /// <summary>
+    /// True if the JPEG has an EXIF (APP1 "Exif") segment
+    /// </summary>
+    private static bool ContainsExif(byte[] jpeg)
+    {
+        byte[] marker = [0xFF, 0xE1, 0, 0, (byte)'E', (byte)'x', (byte)'i', (byte)'f', 0, 0];
+        for (int i = 0; i + marker.Length <= jpeg.Length; i++)
+        {
+            if (jpeg[i] == 0xFF && jpeg[i + 1] == 0xE1 && jpeg.AsSpan(i + 4, 6).SequenceEqual(marker.AsSpan(4)))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Builds just the header of a 24-bit BMP, which is enough for Skia to read its size
+    /// </summary>
+    private static byte[] CreateBmpHeader(int width, int height)
+    {
+        int pixelBytes = ((width * 3 + 3) & ~3) * height;
+        using var ms = new MemoryStream();
+        using var writer = new BinaryWriter(ms);
+        writer.Write((byte)'B'); writer.Write((byte)'M');
+        writer.Write(54 + pixelBytes); writer.Write(0); writer.Write(54);
+        writer.Write(40); writer.Write(width); writer.Write(height);
+        writer.Write((short)1); writer.Write((short)24); writer.Write(0); writer.Write(pixelBytes);
+        writer.Write(2835); writer.Write(2835); writer.Write(0); writer.Write(0);
+        writer.Flush();
+        return ms.ToArray();
     }
 
     /// <summary>

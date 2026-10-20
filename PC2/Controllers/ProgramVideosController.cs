@@ -10,11 +10,13 @@ namespace PC2.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly AzureBlobUploader _azureBlobUploader;
+        private readonly ILogger<ProgramVideosController> _logger;
 
-        public ProgramVideosController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader)
+        public ProgramVideosController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader, ILogger<ProgramVideosController> logger)
         {
             _context = context;
             _azureBlobUploader = azureBlobUploader;
+            _logger = logger;
         }
 
         [AllowAnonymous]
@@ -43,6 +45,10 @@ namespace PC2.Controllers
             ModelState.Remove(nameof(ProgramVideo.PdfLocation));
             ModelState.Remove(nameof(ProgramVideo.PdfName));
 
+            // The PDF is only ever set by an upload, never by the form
+            programVideo.PdfLocation = null;
+            programVideo.PdfName = null;
+
             if (ModelState.IsValid)
             {
                 if (pdfFile != null)
@@ -55,13 +61,13 @@ namespace PC2.Controllers
 
                     try
                     {
-                        string filePath = await _azureBlobUploader.UploadFileAsync(pdfFile, pdfFile.FileName);
-                        programVideo.PdfLocation = filePath;
+                        programVideo.PdfLocation = await _azureBlobUploader.UploadPdfAsync(pdfFile);
                         programVideo.PdfName = pdfFile.FileName;
                     }
                     catch (Exception ex)
                     {
-                        TempData["Message"] = $"Error uploading PDF: {ex.Message}";
+                        _logger.LogError(ex, "Error uploading PDF {FileName} for new video {Title}", pdfFile.FileName, programVideo.Title);
+                        TempData["Message"] = $"Error uploading {pdfFile.FileName}. Please try again.";
                         return View(programVideo);
                     }
                 }
@@ -91,8 +97,19 @@ namespace PC2.Controllers
             ModelState.Remove(nameof(ProgramVideo.PdfLocation));
             ModelState.Remove(nameof(ProgramVideo.PdfName));
 
+            ProgramVideo? existing = await ProgramVideoDB.GetVideoAsync(_context, programVideo.ProgramVideoId);
+            if (existing == null)
+            {
+                return NotFound();
+            }
+
+            // The PDF comes from the database, never the form. It's also shown again if the form is redisplayed.
+            programVideo.PdfLocation = existing.PdfLocation;
+            programVideo.PdfName = existing.PdfName;
+
             if (ModelState.IsValid)
             {
+                string? oldBlobName = null;
                 if (pdfFile != null)
                 {
                     if (!PdfFileValidator.IsPdf(pdfFile))
@@ -103,19 +120,40 @@ namespace PC2.Controllers
 
                     try
                     {
-                        string filePath = await _azureBlobUploader.UploadFileAsync(pdfFile, pdfFile.FileName);
-                        programVideo.PdfLocation = filePath;
-                        programVideo.PdfName = pdfFile.FileName;
+                        string filePath = await _azureBlobUploader.UploadPdfAsync(pdfFile);
+
+                        // The old PDF is removed from blob storage once the video is saved
+                        oldBlobName = existing.PdfLocation?.Split('/').LastOrDefault();
+                        existing.PdfLocation = filePath;
+                        existing.PdfName = pdfFile.FileName;
                     }
                     catch (Exception ex)
                     {
-                        TempData["Message"] = $"Error uploading PDF: {ex.Message}";
+                        _logger.LogError(ex, "Error uploading PDF {FileName} for video {ProgramVideoId}", pdfFile.FileName, existing.ProgramVideoId);
+                        TempData["Message"] = $"Error uploading {pdfFile.FileName}. Please try again.";
                         return View(programVideo);
                     }
                 }
 
-                await ProgramVideoDB.UpdateAsync(_context, programVideo);
-                TempData["Message"] = $"Video \"{programVideo.Title}\" updated successfully";
+                existing.Title = programVideo.Title;
+                existing.YouTubeVideoId = programVideo.YouTubeVideoId;
+
+                await ProgramVideoDB.UpdateAsync(_context, existing);
+                TempData["Message"] = $"Video \"{existing.Title}\" updated successfully";
+
+                if (oldBlobName != null)
+                {
+                    try
+                    {
+                        await _azureBlobUploader.DeleteFileAsync(oldBlobName);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error removing previous PDF {BlobName} for video {ProgramVideoId}", oldBlobName, existing.ProgramVideoId);
+                        TempData["Message"] = $"The video \"{existing.Title}\" was updated, but its previous PDF couldn't be removed from storage.";
+                    }
+                }
+
                 return RedirectToAction("ManageVideos");
             }
 
@@ -157,7 +195,8 @@ namespace PC2.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Message"] = $"Error deleting video: {ex.Message}";
+                _logger.LogError(ex, "Error deleting video {ProgramVideoId}", id);
+                TempData["Message"] = "Error deleting the video. Please try again.";
             }
 
             return RedirectToAction("ManageVideos");

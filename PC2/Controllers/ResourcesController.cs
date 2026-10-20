@@ -120,7 +120,11 @@ namespace PC2.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            Agency agency = await AgencyDB.GetAgencyAsync(_context, id);
+            Agency? agency = await AgencyDB.GetAgencyAsync(_context, id);
+            if (agency == null)
+            {
+                return NotFound();
+            }
             return View(agency);
         }
             
@@ -172,7 +176,7 @@ namespace PC2.Controllers
 
         /// <summary>
         /// Shows a Focus newsletter in the browser's PDF viewer, or downloads it.
-        /// The stored blobs have no PDF content type, so linking to them directly always downloads.
+        /// The stored blobs are served as downloads, so linking to them directly always downloads.
         /// </summary>
         /// <param name="id">The NewsletterId of the newsletter</param>
         /// <param name="download">True to download the file instead of previewing it</param>

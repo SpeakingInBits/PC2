@@ -13,7 +13,7 @@ public class NewsletterFileDB
 
     public static async Task <List<NewsletterFile>> GetAllAsync(ApplicationDbContext context)
     {
-        return await (from nf in context.NewsletterFile
+        return await (from nf in context.NewsletterFile.AsNoTracking()
                       select nf).ToListAsync();
     }
     

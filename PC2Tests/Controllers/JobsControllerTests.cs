@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using PC2.Controllers;
 using PC2.Data;
@@ -35,8 +36,15 @@ public class JobsControllerTests
 
     private JobsController CreateController(string utcNow)
     {
-        var controller = new JobsController(_context, new AzureBlobUploader(new ConfigurationBuilder().Build()),
-            new FixedTimeProvider(utcNow));
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["AzureBlob:BlobServiceUri"] = "UseDevelopmentStorage=true",
+                ["AzureBlob:ContainerName"] = "files"
+            })
+            .Build();
+        var controller = new JobsController(_context, new AzureBlobUploader(configuration),
+            new FixedTimeProvider(utcNow), NullLogger<JobsController>.Instance);
         controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
         controller.TempData = new TempDataDictionary(controller.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
         return controller;

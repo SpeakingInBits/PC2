@@ -13,7 +13,7 @@ public class ProgramVideoDB
 
     public static async Task<List<ProgramVideo>> GetAllAsync(ApplicationDbContext context)
     {
-        return await (from pv in context.ProgramVideos
+        return await (from pv in context.ProgramVideos.AsNoTracking()
                       select pv).ToListAsync();
     }
 

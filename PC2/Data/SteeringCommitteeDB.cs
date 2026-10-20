@@ -11,7 +11,7 @@ namespace PC2.Data
         /// </summary>
         public static async Task<List<SteeringCommittee>> GetAllSteeringCommittee(ApplicationDbContext context)
         {
-            return await (from s in context.SteeringCommittee
+            return await (from s in context.SteeringCommittee.AsNoTracking()
                           orderby s.PriorityOrder ascending, s.Name ascending
                           select s).ToListAsync();
         }

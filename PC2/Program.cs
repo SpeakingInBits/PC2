@@ -1,5 +1,6 @@
 ﻿using IdentityLogin.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PC2.Data;
 using PC2.Models;
@@ -21,8 +22,9 @@ builder.Services.AddSingleton<AzureBlobUploader>();
 // Register ImageService for DI
 builder.Services.AddScoped<PC2.Services.ImageService>();
 
-// Register AnalyticsService for DI
-builder.Services.AddScoped<AnalyticsService>();
+// Register AnalyticsService for DI. A singleton, so its Log Analytics client is created once and its results cache is shared.
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<AnalyticsService>();
 
 // Sender.net mailing list sign-up form settings
 builder.Services.AddOptions<SenderNetOptions>()
@@ -40,6 +42,10 @@ builder.Services.AddHttpClient<IReCaptchaService, ReCaptchaService>(client =>
     // Fail fast if Google is slow so form submissions don't hang for the 100 second default
     client.Timeout = TimeSpan.FromSeconds(10);
 });
+
+// Compresses pages (Brotli or Gzip). Static files are already compressed at build time by MapStaticAssets.
+// Safe over HTTPS here: the only secret in pages, the antiforgery token, is different in every response.
+builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
 
 // Configure Application Insights - only add if connection string is provided
 var appInsightsConnectionString = builder.Configuration.GetSection("APPLICATIONINSIGHTS_CONNECTION_STRING").Value;
@@ -59,7 +65,9 @@ builder.Services.AddApplicationInsightsTelemetry(options =>
 builder.Services.AddDefaultIdentity<IdentityUser>(IdentityHelper.SetIdentityOptions)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+// Every POST, PUT, PATCH and DELETE must carry a valid antiforgery token
+builder.Services.AddControllersWithViews(options =>
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
 // email provider. "File" saves emails to disk instead of sending them (used in development)
 if (builder.Configuration.GetSection("EmailSender").Value == "File")
@@ -98,9 +106,29 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50 MB
+    // Don't advertise the web server in a "Server: Kestrel" header
+    options.AddServerHeader = false;
 });
 
+// Browsers only use HTTPS for the site for a year after each visit (the default is 30 days)
+builder.Services.AddHsts(options => options.MaxAge = TimeSpan.FromDays(365));
+
 var app = builder.Build();
+
+// Standard browser security headers on every response, including static files and error pages
+app.Use(async (context, next) =>
+{
+    IHeaderDictionary headers = context.Response.Headers;
+    // Don't guess a file's type from its contents
+    headers.XContentTypeOptions = "nosniff";
+    // Only other pages on this site may show it in a frame
+    headers.XFrameOptions = "SAMEORIGIN";
+    // Other sites see only "pc2online.org" as the referrer, not the full address
+    headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    // Features the site never uses, for its own pages and anything they embed
+    headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=(), usb=()";
+    await next();
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -110,11 +138,12 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // The max age is set by AddHsts above, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseResponseCompression();
 app.MapStaticAssets();
 app.UseRequestLocalization();
 app.UseRouting();

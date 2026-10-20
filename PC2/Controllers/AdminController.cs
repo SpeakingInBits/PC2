@@ -13,10 +13,12 @@ namespace PC2.Controllers;
 public class AdminController : Controller
 {
     private readonly AnalyticsService _analyticsService;
+    private readonly ILogger<AdminController> _logger;
 
-    public AdminController(AnalyticsService analyticsService)
+    public AdminController(AnalyticsService analyticsService, ILogger<AdminController> logger)
     {
         _analyticsService = analyticsService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -72,7 +74,8 @@ public class AdminController : Controller
         }
         catch (Exception ex)
         {
-            ViewBag.ErrorMessage = $"Error retrieving analytics data: {ex.Message}";
+            _logger.LogError(ex, "Error retrieving analytics data");
+            ViewBag.ErrorMessage = "Error retrieving analytics data. Please try again later.";
             return View(new AnalyticsViewModel 
             { 
                 StartDate = startDate ?? DateTime.Now.AddDays(-30),
