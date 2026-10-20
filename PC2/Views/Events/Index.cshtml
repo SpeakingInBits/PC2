@@ -102,6 +102,42 @@
                 });
             }
 
+            // Builds an event's title element from its HTML
+            function buildEventTitle(event, tagName) {
+                const title = document.createElement(tagName);
+                title.innerHTML = event.title;
+
+                // Prevent inner link navigation so clicks bubble to eventClick and open the modal.
+                // Keep them out of the tab order too, since the event itself is focusable.
+                title.querySelectorAll('a').forEach(function(a) {
+                    a.tabIndex = -1;
+                    a.addEventListener('click', function(e) {
+                        e.preventDefault();
+                    });
+                });
+
+                // Event type is otherwise shown only by colour
+                const typeText = document.createElement('span');
+                typeText.className = 'visually-hidden';
+                typeText.textContent = event.classNames.includes('pc2-event') ? ' (PC2 event)' : ' (County event)';
+                title.appendChild(typeText);
+                return title;
+            }
+
+            // Month view shows timed events that fit in one day as a dot and the rest as a bar
+            function isDotEvent(arg) {
+                const event = arg.event;
+                if (event.allDay || !arg.isStart || !arg.isEnd) {
+                    return false;
+                }
+                if (!event.end || event.end <= event.start) {
+                    return true;
+                }
+                // The end is exclusive, so an event ending at midnight still fits in its start day
+                const lastMoment = new Date(event.end.getTime() - 1);
+                return lastMoment.toDateString() === event.start.toDateString();
+            }
+
             var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                 initialView: 'listMonth',
                 headerToolbar: isMobile ? {
@@ -151,7 +187,10 @@
                     document.getElementById('modalEventDate').innerText = startTime;
                     document.getElementById('modalEventEndTime').innerText = endTime;
 
-                    eventModalOpener = document.activeElement;
+                    // Only an event opened with the keyboard has focus (FullCalendar stops a mouse click from
+                    // focusing it). Otherwise focus is elsewhere, e.g. on a toolbar button, and returning it
+                    // there would scroll the page away from the calendar.
+                    eventModalOpener = info.el.contains(document.activeElement) ? document.activeElement : null;
                     bootstrap.Modal.getOrCreateInstance(eventModalEl).show();
                 },
                 validRange: function(currentDate) {
@@ -164,49 +203,52 @@
 
                     return { start, end };
                 },
-                eventDidMount: function(info) {
-                    // Render HTML in event titles instead of escaped text.
-                    // List view: write to the <td> directly to avoid nesting <a> inside FullCalendar's own <a>.
-                    // Other views: write to the .fc-event-title element.
-                    const isListView = info.view.type === 'listMonth';
-                    const titleEl = isListView
-                        ? info.el.querySelector('.fc-list-event-title')
-                        : info.el.querySelector('.fc-event-title');
-
-                    if (titleEl) {
-                        let titleContainer = titleEl;
-                        if (isListView) {
-                            // This replaces FullCalendar's keyboard-focusable <a>, so add a focusable
-                            // wrapper whose Enter/Space click bubbles to eventClick like a mouse click
-                            titleEl.innerHTML = '';
-                            titleContainer = document.createElement('span');
-                            titleContainer.tabIndex = 0;
-                            titleContainer.addEventListener('keydown', function(e) {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
-                                    titleContainer.click();
-                                }
-                            });
-                            titleEl.appendChild(titleContainer);
-                        }
-                        titleContainer.innerHTML = info.event.title;
-
-                        // Prevent inner link navigation so clicks bubble to eventClick and open the modal.
-                        // Keep them out of the tab order too, since the event itself is focusable.
-                        titleEl.querySelectorAll('a').forEach(function(a) {
-                            a.tabIndex = -1;
-                            a.addEventListener('click', function(e) {
+                // Render HTML in event titles instead of escaped text. This goes through eventContent
+                // rather than editing the DOM in eventDidMount, because FullCalendar re-renders events
+                // (e.g. when the current view's button is clicked again) and would restore its own text.
+                eventContent: function(arg) {
+                    if (arg.view.type === 'listMonth') {
+                        // This replaces FullCalendar's keyboard-focusable <a> (links in the title can't nest
+                        // inside it), so use a focusable wrapper whose Enter/Space click bubbles to eventClick
+                        // like a mouse click
+                        const title = buildEventTitle(arg.event, 'span');
+                        title.tabIndex = 0;
+                        title.addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();
-                            });
+                                title.click();
+                            }
                         });
-
-                        // Event type is otherwise shown only by colour
-                        const typeText = document.createElement('span');
-                        typeText.className = 'visually-hidden';
-                        typeText.textContent = info.event.classNames.includes('pc2-event') ? ' (PC2 event)' : ' (County event)';
-                        titleContainer.appendChild(typeText);
+                        return { domNodes: [title] };
                     }
 
+                    // Month view: the same layout as FullCalendar's default content
+                    const title = buildEventTitle(arg.event, 'div');
+                    title.className = 'fc-event-title';
+                    const time = document.createElement('div');
+                    time.className = 'fc-event-time';
+                    time.textContent = arg.timeText;
+
+                    if (isDotEvent(arg)) {
+                        const dot = document.createElement('div');
+                        dot.className = 'fc-daygrid-event-dot';
+                        dot.style.borderColor = arg.borderColor || arg.backgroundColor;
+                        return { domNodes: arg.timeText ? [dot, time, title] : [dot, title] };
+                    }
+
+                    title.classList.add('fc-sticky');
+                    const titleContainer = document.createElement('div');
+                    titleContainer.className = 'fc-event-title-container';
+                    titleContainer.appendChild(title);
+                    const frame = document.createElement('div');
+                    frame.className = 'fc-event-main-frame';
+                    if (arg.timeText) {
+                        frame.appendChild(time);
+                    }
+                    frame.appendChild(titleContainer);
+                    return { domNodes: [frame] };
+                },
+                eventDidMount: function(info) {
                     // Add a Bootstrap tooltip on month view events so the full text is visible on hover
                     if (info.view.type === 'dayGridMonth') {
                         const tempDiv = document.createElement('div');
