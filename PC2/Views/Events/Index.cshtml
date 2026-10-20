@@ -187,7 +187,10 @@
                     document.getElementById('modalEventDate').innerText = startTime;
                     document.getElementById('modalEventEndTime').innerText = endTime;
 
-                    eventModalOpener = document.activeElement;
+                    // Only an event opened with the keyboard has focus (FullCalendar stops a mouse click from
+                    // focusing it). Otherwise focus is elsewhere, e.g. on a toolbar button, and returning it
+                    // there would scroll the page away from the calendar.
+                    eventModalOpener = info.el.contains(document.activeElement) ? document.activeElement : null;
                     bootstrap.Modal.getOrCreateInstance(eventModalEl).show();
                 },
                 validRange: function(currentDate) {
