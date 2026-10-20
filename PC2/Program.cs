@@ -16,6 +16,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// Built-in Identity UI pages the site doesn't use (registration, email confirmation, password reset) return 404.
+// PostConfigure, because setting up Razor Pages replaces the conventions collection that Configure would add to.
+builder.Services.PostConfigure<Microsoft.AspNetCore.Mvc.RazorPages.RazorPagesOptions>(options =>
+    options.Conventions.Add(new UnusedIdentityPagesConvention()));
+
 // Register AzureBlobUploader for DI
 builder.Services.AddSingleton<AzureBlobUploader>();
 
@@ -165,7 +170,8 @@ IdentityHelper.CreateDefaultAdmin(serviceProvider.ServiceProvider, IdentityHelpe
               .Wait();
 #endif
 
-// If a user tries to access the register page, redirect them to the login page
+// If a user tries to access the register page, redirect them to the login page.
+// UnusedIdentityPagesConvention turns off the Identity UI Register page, so this is the only endpoint for the URL.
 app.Map("/Identity/Account/Register", async context =>
 {
     context.Response.Redirect("/Identity/Account/Login", true, true);
