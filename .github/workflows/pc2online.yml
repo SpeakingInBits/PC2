@@ -1,7 +1,32 @@
 name: Build and deploy .NET Core app to Linux WebApp pc2online
 on:
   workflow_dispatch:
-  
+    inputs:
+      change:
+        description: What's in this release (picks the next version number)
+        type: choice
+        options:
+          - Bug fixes
+          - New features
+          - Breaking changes
+        default: Bug fixes
+      version:
+        description: Version number, e.g. 1.15.0 (optional; overrides the calculated one)
+        type: string
+        required: false
+      summary:
+        description: Short summary for the release title, e.g. Wording update (optional)
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+# This also stops two runs from picking the same version number.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
 env:
   AZURE_WEBAPP_NAME: pc2online
   AZURE_WEBAPP_PACKAGE_PATH: PC2/publish
@@ -13,8 +38,28 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.next.outputs.version }}
     steps:
+    - name: Only deploy main
+      if: github.ref != 'refs/heads/main'
+      run: |
+        echo "::error::Deploy only runs from main, and this run is on $GITHUB_REF_NAME."
+        exit 1
     - uses: actions/checkout@v6
+      with:
+        # The tags are needed to find the latest release.
+        fetch-depth: 0
+    # Comes first so that a bad version number stops the run before anything changes.
+    - name: Next version
+      id: next
+      env:
+        CHANGE: ${{ inputs.change }}
+        REQUESTED: ${{ inputs.version }}
+      run: |
+        version=$(bash .github/scripts/next-version.sh "$CHANGE" "$REQUESTED")
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+        echo "Deploying v$version" >> "$GITHUB_STEP_SUMMARY"
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v5
       with:
@@ -44,3 +89,21 @@ jobs:
       with:
         name: webapp
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+  # A separate job, so that only this one can write to the repository. It runs only after the deploy and the migrations
+  # succeed, so a failed deploy doesn't use up a version number.
+  release:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Create the release
+      env:
+        GH_TOKEN: ${{ github.token }}
+        VERSION: ${{ needs.build-and-deploy.outputs.version }}
+        SUMMARY: ${{ inputs.summary }}
+      run: |
+        title="v$VERSION"
+        [ -z "$SUMMARY" ] || title="$title - $SUMMARY"
+        gh release create "v$VERSION" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "$title" --generate-notes
