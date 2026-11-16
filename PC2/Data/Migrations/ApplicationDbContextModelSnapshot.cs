@@ -17,7 +17,7 @@ namespace PC2.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -513,36 +513,9 @@ namespace PC2.Data.Migrations
 
                     b.ToTable("People");
 
-                    b.HasDiscriminator().HasValue("People");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("People");
 
                     b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("PC2.Models.ProgramVideo", b =>
-                {
-                    b.Property<int>("ProgramVideoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProgramVideoId"));
-
-                    b.Property<string>("PdfLocation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PdfName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("YouTubeVideoId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ProgramVideoId");
-
-                    b.ToTable("ProgramVideos");
                 });
 
             modelBuilder.Entity("PC2.Models.ResourceLink", b =>

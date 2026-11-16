@@ -504,7 +504,7 @@ nav a {
         width: max(80%, 945px);
     }
 
-    /*Bootstrap keeps dropdown labels on one line; let this long one wrap like "Program Videos" does*/
+    /*Bootstrap keeps dropdown labels on one line; let this long one wrap like the other menu items do*/
     #bootstrap-override #housingDropdown {
         white-space: normal;
     }
