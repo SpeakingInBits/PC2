@@ -77,7 +77,7 @@ the email is sent the next time the app checks (every 15 minutes while running).
 - **Send real email from development:** set `EmailSender` to `SendGrid` in user secrets and configure the SendGrid settings.
 
 ### Get Help Referral Forms
-For now, the only link to the forms is the **Get Help** button on the Contact Us page. It goes to `/GetHelp`, where visitors choose between asking for help for themselves or their family
+The forms are linked from the **Get Help** tab in the main menu and the **Get Help** button on the Contact Us page. Both go to `/GetHelp`, where visitors choose between asking for help for themselves or their family
 (`/GetHelp/Self`) and a professional referral (`/GetHelp/Professional`). Submitted referrals are emailed to the `PC2Email` address and are
 **not saved** in the database. Both forms are protected by reCAPTCHA. If Google can't be reached the referral is still sent, with a note in
 the email that it wasn't checked for spam.
