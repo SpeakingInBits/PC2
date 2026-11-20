@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.RateLimiting;
 using PC2.Models;
 using PC2.Services;
 
@@ -47,6 +48,7 @@ namespace PC2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting(RateLimitPolicies.PublicForms)]
         public Task<IActionResult> Self(SelfReferral referral, CancellationToken cancellationToken)
         {
             return SubmitAsync(referral, SelfReCaptchaAction, cancellationToken);
@@ -60,6 +62,7 @@ namespace PC2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting(RateLimitPolicies.PublicForms)]
         public Task<IActionResult> Professional(ProfessionalReferral referral, CancellationToken cancellationToken)
         {
             return SubmitAsync(referral, ProfessionalReCaptchaAction, cancellationToken);

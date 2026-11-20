@@ -97,6 +97,9 @@ builder.Services.AddHostedService<FeedbackDigestBackgroundService>();
 // Emails Get Help referrals to PC2
 builder.Services.AddScoped<ReferralEmailService>();
 
+// Limits how often each visitor can sign in or post the public forms
+builder.Services.AddRateLimitPolicies();
+
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US");
@@ -152,6 +155,7 @@ app.UseResponseCompression();
 app.MapStaticAssets();
 app.UseRequestLocalization();
 app.UseRouting();
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
