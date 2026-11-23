@@ -1,6 +1,11 @@
 @using PC2.Data
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
 @{
     ViewData["Title"] = "Admin Dashboard";
+
+    IdentityUser? currentUser = await UserManager.GetUserAsync(User);
+    bool showTwoFactorWarning = currentUser != null && !await UserManager.GetTwoFactorEnabledAsync(currentUser);
 }
 
 @section Head
@@ -131,6 +136,16 @@
         <h1>Admin Dashboard</h1>
         <p>Manage and organize all PC2 data and content</p>
     </div>
+
+    @if (showTwoFactorWarning)
+    {
+        <div class="alert alert-warning two-factor-warning" role="status">
+            <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>
+            <strong>Two-factor authentication is not turned on for your account.</strong>
+            Turn it on to protect the site if your password is ever stolen.
+            <a href="/Identity/Account/Manage/TwoFactorAuthentication" class="alert-link">Set up two-factor authentication</a>
+        </div>
+    }
 
     <div class="dashboard-grid">
         <!-- Agencies Management -->
