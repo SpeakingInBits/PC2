@@ -12,6 +12,18 @@ namespace PC2.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // Deleting a series deletes all of its dates
+            builder.Entity<CalendarEvent>()
+                .HasOne(e => e.EventSeries)
+                .WithMany(s => s.Events)
+                .HasForeignKey(e => e.EventSeriesID)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
         protected override void ConfigureConventions(ModelConfigurationBuilder builder)
         {
             // Store DateOnly values as 'date' columns
@@ -35,6 +47,7 @@ namespace PC2.Data
         public virtual DbSet<Agency> Agency {  get; set; }
         public virtual DbSet<AgencyCategory> AgencyCategory {  get; set; }
         public virtual DbSet<CalendarEvent> CalendarEvents {  get; set; }
+        public virtual DbSet<EventSeries> EventSeries { get; set; }
         public virtual DbSet<Staff> StaffMembers { get; set; }
         public virtual DbSet<Board> BoardMembers { get; set; }
         public virtual DbSet<SteeringCommittee> SteeringCommittee { get; set; }

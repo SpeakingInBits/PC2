@@ -28,7 +28,11 @@ namespace PC2.Data
         /// <returns></returns>
         public static async Task<List<CalendarEvent>> GetAllEvents(ApplicationDbContext context)
         {
-            return await GetUpcomingEventsAsync(context, null, null);
+            DateOnly today = Today();
+            return await (from calEvents in context.CalendarEvents.Include(e => e.EventSeries)
+                          where calEvents.DateOfEvent >= today
+                          orderby calEvents.DateOfEvent ascending, calEvents.StartingTime ascending
+                          select calEvents).ToListAsync();
         }
 
         /// <summary>
@@ -87,7 +91,7 @@ namespace PC2.Data
         /// <returns></returns>
         public static async Task<CalendarEvent?> GetEvent(ApplicationDbContext context, int id)
         {
-            return await (from c in context.CalendarEvents
+            return await (from c in context.CalendarEvents.Include(e => e.EventSeries)
                           where c.CalendarEventID == id
                           select c).FirstOrDefaultAsync();
         }
@@ -130,19 +134,21 @@ namespace PC2.Data
         }
 
         /// <summary>
-        /// Delete all past events from the database
+        /// Delete all past events from the database, along with any series that have no events left
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public static async Task DeletePastEvents(ApplicationDbContext context)
         {
             List<CalendarEvent> pastEvents = await GetAllPastEvents(context);
-            if (pastEvents.Count == 0)
-                return;
+            if (pastEvents.Count > 0)
+            {
+                // One save deletes them all
+                context.CalendarEvents.RemoveRange(pastEvents);
+                await context.SaveChangesAsync();
+            }
 
-            // One save deletes them all
-            context.CalendarEvents.RemoveRange(pastEvents);
-            await context.SaveChangesAsync();
+            await EventSeriesDB.DeleteFinishedSeries(context);
         }
     }
 }
