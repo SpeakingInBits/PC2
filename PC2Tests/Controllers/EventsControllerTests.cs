@@ -390,58 +390,87 @@ public class EventsControllerTests
 
     #endregion
 
+    #region Date range and past events
+
+    private async Task AddEventAsync(DateOnly date, string description)
+    {
+        _context.CalendarEvents.Add(new CalendarEvent
+        {
+            DateOfEvent = date,
+            StartingTime = new TimeOnly(10, 0),
+            EndingTime = new TimeOnly(11, 0),
+            EventDescription = description,
+            PC2Event = true,
+            CountyEvent = false
+        });
+        await _context.SaveChangesAsync();
+    }
+
+    private static List<string> Titles(JsonResult? result) =>
+        ((List<object>)result!.Value!).Select(e => JsonSerializer.Serialize(e)).ToList();
+
+    [TestMethod]
+    public async Task GetEvents_PastEvent_IsNotReturned()
+    {
+        // Arrange
+        DateOnly today = CalendarEventDB.Today();
+        await AddEventAsync(today.AddDays(-5), "Past event");
+        await AddEventAsync(today.AddDays(5), "Upcoming event");
+
+        // Act
+        var titles = Titles(await _controller.GetEvents() as JsonResult);
+
+        // Assert
+        Assert.AreEqual(1, titles.Count);
+        StringAssert.Contains(titles[0], "Upcoming event");
+    }
+
+    [TestMethod]
+    public async Task GetEvents_WithDateRange_ReturnsOnlyEventsInRange()
+    {
+        // Arrange
+        DateOnly today = CalendarEventDB.Today();
+        await AddEventAsync(today.AddDays(5), "In range");
+        await AddEventAsync(today.AddDays(30), "On the end date");
+        await AddEventAsync(today.AddDays(45), "After the range");
+
+        // Act: end is exclusive, like FullCalendar's
+        var titles = Titles(await _controller.GetEvents(today, today.AddDays(30)) as JsonResult);
+
+        // Assert
+        Assert.AreEqual(1, titles.Count);
+        StringAssert.Contains(titles[0], "In range");
+    }
+
+    [TestMethod]
+    public async Task GetEvents_RangeStartingInThePast_StillExcludesPastEvents()
+    {
+        // Arrange
+        DateOnly today = CalendarEventDB.Today();
+        await AddEventAsync(today.AddDays(-5), "Past event");
+        await AddEventAsync(today.AddDays(5), "Upcoming event");
+
+        // Act: the month view starts before today
+        var titles = Titles(await _controller.GetEvents(today.AddDays(-20), today.AddDays(20)) as JsonResult);
+
+        // Assert
+        Assert.AreEqual(1, titles.Count);
+        StringAssert.Contains(titles[0], "Upcoming event");
+    }
+
+    #endregion
+
     #region Index Tests
 
     [TestMethod]
-    public async Task Index_ReturnsViewWithEventsModel()
+    public void Index_ReturnsViewWithoutModel()
     {
-        // Act
-        var result = await _controller.Index() as ViewResult;
+        // Act: the calendar loads its events from GetEvents
+        var result = _controller.Index() as ViewResult;
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.IsInstanceOfType(result.Model, typeof(EventsModel));
-    }
-
-    [TestMethod]
-    public async Task Index_WithNoEvents_ReturnsModelWithEmptyList()
-    {
-        // Act
-        var result = await _controller.Index() as ViewResult;
-
-        // Assert
-        Assert.IsNotNull(result);
-        var model = result.Model as EventsModel;
-        Assert.IsNotNull(model);
-        Assert.IsNotNull(model.CalendarEvents);
-        Assert.AreEqual(0, model.CalendarEvents.Count);
-    }
-
-    [TestMethod]
-    public async Task Index_WithEvents_ReturnsModelWithEvents()
-    {
-        // Arrange
-        var calendarEvent = new CalendarEvent
-        {
-            DateOfEvent = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
-            StartingTime = new TimeOnly(10, 0),
-            EndingTime = new TimeOnly(11, 0),
-            EventDescription = "Test Event",
-            PC2Event = true,
-            CountyEvent = false
-        };
-        _context.CalendarEvents.Add(calendarEvent);
-        await _context.SaveChangesAsync();
-
-        // Act
-        var result = await _controller.Index() as ViewResult;
-
-        // Assert
-        Assert.IsNotNull(result);
-        var model = result.Model as EventsModel;
-        Assert.IsNotNull(model);
-        Assert.IsNotNull(model.CalendarEvents);
-        Assert.AreEqual(1, model.CalendarEvents.Count);
+        Assert.IsNull(result.Model);
     }
 
     #endregion

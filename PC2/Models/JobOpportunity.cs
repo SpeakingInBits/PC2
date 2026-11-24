@@ -59,7 +59,7 @@ namespace PC2.Models
             get
             {
                 return !IsClosed &&
-                    (ClosingDate == null || ClosingDate >= DateOnly.FromDateTime(DateTime.Today));
+                    (ClosingDate == null || ClosingDate >= PacificTime.Today());
             }
         }
     }

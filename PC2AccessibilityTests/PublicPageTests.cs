@@ -29,8 +29,6 @@ public class PublicPageTests
     [DataRow("/Resources/EmergencyPreparedness")]
     [DataRow("/Resources/EquipmentExchange")]
     [DataRow("/Events")]
-    [DataRow("/NewsToKnow")]
-    [DataRow("/ProgramVideos")]
     [DataRow("/Jobs")]
     [DataRow("/Identity/Account/Login")]
     public async Task Page_MeetsWcag(string path)

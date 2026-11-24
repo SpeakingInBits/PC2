@@ -25,10 +25,10 @@
 
 @if (enableAppInsights)
 {
-    <script src="~/js/appinsights-snippet.js"></script>
+    @* defer: doesn't hold up showing the page. Nothing else on the site calls appInsights directly. *@
+    <script src="~/js/appinsights-snippet.js" defer></script>
 }
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" 
-        integrity="sha256-pdY4ejLKO67E0CM2tbPtq1DJ3VGDVVdqAR6j3ZwdiE4=" crossorigin="anonymous">
+    @* Bootstrap Icons are loaded only by the pages that use them, with <partial name="_BootstrapIconsPartial" /> *@
     <link rel="icon" type="image/x-icon" href="~/images/pc2_logo_icon.ico" />
     <link rel="stylesheet" href="~/sass/customBootStrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
@@ -80,11 +80,8 @@
                         <li id="Home-Index" class="nav-item menu-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" aria-current="@AriaCurrent("Home", "Index")">Home</a>
                         </li>
-                        <li id="ProgramVideos-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-controller="ProgramVideos" asp-action="Index" aria-current="@AriaCurrent("ProgramVideos", "Index")">Program Videos</a>
-                        </li>
-                        <li id="NewsToKnow-Index" class="nav-item menu-item">
-                            <a class="nav-link" asp-area="" asp-controller="NewsToKnow" asp-action="Index" aria-current="@AriaCurrent("NewsToKnow", "Index")">News</a>
+                        <li id="GetHelp-Index" class="nav-item menu-item">
+                            <a class="nav-link" asp-area="" asp-controller="GetHelp" asp-action="Index" aria-current="@AriaCurrent("GetHelp", "Index")">Get Help</a>
                         </li>
                         <li id="Events-Index" class="nav-item menu-item">
                             <a class="nav-link" asp-controller="Events" asp-action="Index" aria-current="@AriaCurrent("Events", "Index")">Events</a>
@@ -100,7 +97,7 @@
                                 <li><a class="dropdown-item" asp-controller="Resources" asp-action="AgeSpecificIssues" aria-current="@AriaCurrent("Resources", "AgeSpecificIssues")">Age-Specific Issues</a></li>
                                 <li><a class="dropdown-item" asp-controller="Resources" asp-action="LegislativeLinksAndEvents" aria-current="@AriaCurrent("Resources", "LegislativeLinksAndEvents")">Legislative Links and Events</a></li>
                                 <li><a class="dropdown-item" asp-controller="Resources" asp-action="EmergencyPreparedness" aria-current="@AriaCurrent("Resources", "EmergencyPreparedness")">Emergency Preparedness</a></li>
-                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="EquipmentExchange" aria-current="@AriaCurrent("Resources", "EquipmentExchange")">Emma's Exceptional Equipment Exchange</a></li>
+                                <li><a class="dropdown-item" asp-controller="Resources" asp-action="EquipmentExchange" aria-current="@AriaCurrent("Resources", "EquipmentExchange")">Donate Your Equipment</a></li>
                             </ul>
                         </li>
                         <li id="Resource-Guide-Index" class="nav-item menu-item">
@@ -110,7 +107,7 @@
                             <a class="nav-link" asp-controller="Resources" asp-action="FocusNewsletters" aria-current="@AriaCurrent("Resources", "FocusNewsletters")">Focus Newsletters</a>
                         </li>
                         <li id="housing-program" class="nav-item menu-item dropdown">
-                            @* site.css lets this label wrap on wide screens so the menu fits. No space before </a>, so the arrow stays with "Services". *@
+                            @* site.css lets this label wrap evenly onto two lines on wide screens so the menu fits. No space before </a>, so the arrow stays with "Services". *@
                             <a class="nav-link dropdown-toggle" href="#" id="housingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Other Program Services</a>
                             <ul class="dropdown-menu" aria-labelledby="housingDropdown">

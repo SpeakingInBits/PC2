@@ -55,8 +55,7 @@ namespace PC2.Data
         public virtual DbSet<NewsletterFile> NewsletterFile { get; set; }
     
         public virtual DbSet<HousingProgram> HousingProgram { get; set; }
-    
-        public virtual DbSet<ProgramVideo> ProgramVideos { get; set; }
+
 
         public virtual DbSet<JobOpportunity> JobOpportunities { get; set; }
 

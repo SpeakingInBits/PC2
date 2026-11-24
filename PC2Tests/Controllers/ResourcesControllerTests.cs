@@ -67,6 +67,32 @@ public class ResourcesControllerTests
     }
 
     [TestMethod]
+    public async Task Details_MissingAgency_ReturnsNotFound()
+    {
+        // Act
+        IActionResult result = await _controller.Details(12345);
+
+        // Assert
+        Assert.IsInstanceOfType<NotFoundResult>(result);
+    }
+
+    [TestMethod]
+    public async Task Details_ExistingAgency_ShowsAgency()
+    {
+        // Arrange
+        var agency = new Agency { AgencyName = "Tacoma Housing Authority" };
+        _context.Agency.Add(agency);
+        await _context.SaveChangesAsync();
+
+        // Act
+        IActionResult result = await _controller.Details(agency.AgencyId);
+
+        // Assert
+        Assert.IsInstanceOfType<Agency>(((ViewResult)result).Model, out Agency model);
+        Assert.AreEqual("Tacoma Housing Authority", model.AgencyName);
+    }
+
+    [TestMethod]
     public async Task ResourceGuide_Post_UnknownCategoryName_ShowsNoResults()
     {
         // Act

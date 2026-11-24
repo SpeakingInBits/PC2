@@ -35,24 +35,16 @@ namespace PC2.Data
         }
 
         /// <summary>
-        /// Gets a list of distinct agencies from the database sorted in alphabetical order by Agency Name.
+        /// Gets the distinct agency names, sorted alphabetically. Only the names are read, not the rest of each agency.
         /// </summary>
-        public static async Task<List<Agency>> GetDistinctAgenciesAsync(ApplicationDbContext context)
+        public static async Task<List<string>> GetDistinctAgencyNamesAsync(ApplicationDbContext context)
         {
-            var query = context.Agency
+            return await context.Agency
                 .Where(a => a.AgencyName != null)
-                .Join(
-                    context.Agency
-                        .Where(x => x.AgencyName != null)
-                        .GroupBy(x => x.AgencyName)
-                        .Select(g => g.Min(x => x.AgencyId)),
-                    a => a.AgencyId,
-                    minId => minId,
-                    (a, minId) => a
-                )
-                .OrderBy(a => a.AgencyName);
-
-            return await query.ToListAsync();
+                .Select(a => a.AgencyName!)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToListAsync();
         }
 
         /// <summary>
@@ -95,8 +87,7 @@ namespace PC2.Data
         /// </summary>
         public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, int categoryID)
         {
-            return await context.Agency
-                .Include(nameof(Agency.AgencyCategories))
+            return await context.Agency.AsNoTracking()
                 .Where(agency => agency.AgencyCategories.Any(cat => cat.AgencyCategoryId == categoryID))
                 .OrderBy(agency => agency.AgencyName)
                 .ToListAsync();
@@ -111,9 +102,9 @@ namespace PC2.Data
         /// <returns></returns>
         public static async Task<List<Agency>> GetSpecificAgenciesAsync(ApplicationDbContext context, string city)
         {
-            return await (from a in context.Agency
+            return await (from a in context.Agency.AsNoTracking()
                           where a.City != null && a.City == city
-                          select a).Include(nameof(Agency.AgencyCategories))
+                          select a)
                           .OrderBy(agency => agency.AgencyName)
                           .ToListAsync();
         }
@@ -127,8 +118,7 @@ namespace PC2.Data
         public static async Task<List<Agency>> GetAgenciesByCategoryAndCity(ApplicationDbContext context,
             string categoryName, string city)
         {
-            IQueryable<Agency> agencyResults = context.Agency
-                .Include(nameof(Agency.AgencyCategories))
+            IQueryable<Agency> agencyResults = context.Agency.AsNoTracking()
                 .Where(agency => agency.City == city);
 
             return await agencyResults
@@ -195,9 +185,9 @@ namespace PC2.Data
 
         public static async Task<List<Agency>> GetAgenciesByName(ApplicationDbContext context, string name)
         {
-            return await (from a in context.Agency
+            return await (from a in context.Agency.AsNoTracking()
                           where a.AgencyName == name
-                          select a).Include(nameof(Agency.AgencyCategories)).ToListAsync();
+                          select a).ToListAsync();
         }
 
         public static async Task<List<string>> GetAllCities(ApplicationDbContext context)
@@ -220,7 +210,7 @@ namespace PC2.Data
             ResourceGuideModel resourceGuide)
         {
             resourceGuide.AgencyCategoriesForDataList = await AgencyCategoryDB.GetAgencyCategoriesAsync(context);
-            resourceGuide.AgenciesForDataList = await GetDistinctAgenciesAsync(context);
+            resourceGuide.AgencyNamesForDataList = await GetDistinctAgencyNamesAsync(context);
             resourceGuide.CitiesForDataList = await GetAllCities(context);
         }
 

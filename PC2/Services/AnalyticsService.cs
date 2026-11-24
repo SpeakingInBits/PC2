@@ -3,22 +3,31 @@ using Azure.Monitor.Query.Models;
 using Azure;
 using PC2.Models;
 using Azure.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace PC2.Services;
 
 /// <summary>
-/// Service for querying Application Insights telemetry data from Azure or local development
+/// Service for querying Application Insights telemetry data from Azure or local development.
+/// Registered as a singleton, so the Log Analytics client and its credential are created once.
 /// </summary>
 public class AnalyticsService
 {
+    /// <summary>
+    /// How long results for a date range are reused before Log Analytics is queried again
+    /// </summary>
+    public static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(10);
+
     private readonly LogsQueryClient? _logsQueryClient;
     private readonly string? _workspaceId;
     private readonly bool _isAzureConfigured;
+    private readonly IMemoryCache _cache;
     private readonly ILogger<AnalyticsService> _logger;
 
-    public AnalyticsService(IConfiguration configuration, ILogger<AnalyticsService> logger)
+    public AnalyticsService(IConfiguration configuration, IMemoryCache cache, ILogger<AnalyticsService> logger)
     {
+        _cache = cache;
         _logger = logger;
         _workspaceId = configuration["ApplicationInsights:WorkspaceId"];
         var connectionString = configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
@@ -60,8 +69,21 @@ public class AnalyticsService
         {
             if (_isAzureConfigured && _logsQueryClient != null)
             {
-                // Use Azure Application Insights Log Analytics
-                await GetAzureAnalyticsDataAsync(viewModel);
+                // Use Azure Application Insights Log Analytics, reusing recent results for the same date range
+                // Callers change the returned model (e.g. the selected dates), so the cache keeps its own copy of the results
+                string cacheKey = GetCacheKey(viewModel.StartDate.Value, viewModel.EndDate.Value);
+                if (_cache.TryGetValue(cacheKey, out AnalyticsViewModel? cached) && cached != null)
+                {
+                    CopyResults(cached, viewModel);
+                    return viewModel;
+                }
+
+                if (await GetAzureAnalyticsDataAsync(viewModel))
+                {
+                    var results = new AnalyticsViewModel();
+                    CopyResults(viewModel, results);
+                    _cache.Set(cacheKey, results, CacheDuration);
+                }
             }
             else
             {
@@ -79,27 +101,70 @@ public class AnalyticsService
     }
 
     /// <summary>
+    /// Copies the query results, but not the selected dates, from one model to another
+    /// </summary>
+    private static void CopyResults(AnalyticsViewModel from, AnalyticsViewModel to)
+    {
+        to.PageViews = from.PageViews;
+        to.TotalPageViews = from.TotalPageViews;
+        to.PdfDownloads = from.PdfDownloads;
+        to.TotalPdfDownloads = from.TotalPdfDownloads;
+        to.SearchTerms = from.SearchTerms;
+        to.TotalSearches = from.TotalSearches;
+        to.TotalUniqueUsers = from.TotalUniqueUsers;
+    }
+
+    /// <summary>
+    /// The cache key for a date range. Times are rounded down to the cache duration, so the default
+    /// "last 30 days" view, which ends at the current second, reuses results instead of always missing.
+    /// </summary>
+    public static string GetCacheKey(DateTime startDate, DateTime endDate)
+    {
+        static long Round(DateTime value) => value.Ticks - value.Ticks % CacheDuration.Ticks;
+        return $"analytics:{Round(startDate)}:{Round(endDate)}";
+    }
+
+    /// <summary>
     /// Retrieves analytics data from Azure Application Insights
     /// </summary>
-    private async Task GetAzureAnalyticsDataAsync(AnalyticsViewModel viewModel)
+    /// <returns>True if every query succeeded. Data from the queries that did succeed is shown either way.</returns>
+    private async Task<bool> GetAzureAnalyticsDataAsync(AnalyticsViewModel viewModel)
     {
-        // Calculate time range
-        var timeRange = CalculateQueryTimeRange(viewModel.StartDate!.Value, viewModel.EndDate!.Value);
+        DateTime startDate = viewModel.StartDate!.Value;
+        DateTime endDate = viewModel.EndDate!.Value;
+        var timeRange = CalculateQueryTimeRange(startDate, endDate);
 
-        // Get page views for the specified date range
-        viewModel.PageViews = await GetPageViewsAsync(viewModel.StartDate.Value, viewModel.EndDate.Value, timeRange);
+        // The four queries don't depend on each other, so they run at the same time
+        Task<List<PageViewData>> pageViews = GetPageViewsAsync(startDate, endDate, timeRange);
+        Task<List<DownloadData>> pdfDownloads = GetPdfDownloadsAsync(startDate, endDate, timeRange);
+        Task<List<SearchTermData>> searchTerms = GetSearchTermsAsync(startDate, endDate, timeRange);
+        Task<int> uniqueUsers = GetUniqueUsersAsync(startDate, endDate, timeRange);
+        try
+        {
+            await Task.WhenAll(pageViews, pdfDownloads, searchTerms, uniqueUsers);
+        }
+        catch
+        {
+            // Each query logs its own error
+        }
+
+        // Page views for the specified date range
+        viewModel.PageViews = pageViews.IsCompletedSuccessfully ? pageViews.Result : new List<PageViewData>();
         viewModel.TotalPageViews = viewModel.PageViews.Sum(pv => pv.ViewCount);
 
-        // Get PDF downloads
-        viewModel.PdfDownloads = await GetPdfDownloadsAsync(viewModel.StartDate.Value, viewModel.EndDate.Value, timeRange);
+        // PDF downloads
+        viewModel.PdfDownloads = pdfDownloads.IsCompletedSuccessfully ? pdfDownloads.Result : new List<DownloadData>();
         viewModel.TotalPdfDownloads = viewModel.PdfDownloads.Sum(d => d.DownloadCount);
 
-        // Get search terms from resource guide
-        viewModel.SearchTerms = await GetSearchTermsAsync(viewModel.StartDate.Value, viewModel.EndDate.Value, timeRange);
+        // Search terms from the resource guide
+        viewModel.SearchTerms = searchTerms.IsCompletedSuccessfully ? searchTerms.Result : new List<SearchTermData>();
         viewModel.TotalSearches = viewModel.SearchTerms.Sum(st => st.SearchCount);
 
-        // Get unique user count
-        viewModel.TotalUniqueUsers = await GetUniqueUsersAsync(viewModel.StartDate.Value, viewModel.EndDate.Value, timeRange);
+        // Unique user count
+        viewModel.TotalUniqueUsers = uniqueUsers.IsCompletedSuccessfully ? uniqueUsers.Result : 0;
+
+        return pageViews.IsCompletedSuccessfully && pdfDownloads.IsCompletedSuccessfully
+            && searchTerms.IsCompletedSuccessfully && uniqueUsers.IsCompletedSuccessfully;
     }
 
     /// <summary>
@@ -220,6 +285,8 @@ public class AnalyticsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving page views from Application Insights");
+            // GetAzureAnalyticsDataAsync shows the other results without this one, and doesn't cache them
+            throw;
         }
 
         return pageViews;
@@ -272,6 +339,8 @@ public class AnalyticsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving PDF downloads from Application Insights");
+            // GetAzureAnalyticsDataAsync shows the other results without this one, and doesn't cache them
+            throw;
         }
 
         return downloads;
@@ -323,6 +392,8 @@ public class AnalyticsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving search terms from Application Insights");
+            // GetAzureAnalyticsDataAsync shows the other results without this one, and doesn't cache them
+            throw;
         }
 
         return searchTerms;
@@ -364,6 +435,8 @@ public class AnalyticsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving unique users from Application Insights");
+            // GetAzureAnalyticsDataAsync shows the other results without this one, and doesn't cache them
+            throw;
         }
 
         return 0;

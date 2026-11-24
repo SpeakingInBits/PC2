@@ -17,7 +17,7 @@ namespace PC2.Data
         /// </summary>
         public static async Task<List<Staff>> GetAllStaff(ApplicationDbContext context)
         {
-            return await (from s in context.StaffMembers
+            return await (from s in context.StaffMembers.AsNoTracking()
                           orderby s.PriorityOrder ascending, s.Name ascending
                           select s).ToListAsync();
         }
@@ -27,7 +27,7 @@ namespace PC2.Data
         /// </summary>
         public static async Task<List<Staff>> GetAllStaffForEditing(ApplicationDbContext context)
         {
-            return await (from s in context.StaffMembers
+            return await (from s in context.StaffMembers.AsNoTracking()
                           orderby s.Name ascending
                           select s).ToListAsync();
         }

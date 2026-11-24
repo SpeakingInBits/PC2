@@ -31,7 +31,27 @@ internal static partial class RegexHelpers
     /// Matches formats: 123-456-7890, 123.456.7890, or 1234567890
     /// </summary>
     /// <returns>A compiled Regex instance for matching phone numbers.</returns>
-    [GeneratedRegex(@"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b", 
+    [GeneratedRegex(@"\b\d{3}[-.]?\d{3}[-.]?\d{4}\b",
         RegexOptions.None)]
     public static partial Regex PhonePattern();
+
+    /// <summary>
+    /// US phone numbers anywhere in an agency's phone text, for <see cref="RendererHelper.RenderPhone"/>.
+    /// Matches formats: (xxx) xxx-xxxx, xxx-xxx-xxxx, xxx.xxx.xxxx, xxx xxx xxxx
+    /// </summary>
+    [GeneratedRegex(@"\(?\d{3}\)?[\s\-.]?\d{3}[\s\-.]?\d{4}")]
+    public static partial Regex PhoneNumberInText();
+
+    /// <summary>
+    /// A field that is just one phone number, such as (253) 555-1234, optionally followed by one space.
+    /// Used by <see cref="Agency.PhoneToString"/>.
+    /// </summary>
+    [GeneratedRegex(@"^\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}[\s]?$")]
+    public static partial Regex WholeFieldPhoneNumber();
+
+    /// <summary>
+    /// A field that is exactly one phone number, such as (253) 555-1234. Used by <see cref="Agency.CrisisToString"/>.
+    /// </summary>
+    [GeneratedRegex(@"^\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$")]
+    public static partial Regex ExactPhoneNumber();
 }

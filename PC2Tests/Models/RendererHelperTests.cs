@@ -39,6 +39,28 @@ namespace PC2.Models.Tests
             // Assert
             Assert.AreEqual(expected, result);
         }
+
+        [DataTestMethod]
+        [DataRow(
+            "<b>Main</b> 253-555-1234 & <i>TTY</i>",
+            "&lt;b&gt;Main&lt;/b&gt; <a href=\"tel:2535551234\">253-555-1234</a><br> &amp; &lt;i&gt;TTY&lt;/i&gt;"
+        )]
+        [DataRow(
+            "<script>alert(1)</script>",
+            "&lt;script&gt;alert(1)&lt;/script&gt;"
+        )]
+        [DataRow(
+            "\"Front desk\" 253-555-1234 'ext. 5'",
+            "&quot;Front desk&quot; <a href=\"tel:2535551234\">253-555-1234</a><br> &#39;ext. 5&#39;"
+        )]
+        public void RenderPhoneTest_textShouldBeHtmlEncoded(string input, string expected)
+        {
+            // Act
+            string result = RendererHelper.RenderPhone(input);
+
+            // Assert
+            Assert.AreEqual(expected, result);
+        }
     }
 }
 

@@ -16,7 +16,7 @@ public class ResourceLinkDB
     /// </summary>
     public static async Task<List<ResourceLink>> GetAllAsync(ApplicationDbContext context)
     {
-        return await (from rl in context.ResourceLinks
+        return await (from rl in context.ResourceLinks.AsNoTracking()
                       orderby rl.Name
                       select rl).ToListAsync();
     }

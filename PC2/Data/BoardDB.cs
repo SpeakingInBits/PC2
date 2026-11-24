@@ -11,7 +11,7 @@ namespace PC2.Data
         /// </summary>
         public static async Task<List<Board>> GetAllBoardMembers(ApplicationDbContext context)
         {
-            return await (from b in context.BoardMembers
+            return await (from b in context.BoardMembers.AsNoTracking()
                           orderby b.PriorityOrder ascending, b.Name ascending
                           select b).ToListAsync();
         }
@@ -21,7 +21,7 @@ namespace PC2.Data
         /// </summary>
         public static async Task<List<Board>> GetAllBoardMembersForEditing(ApplicationDbContext context)
         {
-            return await (from b in context.BoardMembers
+            return await (from b in context.BoardMembers.AsNoTracking()
                           orderby b.Name ascending
                           select b).ToListAsync();
         }

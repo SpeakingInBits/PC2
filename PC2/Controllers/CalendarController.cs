@@ -15,7 +15,8 @@ public class CalendarController : Controller
         _context = context;
     }
 
-    private static DateOnly Today => DateOnly.FromDateTime(DateTime.Today);
+    // Pacific time date, so the calendar does not roll over early on Azure's UTC clock
+    private static DateOnly Today => CalendarEventDB.Today();
 
     public async Task<IActionResult> Index()
     {

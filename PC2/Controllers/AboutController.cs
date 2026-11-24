@@ -11,11 +11,13 @@ public class AboutController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly AzureBlobUploader _azureBlobUploader;
+    private readonly ILogger<AboutController> _logger;
 
-    public AboutController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader)
+    public AboutController(ApplicationDbContext context, AzureBlobUploader azureBlobUploader, ILogger<AboutController> logger)
     {
         _context = context;
         _azureBlobUploader = azureBlobUploader;
+        _logger = logger;
     }
 
     public async Task<IActionResult> HousingProgramData()
@@ -67,7 +69,7 @@ public class AboutController : Controller
 
             try
             {
-                string filePath = await _azureBlobUploader.UploadFileAsync(userFile, userFile.FileName);
+                string filePath = await _azureBlobUploader.UploadPdfAsync(userFile);
                 TempData["Message"] = $"{userFile.FileName} uploaded successfully";
 
                 NewsletterFile newsLetterFile = new()
@@ -80,7 +82,8 @@ public class AboutController : Controller
             }
             catch (Exception ex)
             {
-                TempData["Message"] = $"Error uploading file: {ex.Message}";
+                _logger.LogError(ex, "Error uploading newsletter {FileName}", userFile.FileName);
+                TempData["Message"] = $"Error uploading {userFile.FileName}. Please try again.";
                 List<NewsletterFile> newsletterFiles = await NewsletterFileDB.GetAllAsync(_context);
                 return View(newsletterFiles);
             }
@@ -116,7 +119,8 @@ public class AboutController : Controller
         }
         catch (Exception ex)
         {
-            TempData["Message"] = $"Error deleting file: {ex.Message}";
+            _logger.LogError(ex, "Error deleting newsletter {NewsletterId}", id);
+            TempData["Message"] = "Error deleting the file. Please try again.";
         }
 
         return RedirectToAction("UploadNewsletter");
