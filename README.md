@@ -16,7 +16,7 @@ is hosted on Azure SQL Database.
 ### Prerequisites
 - Visual Studio 2026
 - Ensure the SQL Server Data Tools component are installed with Visual Studio.
-- .NET 10 SDK (bundled with Visual Studio 2026)
+- .NET 11 SDK (comes with Visual Studio 2026 when it is up to date, or install it from https://dotnet.microsoft.com/download)
 - ASP.NET and web development workload
 
 ### Setup Instructions
