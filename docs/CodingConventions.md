@@ -12,7 +12,7 @@ This document captures repository-wide conventions for consistent code, architec
 ---
 
 ## IDE
-The team uses Visual Studio 2026 to support .NET 10 development and built-in support
+The team uses Visual Studio 2026 to support .NET 11 development and built-in support
 for tools like the .editorconfig file, analyzers, and refactoring tools.
 
 ## Member Naming Conventions
@@ -51,7 +51,7 @@ Follow idiomatic .NET naming unless a specific exception is documented. Enforce 
 
 ## Architecture Guidance
 
-This project targets .NET 10 and is an ASP.NET Core MVC application with Identity integration. Use the following structural and naming guidance to organize code consistently.
+This project targets .NET 11 and is an ASP.NET Core MVC application with Identity integration. Use the following structural and naming guidance to organize code consistently.
 
 - Current Project Structure
   - `PC2/` (ASP.NET Core MVC app - single project architecture)
